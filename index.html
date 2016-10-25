@@ -9,19 +9,42 @@
     <script src="lib/browserdetect.js"></script>
     <script src="lib/jquery/dist/jquery.min.js"></script>
     <script src="lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="tsomi-rdf.js"></script>
 
     <link type="text/css" rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.css"/>
     <link type="text/css" rel="stylesheet" href="tsomi.css"/>
   </head>
 
   <body>
-    <table id="table-header">
-      <tr id= "header">
-        <td id="title">The Sphere of My Influence</td>
-        <td><span>Search:</span><input class="search-input" type="text" name="query"></td>
-        <td id="about"><a href="https://github.com/treboresque/tsomi" target="_blank">About<a></td>
-      </tr>
-    </table>
+
+    <!-- nav bar -->
+
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">The Sphere of My Influence</a>
+        </div>
+
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <form class="search navbar-form navbar-left" role="search">
+            <div class="form-group">
+              <input type="text" class="search-input form-control" placeholder="Search">
+            </div>
+            <button type="submit" class="search-submit btn btn-default "><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://github.com/trebor/tsomi">About</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
     <div id="container">
       <div id="chartdiv">
         <div id="chart"> </div>
@@ -40,8 +63,17 @@
         </iframe>
       </div>
     </div>
-    <script type="text/javascript" src="tsomi-rdf.js"></script>
-    <script type="text/javascript" src="tsomi.js"></script>
+
+    <!-- results chooser -->
+
+    <div id="results-chooser" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="results-chooser">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          ...
+        </div>
+      </div>
+    </div>
+
   </body>
 
   <!-- google analytics   -->
@@ -59,4 +91,5 @@
     })();
 
   </script>
+  <script type="text/javascript" src="tsomi.js"></script>
 </html>

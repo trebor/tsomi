@@ -47,19 +47,21 @@ var tsomiFuture = [];
 
 var dateFormat = d3.time.format('%Y-%m-%d');
 
-$(".search-input").keyup(function (e) {
-  if (e.keyCode == 13) {
-    searchForPeople(e.target.value, function(results) {
-      console.log("results", results);
-    });
-  }
+$('.search').submit(function(event) {
+  chooseResult(['foo', 'bar', $(".search-input").val()]);
+  // var query = $(".search-input").val();
+  // console.log("query", query);
+  // searchForPeople(query, chooseResult);
+  event.preventDefault();
 });
 
-$(document).keyup(function (e) {
-    if ($(".input1").is(":focus") && (e.keyCode == 13)) {
-        // Do something
-    }
-});
+$('#results-chooser').modal({show: false});
+$('#results-chooser').modal('hide');
+
+function chooseResult(results) {
+  console.log("results", results);
+  $('#results-chooser').modal('show');
+}
 
 // create the svg instance
 

@@ -1,219 +1,170 @@
-/* specify the font face */
+/* /\* specify the font face *\/ */
 
-@font-face
-{
-  font-family: capita-light-cat;
-  src: url('fonts/capita-light.svg'),
-  url('fonts/capita-light.ttf'),
-  url('fonts/capita-light.eot'); /* IE9 */
-}
+/* @font-face */
+/* { */
+/*   font-family: capita-light-cat; */
+/*   src: url('fonts/capita-light.svg'), */
+/*   url('fonts/capita-light.ttf'), */
+/*   url('fonts/capita-light.eot'); /\* IE9 *\/ */
+/* } */
 
-/* default to zero padding and margin for all */
+/* /\* default to zero padding and margin for all *\/ */
 
-* {
-  margin: 0px;
-  padding: 0px;
-	border: 0px;
-}
+/* * { */
+/*   margin: 0px; */
+/*   padding: 0px; */
+/* 	border: 0px; */
+/* } */
 
-html {
-  position: absolute;
-  font-size: 11px;
-  font-family: capita-light-cat;
-  width: 100%;
-  height: calc(100% - 5px);
-  height: -webkit-calc(100% - 5px);
-}
+/* html { */
+/*   position: absolute; */
+/*   font-size: 11px; */
+/*   font-family: capita-light-cat; */
+/*   width: 100%; */
+/*   height: calc(100% - 5px); */
+/*   height: -webkit-calc(100% - 5px); */
+/* } */
 
-body {
-  width: 100%;
-  height: 100%;
-}
+/* body { */
+/*   width: 100%; */
+/*   height: 100%; */
+/* } */
 
-#header {
-  width: 100%;
-  border-bottom: solid;
-  border-width: 2px;
-  border-color: #888;
-  font-size: 14px;
-  font-weight: bold;
-}
+/* .navbar { */
+/*   padding: 0px; */
+/*   margin: 0px; */
+/* } */
 
-#table-header {
-  width: 100%;
-  height: 25px;
-  border-bottom: solid;
-  border-width: 2px;
-  border-color: #888;
-  font-size: 14px;
-  font-weight: bold;
-  padding-left: 10px;
-  padding-right: 10px;
-}
+/* #container { */
+/*   width: 100%; */
+/*   height: calc(100% - 45px); */
+/*   height: -webkit-calc(100% - 45px); */
+/* } */
 
-#header #title {
-  width: 50%;
-}
+/* #chartdiv { */
+/*   width: 65%; */
+/*   height: 100%; */
+/* 	float: left; */
+/* } */
 
-#header #about {
-  width: 50%;
-  text-align: right;
-  cursor: pointer;
-}
+/* #chart { */
+/*   width: 100%; */
+/*   height: 100%; */
+/* } */
 
-#about a {
-  color: black;
-  text-decoration: none;
-}
+/* #wikiconnect { */
+/*   position: relative; */
+/*   -o-transform: scale(0); */
+/*   -ms-transform: scale(0); */
+/*   -moz-transform: scale(0); */
+/*   -webkit-transform: scale(0); */
+/*   top: -100%; */
+/*   padding: 20px; */
+/*   float: right; */
+/* } */
 
-#container {
-  width: 100%;
-  height: calc(100% - 25px);
-  height: -webkit-calc(100% - 25px);
-}
+/* #wikiconnect > img { */
+/*   width: 80px; */
+/*   height: 80px; */
+/*   cursor: pointer; */
+/* } */
 
-#chartdiv {
-  width: 65%;
-  height: 100%;
-	float: left;
-}
+/* #wikidiv { */
+/*   width: 35%; */
+/*   height: 100%; */
+/* 	float: right; */
+/* } */
 
-#chart {
-  width: 100%;
-  height: 100%;
-}
+/* .wikibutton { */
+/*   visibility: visible; */
+/*   cursor: pointer; */
+/* } */
 
-#wikiconnect {
-  position:relative;
-  -o-transform: scale(0);
-  -ms-transform: scale(0);
-  -moz-transform: scale(0);
-  -webkit-transform: scale(0);
-  top: -100%;
-  padding: 20px;
-  float: right;
-  width: 80px;
-  height: 80px;
-}
+/* #wikiframe { */
+/* 	width: 100%; */
+/* 	height: 100%; */
+/* } */
 
-#wikiconnect > img {
-  width: 80px;
-  height: 80px;
-  cursor: pointer;
-}
+/* .node { */
+/*   cursor: pointer; */
+/* } */
 
-#wikidiv {
-  /* position: absolute; */
-  width: 35%;
-  height: 100%;
-	float: right;
-}
+/* .backdrop { */
+/*   fill: #aaa; */
+/*   stroke-width: 0px; */
+/*   stroke: none; */
+/* } */
 
-.wikibutton {
-  visibility: visible;
-  cursor: pointer;
-}
+/* .loading-ring { */
+/* } */
 
-#wikiframe {
-	width: 100%;
-	height: 100%;
-  /* seamless:seamless; */
-}
+/* .backdrop.clicked { */
+/*   fill: #eee; */
+/*   stroke-width: 10px; */
+/*   stroke: #ddd; */
+/* } */
 
-.node {
-  cursor: pointer;
-}
+/* .rim { */
+/*   fill: none; */
+/*   stroke: black; */
+/*   opacity: 0.5; */
+/* } */
 
-.backdrop {
-  fill: #aaa;
-  stroke-width: 0px;
-  stroke: none;
-}
+/* .banner { */
+/*   stroke: #222; */
+/*   opacity: 0.8; */
+/* } */
 
-.loading-ring {
-}
+/* path.link { */
+/*   opacity: 0.3; */
+/* } */
+/* path.link.from { */
+/*   stroke: #888; */
+/* } */
 
-.backdrop.clicked {
-  /* fill: #E5F5D2; */
-  fill: #eee;
-  stroke-width: 10px;
-  stroke: #ddd;
-}
+/* path.link.to { */
+/*   stroke: #888; */
+/* } */
 
-.rim {
-  fill: none;
-  /* stroke-width: 2px; */
-  /* stroke: #E5F5D2; */
-  stroke: black;
-  opacity: 0.5;
-  /* stroke: red; */
-}
+/* .title { */
+/*   font-weight: bold; */
+/*   fill: #222; */
+/*   font-size: 60px; */
+/* } */
 
-.banner {
-  stroke: #222;
-  opacity: 0.8;
-}
+/* .loading { */
+/*   font-weight: bold; */
+/*   fill: #222; */
+/*   font-size: 18px; */
+/*   cursor: pointer; */
+/* } */
 
-path.link {
-  opacity: 0.3;
-}
-path.link.from {
-  /* stroke: #D6FBF9; */
-  /* stroke: #eec; */
-  stroke: #888;
-}
+/* .name { */
+/*   fill: white; */
+/* } */
 
-path.link.to {
-  /* stroke: #cee; */
-  stroke: #888;
-}
+/* .node > text { */
+/*   fill: black; */
+/*   text-shadow: 0px 0px 5px #fff; */
+/* } */
 
-.title {
-  font-weight: bold;
-  fill: #222;
-  font-size: 60px;
-}
+/* path.link { */
+/*   fill: none; */
+/*   stroke-linecap: round; */
+/* } */
 
-.loading {
-  font-weight: bold;
-  fill: #222;
-  font-size: 18px;
-  cursor: pointer;
-}
+/* .axis { */
+/*   shape-rendering: crispEdges; */
+/*   color: green; */
+/*   stroke: #444; */
+/* } */
 
-.name {
-  fill: white;
-}
+/* .axis text { */
+/*   stroke: none; */
+/*   fill: #888; */
+/* } */
 
-.node > text {
-  fill: black;
-  text-shadow: 0px 0px 5px #fff;
-}
-
-path.link {
-  /* opacity: 0.2; */
-  /* stroke: #000; */
-  fill: none;
-  stroke-linecap: round;
-}
-
-.axis {
-  shape-rendering: crispEdges;
-  color: green;
-  stroke: #444;
-  /* stroke: blue; */
-}
-
-.axis text {
-  stroke: none;
-  fill: #888;
-}
-
-.timeline {
-  fill: black;
-  opacity: 0.03;
-}
-
-/* .timeline.highlight { */
-/*   opacity: 0.2; */
+/* .timeline { */
+/*   fill: black; */
+/*   opacity: 0.03; */
 /* } */

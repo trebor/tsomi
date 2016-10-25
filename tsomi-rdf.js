@@ -246,9 +246,10 @@ WHERE\n\
 
 var query_describe = 'DESCRIBE %target%';
 
-var query_search = 'SELECT ?person ?name COUNT(?inf) as ?score \
+var query_search = 'SELECT ?id COUNT(?inf) as ?score \
 WHERE { \
   ?person a foaf:Person. \
+  ?person dbprop:id ?id. \
   ?person foaf:name ?name. \
 \
   {?inf dbpedia-owl:influenced ?person.} \
@@ -274,7 +275,12 @@ LIMIT 10';
 
 function searchForPeople(queryString, callback) {
   sparqlQuery(query_search, {search_query: queryString.trim()}, function(data) {
-    callback(data.results ? data.results.bindings : []);
+    var results = (data.results ? data.results.bindings : []).forEech(
+      function(result) {
+        result.name = result.id.replace(/_/g, ' ');
+      });
+
+    callback(results);
   });
 }
 
