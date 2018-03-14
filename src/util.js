@@ -32,8 +32,3 @@ module.exports = {
   radial
 }
 
-
-<<<<<<< HEAD
->>>>>>> added test fixtures, implemented History component
-=======
->>>>>>> d0ac5cda28538d66c67d6f2835b2df277b8eb563
