@@ -36,7 +36,7 @@ class History {
   }
 
   goBack() {
-    if(!this.past.length)
+    if(!this.hasPast())
       return false
 
     const p = this.past.pop()
@@ -45,7 +45,7 @@ class History {
   }
 
   goForward() {
-    if(!this.future.length)
+    if(!this.hasFuture())
       return false
 
     const mostRecent = last(this.future)
