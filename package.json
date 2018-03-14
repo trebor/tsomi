@@ -5,7 +5,7 @@
   "main": "dist/bundle.js",
   "scripts": {
     "build": "webpack",
-    "test": "jasmine",
+    "test": "babel-node spec/run.js",
     "flow": "flow",
     "dev": "webpack-dev-server"
   },
@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/trebor/tsomi#readme",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",

@@ -23,7 +23,7 @@ var prefixies = [
   {prefix: 'dcterms',     uri: 'http://purl.org/dc/terms/'},
 ];
 
-export var predicates = {
+var predicates = {
   influenced:    'dbpedia-owl:influenced',
   influencedBy: 'dbpedia-owl:influencedBy',
   depiction: 'foaf:depiction',
@@ -36,7 +36,7 @@ export var predicates = {
   dod: 'dbpedia-owl:deathDate'
 };
 
-export var subjects = {
+var subjects = {
   dylan:      'dbpedia:Bob_Dylan',
   bronte:     'dbpedia:Charlotte_Brontë',
   basil:      'dbpedia:Priya_Basil',
@@ -113,7 +113,7 @@ var specialPeopleData = [
   },
 ];
 
-export function createSpecialData(callback) {
+function createSpecialData(callback) {
 
   // all the accumulated queries
 
@@ -274,7 +274,7 @@ WHERE { \
 ORDER BY DESC(?score) \
 LIMIT 10';
 
-export function searchForPeople(queryString, callback) {
+function searchForPeople(queryString, callback) {
   sparqlQuery(query_search, {search_query: queryString.trim()}, function(data) {
     callback(data.results ? data.results.bindings : []);
   });
@@ -359,7 +359,7 @@ function prefix_uri(prefixies, uri) {
   return result;
 }
 
-export function lengthen(uri, bracket) {
+function lengthen(uri, bracket) {
   var result = uri;
   bracket = bracket || false;
 
@@ -429,7 +429,7 @@ function createMockData() {
   return  mockGraph;
 }
 
-export function getPerson(id, callback) {
+function getPerson(id, callback) {
 
   // if the person is in the cache, use that
 
@@ -568,5 +568,14 @@ function queryDetails(targetGraph, targetId, callback) {
     }
     callback();
   });
+}
+
+
+module.exports = { 
+  createSpecialData, 
+  subjects, 
+  lengthen, 
+  getPerson, 
+  searchForPeople 
 }
 

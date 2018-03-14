@@ -1,7 +1,14 @@
-import $ from 'jquery'
-import d3 from 'd3'
-import { createSpecialData, subjects, lengthen, getPerson, searchForPeople } from './tsomi-rdf'
-import { convertSpaces, angleRadians, radial, smallest, largest } from './util'
+const $ = require('jquery')
+const d3 = require('d3')
+const { 
+  createSpecialData, 
+  subjects, 
+  lengthen, 
+  getPerson, 
+  searchForPeople 
+} = require('./tsomi-rdf')
+const { convertSpaces, angleRadians, radial } = require('./util')
+const { History} = require('./components/History')
 
 var width = $('#chart').width();
 var height = $('#chart').height();
