@@ -57,8 +57,7 @@ var WIKI_LOGO = 'static/images/Wikipedia-logo.png';
 
 // the history of tsomi
 
-var tsomiPast = [];
-var tsomiFuture = [];
+const history = new History()
 
 // date formatter
 
@@ -943,18 +942,22 @@ function onForwardbuttonClick(node) {
 }
 
 function goBack() {
-  if (tsomiPast.length > 0) {
-    querySubject(tsomiPast.shift(), false, true);
-    if (tsomiPast.length == 0)
-      hideBackButton();
+  const previous = history.goBack()
+  if(previous) {
+    querySubject(previous, false, true)
+
+    if(!history.hasPast())
+      hideBackButton()
   }
 }
 
 function goForward() {
-  if (tsomiFuture.length > 0) {
-    querySubject(tsomiFuture.shift(), true, false);
-    if (tsomiFuture.length == 0)
-      hideForwardButton();
+  const next = history.goForward()
+  if(next) {
+    querySubject(next, true, false);
+    
+    if(!history.hasFuture())
+      hideForwardButton()
   }
 }
 

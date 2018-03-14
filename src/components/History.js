@@ -11,6 +11,14 @@ class History {
     this.future = []
   }
 
+  hasPast() {
+    return !!this.past.length
+  }
+
+  hasFuture() {
+    return !!this.future.length
+  }
+
   current() {
     return last(this.past)
   }
@@ -20,6 +28,9 @@ class History {
   }
 
   goBack() {
+    if(!this.past.length)
+      return false
+
     const p = this.past.pop()
     this.future.push(p)
     return this.current()
