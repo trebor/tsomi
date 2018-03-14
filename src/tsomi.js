@@ -962,24 +962,26 @@ function goForward() {
 }
 
 function savePast() {
-  if (centerPerson !== undefined) {
-    tsomiPast.unshift(centerPerson.getId());
-    if (tsomiPast.length == 1)
-      showBackButton();
+  if(centerPerson !== undefined) {
+    history.goTo(centerPerson.getId())
+
+    if(history.hasPast())
+      showBackButton()
   }
 }
 
 function saveFuture() {
   if (centerPerson !== undefined) {
-    tsomiFuture.unshift(centerPerson.getId());
-    if (tsomiFuture.length == 1)
-      showForwardButton();
+    history.addToFuture(centerPerson.getId())
+
+    if(history.hasFuture())
+      showForwardButton()
   }
 }
 
 function clearFuture() {
-  tsomiFuture = [];
-  hideForwardButton();
+  history.clearFuture() 
+  hideForwardButton()
 }
 
 function onWikipediaClick(node) {

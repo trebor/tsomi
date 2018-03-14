@@ -15,6 +15,10 @@ class History {
     return !!this.past.length
   }
 
+  clearFuture() {
+    this.future = []
+  }
+
   hasFuture() {
     return !!this.future.length
   }
@@ -25,6 +29,10 @@ class History {
 
   goTo(str: string) {
     this.past.push(str)
+  }
+
+  addToFuture(str: string) {
+    this.future.push(str)
   }
 
   goBack() {
