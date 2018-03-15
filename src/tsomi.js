@@ -7,7 +7,7 @@ const {
   getPerson, 
   searchForPeople 
 } = require('./tsomi-rdf')
-const { convertSpaces, angleRadians, radial } = require('./util')
+const { convertSpaces, angleRadians, radial, largest, smallest } = require('./util')
 const { History} = require('./components/History')
 
 var width = $('#chart').width();
