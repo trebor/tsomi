@@ -66,7 +66,12 @@ var dateFormat = d3.time.format('%Y-%m-%d');
 $(".search-input").keyup(function (e) {
   if (e.keyCode == 13) {
     searchForPeople(e.target.value, function(results) {
-      console.log("results", results);
+        if (results.length > 0) {
+            var subject = convertSpaces(results[0].name.value);
+            location.href = "/?subject=" + subject;
+        } else {
+              // TODO NOT FOUND MESSAGE
+        }
     });
   }
 });
@@ -778,10 +783,10 @@ function updateChart(graph) {
 
     // Make sure that all nodes remain within the top and bottom edges
     // of the display area
-    var min_x = MARGIN;
-    var max_x = width - MARGIN;
-    var min_y = MARGIN;
-    var max_y = height - MARGIN;
+    var min_x = MARGIN+20;
+    var max_x = width - (MARGIN + 20);
+    var min_y = MARGIN+20;
+    var max_y = TIMELINE_Y - (MARGIN+20);
     // TODO: max_y should be adjusted to end _above_ the timeline
 
     nodes.each(function(d) {
