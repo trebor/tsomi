@@ -1,87 +1,21 @@
 const $ = require('jquery')
 
-var QUERY_URL = 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&format=json&query=';
+const {
+  personalDetails,
+  predicates,
+  prefixies,
+  subjects
+} = require('./constants')
+
+const { Sparql } = require('./components/Sparql')
+const sparql = new Sparql()
 
 var LANGUAGE = 'en';
 var debugging = false;
-
-var prefixies = [
-  {prefix: 'rdf',         uri: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'},
-  {prefix: 'fn',          uri: 'http://www.w3.org/2005/xpath-functions#'},
-  {prefix: 'dbcat',       uri: 'http://dbpedia.org/resource/Category/'},
-  {prefix: 'rdfs',        uri: 'http://www.w3.org/2000/01/rdf-schema#'},
-  {prefix: 'skos',        uri: 'http://www.w3.org/2004/02/skos/core/'},
-  {prefix: 'xsd',         uri: 'http://www.w3.org/2001/XMLSchema#'},
-  {prefix: 'dc',          uri: 'http://purl.org/dc/elements/1.1/'},
-  {prefix: 'owl',         uri: 'http://www.w3.org/2002/07/owl#'},
-  {prefix: 'wiki',        uri: 'http://en.wikipedia.org/wiki/'},
-  {prefix: 'dbpedia-owl', uri: 'http://dbpedia.org/ontology/'},
-  {prefix: 'dbprop',      uri: 'http://dbpedia.org/property/'},
-  {prefix: 'dbpedia',     uri: 'http://dbpedia.org/resource/'},
-  {prefix: 'prov',        uri: 'http://www.w3.org/ns/prov#'},
-  {prefix: 'foaf',        uri: 'http://xmlns.com/foaf/0.1/'},
-  {prefix: 'dcterms',     uri: 'http://purl.org/dc/terms/'},
-];
-
-var predicates = {
-  influenced:    'dbpedia-owl:influenced',
-  influencedBy: 'dbpedia-owl:influencedBy',
-  depiction: 'foaf:depiction',
-  thumbnail: 'dbpedia-owl:thumbnail',
-  //name: 'foaf:name',
-  name: 'rdfs:label',
-  wikiTopic: 'foaf:isPrimaryTopicOf',
-  occupation: 'dbprop:occupation',
-  dob: 'dbpedia-owl:birthDate',
-  dod: 'dbpedia-owl:deathDate'
-};
-
-var subjects = {
-  dylan:      'dbpedia:Bob_Dylan',
-  bronte:     'dbpedia:Charlotte_Brontë',
-  basil:      'dbpedia:Priya_Basil',
-  munro:      'dbpedia:Alice_Munro',
-  mock:       'dbpedia:Mock_Data',
-  bacon:      'dbpedia:Kevin_Bacon',
-  duckworth:  'dbpedia:Eleanor_Duckworth',
-  vonnegut:   'dbpedia:Kurt_Vonnegut',
-  plath:      'dbpedia:Silvia_Plath',
-  egoldman:   'dbpedia:Emma_Goldman',
-  oats:       'dbpedia:Joyce_Carol_Oates',
-  kahlo:      'dbpedia:Frida_Kahlo',
-  bohm:       'dbpedia:David_Bohm',
-  obama:      'dbpedia:Barack_Obama',
-  chomsky:    'dbpedia:Noam_Chomsky',
-  eroosevelt: 'dbpedia:Eleanor_Roosevelt(Hato_Rey)',
-  sontag:     'dbpedia:Susan_Sontag',
-  einstein:   'dbpedia:Albert_Einstein',
-  silverman:  'dbpedia:Sarah_Silverman',
-  trebor:     'dbpedia:Robert_Boyd_Harris',
-  geerlings:  'dbpedia:Stephanie_Geerlings',
-  kant:       'dbpedia:Immanuel_Kant',
-  tufte:      'dbpedia:Edward_Tufte',
-  hopper:     'dbpedia:Grace_Hopper',
-  dawkins:    'dbpedia:Richard_Dawkins',
-  norman:     'dbpedia:Donald_Norman',
-  mccloud:    'dbpedia:Scott_McCloud',
-  pinker:     'dbpedia:Steven_Pinker'
-};
-
-var personalDetails = [
-  {name: 'name',       optional: false, language: true,  type: 'literal'},
-  {name: 'thumbnail',  optional: true,  language: false, type: 'url'},
-  {name: 'depiction',  optional: true,  language: false, type: 'url'},
-  {name: 'wikiTopic',  optional: false, language: false, type: 'url'},
-  {name: 'dob',        optional: true,  language: false, type: 'literal'},
-  {name: 'dod',        optional: true,  language: false, type: 'literal'},
-];
-
 var personCache = {};
-
-personCache[lengthen(subjects.mock, true)] = createMockData();
-
 var specialPeople = {};
 
+personCache[lengthen(subjects.mock, true)] = createMockData();
 var specialPeopleData = [
   {id: 'dbpedia:Robert_Boyd_Harris',
    name: 'Robert Harris',
@@ -275,7 +209,7 @@ ORDER BY DESC(?score) \
 LIMIT 10';
 
 function searchForPeople(queryString, callback) {
-  sparqlQuery(query_search, {search_query: queryString.trim()}, function(data) {
+  sparql.query(query_search, {search_query: queryString.trim()}, function(data) {
     callback(data.results ? data.results.bindings : []);
   });
 }
@@ -313,37 +247,6 @@ function binding_to_string(binding) {
   return result;
 }
 
-function sparqlQuery(query, variables, callback) {
-
-  var execute = function() {
-    Object.keys(variables).forEach(function(variable) {
-      query = query.replace(new RegExp('%' + variable + '%', 'g'), variables[variable]);
-    });
-
-    query = prefix_table_to_string(prefixies) + '\n' + query;
-
-    if (debugging) {
-      console.log('---------------- query ----------------');
-      console.log(query);
-      console.log('^^^^^^^^^^^^^^^^ query ^^^^^^^^^^^^^^^^');
-    }
-
-    $.getJSON(QUERY_URL + escape(query))
-      .then(function(data) {
-        if (debugging) {
-          console.log('---------------- results -----------------');
-          display_results(data);
-          console.log('^^^^^^^^^^^^^^^^ results ^^^^^^^^^^^^^^^^');
-        }
-
-        callback(data);
-      }, function(error) {
-        console.log('HTTP error'), callback(undefined);
-      });
-  };
-
-  setTimeout(execute, 0);
-};
 
 // convert uri to prefixed thingy
 
@@ -390,13 +293,6 @@ function shorten(uri) {
 
 // convert prefix table to string
 
-function prefix_table_to_string(prefixies) {
-  var result = '';
-  prefixies.forEach(function(prefix) {
-    result += 'PREFIX ' + prefix.prefix + ': <' + prefix.uri + '>\n';
-  });
-  return result;
-}
 
 function createMockData() {
 
@@ -533,7 +429,7 @@ function queryForRelationship(subject, predicate, object, bind, callback) {
     predicate: predicate,
     object: object
   };
-  sparqlQuery(query_relationship_details, parameters, function(data) {
+  sparql.query(query_relationship_details, parameters, function(data) {
     if (data !== undefined) {
       data.results.bindings.forEach(bind);
     }
@@ -554,8 +450,7 @@ function applyDetails(node, binding) {
 }
 
 function queryDetails(targetGraph, targetId, callback) {
-
-  sparqlQuery(query_details, {target: targetId}, function(details) {
+  sparql.query(query_details, {target: targetId}, function(details) {
     if (details !== undefined) {
       if (details.results.bindings.length > 0) {
         var detailsBinding = details.results.bindings[0];

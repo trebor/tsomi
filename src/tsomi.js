@@ -1,5 +1,7 @@
 const $ = require('jquery')
 const d3 = require('d3')
+const { History } = require('./components/History')
+
 const { 
   createSpecialData, 
   subjects, 
@@ -7,61 +9,59 @@ const {
   getPerson, 
   searchForPeople 
 } = require('./tsomi-rdf')
-const { convertSpaces, angleRadians, radial, largest, smallest } = require('./util')
-const { History} = require('./components/History')
 
-var width = $('#chart').width();
-var height = $('#chart').height();
+const {
+  angleRadians,
+  convertSpaces,
+  largest, 
+  parseDate,
+  radial,
+  smallest
+} = require('./util')
+
+const {
+  ARROW_WIDTH,
+  BACK_BUTTON,
+  BANNER_X,
+  BANNER_Y,
+  BANNER_SIZE,
+  CHART_WIDTH,
+  CHART_HEIGHT,
+  CHARGE_BASE,
+  CHARGE_HIDDEN,
+  CHARGE_RANDOM,
+  DEFAULT_DURATION,
+  FB_BUTTON_SIZE,
+  FB_BUTTON_X_OFF,
+  FB_BUTTON_X,
+  FB_BUTTON_Y,
+  FORWARD_BUTTON,
+  GRAVITY,
+  HEAD_ANGLE,
+  IMAGE_SIZE,
+  LINK_BASE,
+  LINK_MIN_OFFSET,
+  LINK_RANDOM,
+  LINK_STRENGHT,
+  MAX_SCREEN_NODES,
+  MARGIN,
+  NODE_SIZE,
+  PRINTABLE,
+  PRINTABLE_PARAM,
+  RIM_SIZE,
+  STOCK_EASE,
+  TIMELINE_OPACITY,
+  TIMELINE_HIGHLIGHT_OPACITY,
+  TIMELINE_MARGIN,
+  TIMELINE_Y,
+  UNKNOWN_PERSON,
+  WIKI_LOGO,
+  WIKI_ICON_WIDTH
+} = require('./constants')
 
 var nextMidId = 0;
 
-var TIMELINE_OPACITY = 0.03;
-var TIMELINE_HIGHLIGHT_OPACITY = 0.4;
-var HEAD_ANGLE = Math.PI / 6;
-var ARROW_WIDTH = 6;
-var WIKI_ICON_WIDTH = 30;
-var PRINTABLE_PARAM = '?printable=yes';
-var GRAVITY = 0;
-var CHARGE_HIDDEN = 50;
-var CHARGE_BASE = 200;
-var CHARGE_RANDOM = 0;
-var LINK_BASE = 40;
-var LINK_STRENGHT = 0.3;
-var LINK_RANDOM = 100;
-var LINK_MIN_OFFSET = 25;
-var RIM_SIZE = 15;
-var NODE_SIZE = 150;
-var MARGIN = NODE_SIZE / 2 / 2;
-var IMAGE_SIZE = 180;
-var BANNER_SIZE = 25;
-var BANNER_X = IMAGE_SIZE;
-var BANNER_Y = 52;
-var PRINTABLE = true;
-var STOCK_EASE = 'elastic';
-var DEFAULT_DURATION = 1000;
-var TIMELINE_MARGIN = 50;
-var TIMELINE_Y = (height - 20);
-var MAX_SCREEN_NODES = 25;
-
-var FB_BUTTON_SIZE = 34;
-var FB_BUTTON_X_OFF = (80 - FB_BUTTON_SIZE) / 2;
-var FB_BUTTON_X = width - 60;
-var FB_BUTTON_Y = 125;
-
-// image for unknown person
-
-var BACK_BUTTON = 'static/images/backbutton.png';
-var FORWARD_BUTTON = 'static/images/forwardbutton.png';
-var UNKNOWN_PERSON = 'static/images/unknown.png';
-var WIKI_LOGO = 'static/images/Wikipedia-logo.png';
-
-// the history of tsomi
-
 const history = new History()
-
-// date formatter
-
-var dateFormat = d3.time.format('%Y-%m-%d');
 
 $(".search-input").keyup(function (e) {
   if (e.keyCode == 13) {
@@ -86,8 +86,8 @@ $(document).keyup(function (e) {
 
 var svg = d3.select('#chart')
   .append('svg:svg')
-  .attr('width', width)
-  .attr('height', height);
+  .attr('width', CHART_WIDTH)
+  .attr('height', CHART_HEIGHT);
 
 // create a definitions section
 
@@ -208,16 +208,16 @@ defs.append('path')
 
 svg.append('text')
   .classed('loading', true)
-  .attr('x', width / 2)
-  .attr('y', height / 2)
+  .attr('x', CHART_WIDTH / 2)
+  .attr('y', CHART_HEIGHT / 2)
   .attr('text-anchor', 'middle')
   .text('Loading...');
 
 svg.append('text')
   .classed('nodata', true)
   .attr('visibility', 'hidden')
-  .attr('x', width / 2)
-  .attr('y', height / 2)
+  .attr('x', CHART_WIDTH / 2)
+  .attr('y', CHART_HEIGHT / 2)
   .attr('text-anchor', 'middle')
   .text('No Data.');
 
@@ -269,7 +269,7 @@ var axiesGroup = svg
 // setup the axies
 
 var timelineScale = d3.time.scale()
-  .range([0, width - 1])
+  .range([0, CHART_WIDTH - 1])
   .domain([new Date(1900, 12, 15), new Date()]);
 
 var timelineAxis = d3.svg.axis()
@@ -296,7 +296,7 @@ var force = d3.layout.force()
       base = NODE_SIZE / 4 + LINK_MIN_OFFSET;
 
     return Math.random() * LINK_RANDOM + base;})
-  .size([width, height]);
+  .size([CHART_WIDTH, CHART_HEIGHT]);
 
 var centerPerson;
 
@@ -446,10 +446,6 @@ function scaleElement(element, scale, duration, ease) {
   if (duration !== undefined) te.duration(duration);
 }
 
-function parseDate(dateString) {
-  return dateFormat.parse(dateString.substr(0, 10));
-}
-
 function updateChart(graph) {
 
   // check each physicalNode and, if it already exited, reestablish it's old positions
@@ -497,14 +493,6 @@ function updateChart(graph) {
       sampleDate(dod);
       sampleDate(dob);
     }
-
-    // default node to center of screen
-
-    // physicalNode.x = width/2 + (Math.random() - 0.5) * 10;
-    // physicalNode.y = height/2 + (Math.random() - 0.5) * 10;
-
-    // physicalNode.px = physicalNode.x = width/2 + (Math.random() - 0.5) * width/2;
-    // physicalNode.py = physicalNode.y = height/2 + (Math.random() - 0.5) * height/2;
 
     force.nodes().forEach(function(oldNode) {
       if (centerPerson.getId() == oldNode.getId()) {
@@ -761,8 +749,8 @@ function updateChart(graph) {
 
     var k2 = 15 * event.alpha;
     var k = .5 * event.alpha;
-    centerPerson.x += (width  / 2 - centerPerson.x) * k;
-    centerPerson.y += (height / 2 - centerPerson.y) * k;
+    centerPerson.x += (CHART_WIDTH / 2 - centerPerson.x) * k;
+    centerPerson.y += (CHART_HEIGHT / 2 - centerPerson.y) * k;
 
     d3.selectAll('path.link')
       .each(function(link) {
@@ -783,10 +771,10 @@ function updateChart(graph) {
 
     // Make sure that all nodes remain within the top and bottom edges
     // of the display area
-    var min_x = MARGIN+20;
-    var max_x = width - (MARGIN + 20);
-    var min_y = MARGIN+20;
-    var max_y = TIMELINE_Y - (MARGIN+20);
+    var min_x = MARGIN;
+    var max_x = CHART_WIDTH - MARGIN;
+    var min_y = MARGIN;
+    var max_y = CHART_HEIGHT - MARGIN;
     // TODO: max_y should be adjusted to end _above_ the timeline
 
     nodes.each(function(d) {

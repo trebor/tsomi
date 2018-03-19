@@ -1,7 +1,7 @@
 [ignore]
-.*node_modules.*
 
 [include]
+.*node_modules.*
 
 [libs]
 

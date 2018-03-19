@@ -1,12 +1,18 @@
 // @flow
 
+const d3 = require('d3')
+const dateFormat = d3.time.format('%Y-%m-%d')
+
 type Point = {
   x: number,
   y: number
 }
 
+const parseDate = (dateString: string) =>
+  dateFormat.parse(dateString.substr(0, 10))
+
 const convertSpaces = (element: string): string =>
-  element.replace('%20', '_').replace(' ', '_')
+  element.replace(/(%20| )/g, '_')
 
 const angleRadians = (p1: Point, p2: Point): number =>
   Math.atan2(p2.y - p1.y, p2.x - p1.x)
@@ -27,8 +33,8 @@ module.exports = {
   convertSpaces,
   largest,
   last,
+  parseDate,
   smallest,
-  last,
   radial
 }
 
