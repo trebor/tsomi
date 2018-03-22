@@ -78,14 +78,14 @@ let CHART_HEIGHT
 // utility functions
 function establishInitialSubject() {
   var subject = subjects.oats;
-  var urlSubject = getURLParameter('subject');
+  var urlSubject = getURLParameter(window.location.search, 'subject');
 
   if (urlSubject != 'null') {
     subject = 'dbpedia:' + convertSpaces(urlSubject);
   }
   
   else {
-    urlSubject = getURLParameter('subject_raw');
+    urlSubject = getURLParameter(window.location.search, 'subject_raw');
     if (urlSubject != 'null') {
       subject = 'dbpedia:' + urlSubject;
     }
@@ -158,7 +158,12 @@ const createChart = () => {
     $(".search-input").keyup(function (e) {
       if (e.keyCode == 13) {
         searchForPeople(e.target.value, function(results) {
-          console.log("results", results);
+            if (results.length > 0) {
+                var subject = convertSpaces(results[0].name.value);
+                location.href = "/?subject=" + subject;
+            } else {
+              // TODO NOT FOUND MESSAGE
+            }
         });
       }
     });
