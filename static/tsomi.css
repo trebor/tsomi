@@ -8,6 +8,7 @@
   url('/static/fonts/capita-light.eot');
 }
 
+
 /* default to zero padding and margin for all */
 
 * {
@@ -217,3 +218,24 @@ path.link {
 /* .timeline.highlight { */
 /*   opacity: 0.2; */
 /* } */
+
+
+@media only screen and (min-width: 1200px) {
+  #chartdiv {
+    width: 70%;
+  }
+
+  #wikidiv {
+    width: 30%;
+  }
+}
+
+@media only screen and (min-width: 1500px) {
+  #chartdiv {
+    width: 75%;
+  }
+
+  #wikidiv {
+    width: 25%;
+  }
+}

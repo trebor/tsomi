@@ -1,8 +1,11 @@
 const {
  convertSpaces, 
+ getURLElement,
+ getURLParameter,
  largest,
  last,
  smallest,
+ queryParamsToHash,
 } = require('./util')
 
 describe('convertSpaces', () => {
@@ -21,6 +24,30 @@ describe('convertSpaces', () => {
   })
 })
 
+describe('getURLElement', () => {
+  it('should correctly give back the url element', () => {
+    const answers = [
+      [ '/tsomi/hello', decodeURI('hello') ],
+      [ '/tsomi/some%20%20URI', decodeURI('some%20%20URI') ],
+      [ '/hello/goodbye', 'null' ]
+    ]
+
+    answers.forEach(([ i, o ]) => 
+      expect(getURLElement(i)).toEqual(o))
+  })
+})
+
+describe('getURLParameter', () => {
+  it('should correctly give back the url parameter', () => {
+    const answers = [
+      [ '?hello=goodbye', 'hello', decodeURI('goodbye') ],
+      [ '?hello=goodbye', 'goodbye', 'null' ]
+    ]
+
+    answers.forEach(([ params, name, expected ]) => 
+      expect(getURLParameter(params, name)).toEqual(expected))
+  })
+})
 describe('smallest', () => {
   it('should return the smallest', () => {
     const answers = [
@@ -60,6 +87,21 @@ describe('last', () => {
     answers.forEach(arr => {
       expect(last(arr)).toEqual(arr[arr.length - 1])
     })
+  })
+})
+
+describe('queryParamsToHash', () => {
+  it('should return a hash of the query params', () => {
+    const withQ = '?name=autumn&foo=bar&a=b'
+    const withoutQ = '?name=autumn&foo=bar&a=b'
+    const o = {
+      name: 'autumn',
+      foo: 'bar',
+      a: 'b'
+    }
+
+    expect(queryParamsToHash(withQ)).toEqual(o)
+    expect(queryParamsToHash(withoutQ)).toEqual(o)
   })
 })
 

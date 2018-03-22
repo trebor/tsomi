@@ -106,9 +106,6 @@ const UNKNOWN_PERSON = 'static/images/unknown.png'
 const WIKI_LOGO = 'static/images/Wikipedia-logo.png'
 const WIKI_ICON_WIDTH = 30
 
-
-
-
 module.exports = {
   ARROW_WIDTH,
   BACK_BUTTON,
