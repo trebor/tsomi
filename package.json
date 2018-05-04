@@ -44,6 +44,7 @@
     "d3-scale": "^2.0.0",
     "jasmine": "^3.1.0",
     "lodash": "^4.17.5",
+    "rc-slider": "^8.6.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.7",

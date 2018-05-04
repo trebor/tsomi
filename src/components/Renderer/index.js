@@ -654,6 +654,7 @@ const render = function(history) {
       .on('error', function(d) {this.setAttribute('href', d.images.shift());})
       .attr('x', -IMAGE_SIZE / 2)
       .attr('y', -IMAGE_SIZE / 2)
+      .attr('preserveAspectRatio', 'xMidYMin slice')
       .attr('width', IMAGE_SIZE)
       .attr('height', IMAGE_SIZE);
 
