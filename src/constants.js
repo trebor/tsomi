@@ -47,23 +47,6 @@ const predicates = {
   dob: 'dbpedia-owl:birthDate',
   dod: 'dbpedia-owl:deathDate'
 }
-const prefixies = [
-  {prefix: 'rdf',         uri: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'},
-  {prefix: 'fn',          uri: 'http://www.w3.org/2005/xpath-functions#'},
-  {prefix: 'dbcat',       uri: 'http://dbpedia.org/resource/Category/'},
-  {prefix: 'rdfs',        uri: 'http://www.w3.org/2000/01/rdf-schema#'},
-  {prefix: 'skos',        uri: 'http://www.w3.org/2004/02/skos/core/'},
-  {prefix: 'xsd',         uri: 'http://www.w3.org/2001/XMLSchema#'},
-  {prefix: 'dc',          uri: 'http://purl.org/dc/elements/1.1/'},
-  {prefix: 'owl',         uri: 'http://www.w3.org/2002/07/owl#'},
-  {prefix: 'wiki',        uri: 'http://en.wikipedia.org/wiki/'},
-  {prefix: 'dbpedia-owl', uri: 'http://dbpedia.org/ontology/'},
-  {prefix: 'dbprop',      uri: 'http://dbpedia.org/property/'},
-  {prefix: 'dbpedia',     uri: 'http://dbpedia.org/resource/'},
-  {prefix: 'prov',        uri: 'http://www.w3.org/ns/prov#'},
-  {prefix: 'foaf',        uri: 'http://xmlns.com/foaf/0.1/'},
-  {prefix: 'dcterms',     uri: 'http://purl.org/dc/terms/'},
-]
 const PRINTABLE = true
 const PRINTABLE_PARAM = '?printable=yes'
 const QUERY_URL = 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&format=json&query='
@@ -136,7 +119,6 @@ module.exports = {
   NODE_SIZE,
   personalDetails,
   predicates,
-  prefixies,
   PRINTABLE,
   PRINTABLE_PARAM,
   QUERY_URL,

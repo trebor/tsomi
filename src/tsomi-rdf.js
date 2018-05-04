@@ -3,11 +3,10 @@ const $ = require('jquery')
 const {
   personalDetails,
   predicates,
-  prefixies,
   subjects
 } = require('./constants')
 
-const { Sparql } = require('./components/Sparql')
+const { rdfPrefixies, Sparql } = require('./components/Sparql')
 const sparql = new Sparql()
 
 var LANGUAGE = 'en';
@@ -182,38 +181,6 @@ WHERE\n\
 
 var query_describe = 'DESCRIBE %target%';
 
-var query_search = 'SELECT ?person ?name COUNT(?inf) as ?score \
-WHERE { \
-  ?person a foaf:Person. \
-  ?person foaf:name ?name. \
-\
-  {?inf dbpedia-owl:influenced ?person.} \
-  UNION \
-  {?person dbpedia-owl:influenced ?inf.} \
-  UNION \
-  {?inf dbpedia-owl:influencedBy ?person.} \
-  UNION \
-  {?person dbpedia-owl:influencedBy ?inf.} \
-  UNION \
-  {?inf dbprop:influenced ?person.} \
-  UNION \
-  {?person dbprop:influenced ?inf.} \
-  UNION \
-  {?inf dbprop:influences ?person.} \
-  UNION \
-  {?person dbprop:influences ?inf.} \
-\
-  filter( regex(str(?name), "%search_query%", "i")). \
-} \
-ORDER BY DESC(?score) \
-LIMIT 10';
-
-function searchForPeople(queryString, callback) {
-  sparql.query(query_search, {search_query: queryString.trim()}, function(data) {
-    callback(data.results ? data.results.bindings : []);
-  });
-}
-
 var display_results = function(data){
   console.log(data);
   var keys = data.head.vars;
@@ -234,7 +201,7 @@ function binding_to_string(binding) {
     switch (binding.type) {
     case 'uri':
       //result = binding.value;
-      result = prefix_uri(prefixies, binding.value);
+      result = prefix_uri(rdfPrefixies, binding.value);
       break;
     case 'literal':
       result = '[' + binding.value.substring(0, 30) + ']';
@@ -273,7 +240,7 @@ function lengthen(uri, bracket) {
   var prefixName = symbols[0];
   var id = symbols[1];
 
-  prefixies.some(function(prefix) {
+  rdfPrefixies.some(function(prefix) {
     if (prefix.prefix == prefixName) {
       result = prefix.uri + id;
       if (bracket) result = '<' + encodeURI(result) + '>';
@@ -288,7 +255,7 @@ function shorten(uri) {
   var len = uri.length;
   if (uri[0] == '<' && uri[len - 1] == '>')
     uri = uri.substring(1, len - 1);
-  return prefix_uri(prefixies, uri);
+  return prefix_uri(rdfPrefixies, uri);
 }
 
 // convert prefix table to string
@@ -466,11 +433,10 @@ function queryDetails(targetGraph, targetId, callback) {
 }
 
 
-module.exports = { 
-  createSpecialData, 
-  subjects, 
-  lengthen, 
-  getPerson, 
-  searchForPeople 
+module.exports = {
+  createSpecialData,
+  subjects,
+  lengthen,
+  getPerson,
 }
 

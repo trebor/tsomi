@@ -32,6 +32,7 @@
     "extract-text-webpack-plugin": "^3.0.2",
     "flow-bin": "^0.67.1",
     "flow-webpack-plugin": "^1.2.0",
+    "isomorphic-fetch": "^2.2.1",
     "jquery": "^3.3.1",
     "path": "^0.12.7",
     "style-loader": "^0.20.3",
