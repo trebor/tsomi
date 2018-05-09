@@ -11,6 +11,7 @@ const { subjects } = require('../../constants')
 const { About } = require('../About/')
 const { getURLParameter } = require('../../util')
 const { searchForPeople } = require('../../tsomi-rdf')
+import type { PersonAbstract } from '../../clients/DBpedia'
 require('./main.css')
 
 type AppProps = {}
@@ -18,6 +19,7 @@ type AppState = {
   history: History,
   influencers: number,
   influenced: number,
+  searchResults: Array<PersonAbstract>,
   showAboutPage: boolean,
   subject: string,
   wikiDivHidden: boolean,
@@ -41,16 +43,18 @@ const changeSubject = (url: string, subject: string) => {
     ? url.replace(/\?subject=.+/, sanitizedSubject)
     : url + sanitizedSubject
 }
+
 class App extends React.Component<AppProps, AppState> {
   state: AppState
 
   constructor() {
     super()
-      
+     
     this.state = {
       history: new History(),
       influencers: 10,
       influenced: 20,
+      searchResults: [],
       showAboutPage: false,
       subject: subjects.oates,
       wikiDivHidden: false,
@@ -104,7 +108,7 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   render() {
-    const { influencers, influenced } = this.state
+    const { influencers, influenced, searchResults, } = this.state
     const navbar = React.createElement(Navbar, {
       key: 'navbar',
       goHome: () => this.goHome(),
@@ -114,6 +118,7 @@ class App extends React.Component<AppProps, AppState> {
       updateInfluences: val => this.updateInfluences(val),
       updateInfluencers: val => this.updateInfluencers(val),
       submitSearch: name => this.submitSearch(name),
+      searchResults,
     })
 
     const about = React.createElement(About, {

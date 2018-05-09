@@ -6,8 +6,10 @@ const Slider = require('rc-slider').default
 require('rc-slider/assets/index.css')
 require('./main.css')
 
+import type { PersonAbstract } from '../../clients/DBpedia'
 
 const { inputElement } = require('../../eventtypes')
+const { SearchResult } = require('../SearchResult/')
 
 type SearchState = {
   name: string
@@ -19,6 +21,7 @@ type SearchProps = {
   updateInfluencers: Function,
   updateInfluences: Function,
   submitSearch: Function,
+  searchResults: Array<PersonAbstract>,
 }
 
 class Search extends React.Component<SearchProps, SearchState> {
@@ -41,7 +44,7 @@ class Search extends React.Component<SearchProps, SearchState> {
   }
 
   render() {
-    const { influencers, influenced } = this.props
+    const { influencers, influenced, searchResults } = this.props
     const searchGlyph = React.createElement('span', {}, '🔍')
 
     const slider = createSliderWithTooltip(Slider) //React.createElement(Slider, {})
@@ -81,11 +84,16 @@ class Search extends React.Component<SearchProps, SearchState> {
       )
     )
 
+    const searchResult = searchResults.length
+      ? React.createElement(SearchResult, { searchResults },)
+      : undefined
+
     return React.createElement('div', { className: 'search' }, 
       searchGlyph,
       input,
       submit,
-      sliderGroup
+      sliderGroup,
+      searchResult,
     )
   }
 }

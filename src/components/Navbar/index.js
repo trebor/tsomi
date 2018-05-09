@@ -5,6 +5,8 @@ require('./main.css')
 
 const { Search } = require('../Search/')
 
+import type { PersonAbstract } from '../../clients/DBpedia'
+
 type NavbarState = {
 }
 
@@ -15,7 +17,8 @@ type NavbarProps = {
   toggleAbout: Function,
   updateInfluencers: Function,
   updateInfluences: Function,
-  submitSearch: Function
+  submitSearch: Function,
+  searchResults: Array<PersonAbstract>
 }
 
 class Navbar extends React.Component<NavbarProps, NavbarState> {
@@ -33,6 +36,7 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
       updateInfluences,
       updateInfluencers,
       submitSearch,
+      searchResults,
     } = this.props
 
     const about = React.createElement('a', { onClick: toggleAbout }, 'About')
@@ -50,6 +54,7 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
       updateInfluencers,
       updateInfluences,
       submitSearch,
+      searchResults,
     })
 
     return React.createElement(React.Fragment, {}, 

@@ -1,0 +1,82 @@
+.search-results {
+  overflow-y: scroll;
+  position: fixed;
+  top: 140px;
+  left: 0px;
+  width: 65%;
+  height: calc(100vh - 140px);
+  box-sizing: border-box;
+  background-color: white;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.search-result {
+  font-family: 'Montserrat', sans-serif;
+  width: 100%;
+  height: 170px;
+  background-color: #f1f4f8;
+  max-width: 700px;
+  margin: 15px calc(calc(100% - 700px) / 2);
+  position: relative;
+  display: flex;
+}
+
+.search-result img {
+  flex: 1;
+  margin: 20px;
+  height: 130px;
+  max-width: 130px;
+}
+
+.search-result > div {
+  flex: 4;
+  box-sizing: border-box;
+  padding: 20px 20px;
+  height: 130px;
+}
+
+.search-result a {
+  text-decoration: none;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.search-result h3 {
+  font-size: 1.7em;
+  color: rgb(82, 131, 200);
+}
+
+.search-result p,
+.search-influence {
+  font-size: 1.3em;
+  margin: 8px 0;
+}
+
+.search-influence span {
+  margin-right: 30px;
+}
+
+@media only screen and (max-width: 1000px) {
+  .search-result {
+    margin: 15px 0;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .search-results {
+    width: 70%;
+  }
+
+  .search-result {
+    width: 700px;
+  }
+}
+
+@media only screen and (min-width: 1500px) {
+  .search-results {
+    width: 75%;
+  }
+}
+

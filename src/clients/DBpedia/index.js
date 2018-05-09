@@ -40,7 +40,7 @@ type PersonJSON = {
   influencedCount: { [string]: any },
 }
 
-type PersonAbstract = {
+export type PersonAbstract = {
   uri: Uri,
   name: string,
   abstract?: string,
