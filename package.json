@@ -7,7 +7,7 @@
     "build": "npm run test && npm run flow && webpack",
     "test": "babel-node spec/run.js",
     "flow": "flow",
-    "dev": "webpack-dev-server"
+    "dev": "webpack --watch --colors --progress"
   },
   "repository": {
     "type": "git",
@@ -72,8 +72,7 @@
     "path": "^0.12.7",
     "style-loader": "^0.20.3",
     "url-loader": "^1.0.1",
-    "webpack": "^3.11.0",
-    "webpack-dev-server": "^2.11.2"
+    "webpack": "^3.11.0"
   },
   "dependencies": {
     "d3-scale": "^2.0.0",
