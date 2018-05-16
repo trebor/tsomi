@@ -2,7 +2,25 @@
 
 import type { PersonAbstract } from '../../types'
 
+const { uniqueBy } = require('../../util')
 const { runSparqlQuery } = require('../../components/Sparql')
+
+type PersonJSON = {
+  person: { [string]: any },
+  name: { [string]: any },
+  abstract: { [string]: any },
+  birthPlace?: { [string]: any },
+  birthDate?: { [string]: any },
+  deathDate?: { [string]: any },
+  influencedByCount: { [string]: any },
+  influencedCount: { [string]: any },
+}
+
+type SearchResultJSON = {
+  results: {
+    bindings: Array<PersonJSON>
+  }
+}
 
 class ParseError {
   message: string
@@ -28,17 +46,6 @@ WHERE { \
   filter( regex(str(?name), "%search_query%", "i") ) \
   filter( lang(?abstract) = "en" ). \
 }'
-
-type PersonJSON = {
-  person: { [string]: any },
-  name: { [string]: any },
-  abstract: { [string]: any },
-  birthPlace?: { [string]: any },
-  birthDate?: { [string]: any },
-  deathDate?: { [string]: any },
-  influencedByCount: { [string]: any },
-  influencedCount: { [string]: any },
-}
 
 const personResultFromJS = (js: PersonJSON): PersonAbstract => {
   if (js.person.type !== 'uri') {
@@ -86,24 +93,10 @@ const personResultFromJS = (js: PersonJSON): PersonAbstract => {
   }
 }
 
-type SearchResultJSON = {
-  results: {
-    bindings: Array<PersonJSON>
-  }
-}
-
-/* TODO: searchForPeople may return two hits that have the same URL. Find and
- * merge those, probably withe first hit. i.e.:
- *
- * {name: "Sir Walter Scott, Bt", uri: "http://dbpedia.org/resource/Walter_Scott", score: 37}
- * {name: "Walter Scott", uri: "http://dbpedia.org/resource/Walter_Scott", score: 37}
- * =>
- * {name: "Sir Walter Scott, Bt", uri: "http://dbpedia.org/resource/Walter_Scott", score: 37}
- */
 const searchForPeople = (name: string): Promise<Array<PersonAbstract>> =>
   runSparqlQuery(queryPersonAbstract, { search_query: name.trim() })
-    .then((js: SearchResultJSON): Array<PersonAbstract> =>
-      js.results.bindings.map(js_ => personResultFromJS(js_)))
+    .then((js: SearchResultJSON): Array<PersonAbstract> => 
+      uniqueBy(i => i.uri, js.results.bindings.map(personResultFromJS)))
 
 module.exports = {
   searchForPeople,

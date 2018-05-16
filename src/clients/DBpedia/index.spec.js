@@ -3,7 +3,7 @@ const { searchForPeople } = require('./')
 describe('DBpedia library', () => {
   it('retrieves an individual result', (done) => {
     searchForPeople('Joyce Carol Oates').then(lst => {
-      expect(lst.length).toEqual(2)
+      expect(lst.length).toEqual(1) // should dedupe data
       expect(lst[0].uri).toEqual('http://dbpedia.org/resource/Joyce_Carol_Oates')
       expect(lst[0].name).toEqual('Joyce Carol Oates')
       expect(lst[0].birthPlace).toEqual('http://dbpedia.org/resource/Lockport_(city),_New_York')
