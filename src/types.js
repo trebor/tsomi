@@ -24,6 +24,7 @@ export type PersonAbstract = {|
 
 export type PersonDetail = {|
   type: 'PersonDetail',
+  thumbnail: ?string,
   uri: Uri,
   name: string,
   abstract?: string,

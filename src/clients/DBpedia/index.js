@@ -149,7 +149,11 @@ const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
 
       const deathDate = person.deathDate
         ? moment(person.deathDate[0].value)
-        : undefined
+        : null
+
+      const thumbnail = person.thumbnail
+        ? person.thumbnail[0].value
+        : null
       
       return {
         type:'PersonDetail',
