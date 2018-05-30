@@ -10,11 +10,7 @@ type NavbarState = {
 
 type NavbarProps = {
   goHome: Function,
-  influencers: number,
-  influenced: number,
   toggleAbout: Function,
-  updateInfluencers: Function,
-  updateInfluences: Function,
   submitSearch: Function
 }
 
@@ -26,12 +22,8 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
 
   render() {
     const { 
-      influencers, 
-      influenced, 
       toggleAbout, 
       goHome,
-      updateInfluences,
-      updateInfluencers,
       submitSearch,
     } = this.props
 
@@ -45,10 +37,6 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
       React.createElement('div', { className: 'right' }, about))
 
     const search = React.createElement(Search, {
-      influencers,
-      influenced,
-      updateInfluencers,
-      updateInfluences,
       submitSearch,
     })
 
