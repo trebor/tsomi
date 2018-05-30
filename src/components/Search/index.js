@@ -84,7 +84,7 @@ class Search extends React.Component<SearchProps, SearchState> {
       )
     )
 
-    const searchResult = searchResults.length
+    const searchResult = searchResults && searchResults.length
       ? React.createElement(SearchResult, { searchResults },)
       : undefined
 
