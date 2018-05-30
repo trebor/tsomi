@@ -2,7 +2,7 @@
 
 const React = require('react')
 
-import type { PersonAbstract } from '../../clients/DBpedia'
+import type { PersonAbstract } from '../../types'
 require('./main.css')
 
 type SearchResultProps = {

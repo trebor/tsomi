@@ -6,7 +6,7 @@ const Slider = require('rc-slider').default
 require('rc-slider/assets/index.css')
 require('./main.css')
 
-import type { PersonAbstract } from '../../clients/DBpedia'
+import type { PersonAbstract } from '../../types'
 
 const { inputElement } = require('../../eventtypes')
 const { SearchResult } = require('../SearchResult/')
@@ -77,7 +77,7 @@ class Search extends React.Component<SearchProps, SearchState> {
           defaultValue: influenced,
           min: 0,
           max: 25,
-          onChange: this.props.updateInfluences
+          onChange: evt => this.props.updateInfluences(evt),
         }),
 
         React.createElement('span', {}, influenced.toString())

@@ -5,7 +5,7 @@ require('./main.css')
 
 const { Search } = require('../Search/')
 
-import type { PersonAbstract } from '../../clients/DBpedia'
+import type { PersonAbstract } from '../../types'
 
 type NavbarState = {
 }

@@ -1,5 +1,7 @@
 // @flow
 
+import type { PersonAbstract } from '../../types'
+
 const { runSparqlQuery } = require('../../components/Sparql')
 
 class ParseError {
@@ -27,8 +29,6 @@ WHERE { \
   filter( lang(?abstract) = "en" ). \
 }'
 
-type Uri = string
-
 type PersonJSON = {
   person: { [string]: any },
   name: { [string]: any },
@@ -38,17 +38,6 @@ type PersonJSON = {
   deathDate?: { [string]: any },
   influencedByCount: { [string]: any },
   influencedCount: { [string]: any },
-}
-
-export type PersonAbstract = {
-  uri: Uri,
-  name: string,
-  abstract?: string,
-  birthPlace?: string,
-  birthDate?: string,
-  deathDate?: string,
-  influencedByCount: number,
-  influencedCount: number,
 }
 
 const personResultFromJS = (js: PersonJSON): PersonAbstract => {

@@ -275,39 +275,6 @@ const createChart = () => {
       .attr('text-anchor', 'middle')
       .text('No Data.');
 
-    // add back button
-    svg.append('g')
-      .attr('transform', 'translate(' +
-            (FB_BUTTON_X() - FB_BUTTON_X_OFF) + ', ' +
-            (FB_BUTTON_Y) + ')')
-      .append('image')
-      .classed('backbutton', true)
-      .attr('transform', 'scale(0)')
-      .attr('xlink:href', BACK_BUTTON)
-      .style('opacity', .7)
-      .attr('x', FB_BUTTON_SIZE / -2)
-      .attr('y', FB_BUTTON_SIZE / -2)
-      .attr('width', FB_BUTTON_SIZE)
-      .attr('height', FB_BUTTON_SIZE)
-      .append('title')
-      .text('Go Back (Left Arrow)');
-
-    svg.append('g')
-      .attr('transform', 'translate(' +
-            (FB_BUTTON_X() + FB_BUTTON_X_OFF) + ', ' +
-            (FB_BUTTON_Y) + ')')
-      .append('image')
-      .classed('forwardbutton', true)
-      .attr('transform', 'scale(0)')
-      .attr('xlink:href', FORWARD_BUTTON)
-      .style('opacity', .7)
-      .attr('x', FB_BUTTON_SIZE / -2)
-      .attr('y', FB_BUTTON_SIZE / -2)
-      .attr('width', FB_BUTTON_SIZE)
-      .attr('height', FB_BUTTON_SIZE)
-      .append('title')
-      .text('Go Forward (Right Arrow)');
-
     // add groups for links and nodes
     timelinesGroup = svg.append('g').classed('timelines', true);
     linkGroup = svg.append('g').classed('links', true);
@@ -382,20 +349,15 @@ const createChart = () => {
           .call(timelineAxis)
       }), 400)
 
-      d3.select(window).on('popstate', () => {
-        if(window.goBack)
-          window.goBack()
-      })
-
     resolve(svg, force)
   })
 }
 
-const render = function(history) {
+const render = function() {
   createChart().then((svg) => {
     createSpecialData(function() {
       var subject = establishInitialSubject();
-      querySubject(lengthen(subject, true), true, false, function () {
+      querySubject(lengthen(subject, true), function () {
         svg.selectAll('text.static-text')
           .transition()
           .duration(2000)
@@ -409,15 +371,9 @@ const render = function(history) {
     })
   })
 
-  function querySubject(subjectId, recordPast, recordFuture, callback) {
-    recordPast = recordPast || true
-    recordFuture = recordFuture || false
-
+  function querySubject(subjectId, callback) {
     getPerson(subjectId, (graph) => {
       if (graph.getNodes().length > 0) {
-        if (recordPast) savePast()
-        if (recordFuture) saveFuture()
-
         centerPerson = graph.getNode(subjectId)
         limitScreenNodes(graph)
         updateChart(graph, force)
@@ -866,73 +822,6 @@ const render = function(history) {
       .attr('transform', 'scale(' + scale + ')');
   }
 
-  function onBackbuttonMouseOver(node) {
-    scaleBackButton(1.4);
-  }
-
-  function onBackbuttonMouseOut(node) {
-    scaleBackButton(1.0);
-  }
-
-  function onBackbuttonClick(node) {
-    goBack();
-  }
-
-  function onForwardbuttonMouseOver(node) {
-    scaleForwardButton(1.4);
-  }
-
-  function onForwardbuttonMouseOut(node) {
-    scaleForwardButton(1.0);
-  }
-
-  function onForwardbuttonClick(node) {
-    goForward();
-  }
-
-  function goBack() {
-    const previous = history.goBack()
-    if(previous) {
-      querySubject(previous, false, true)
-
-      if(!history.hasPast())
-        hideBackButton()
-    }
-  }
-
-  function goForward() {
-    const next = history.goForward()
-    if(next) {
-      querySubject(next, true, false);
-      
-      if(!history.hasFuture())
-        hideForwardButton()
-    }
-  }
-
-  function savePast() {
-    if(centerPerson !== undefined) {
-      history.goTo(centerPerson.getId())
-
-      if(history.hasPast())
-        showBackButton()
-    }
-  }
-
-  function saveFuture() {
-    if (centerPerson !== undefined) {
-      history.addToFuture(centerPerson.getId())
-
-      if(history.hasFuture())
-        showForwardButton()
-    }
-  }
-
-  function clearFuture() {
-    history.clearFuture() 
-    hideForwardButton()
-  }
-
   function onWikipediaClick(node) {
     d3.select(d3.event.target)
       .transition()
@@ -946,58 +835,9 @@ const render = function(history) {
     window.mediator.getEntry('react', 'setWikiPage')(node);
   }
 
-  function showBackButton() {
-    d3.select('.backbutton')
-      .on('mouseover', onBackbuttonMouseOver)
-      .on('mouseout', onBackbuttonMouseOut)
-      .on('click', onBackbuttonClick);
-    scaleBackButton(1);
-  }
-
-  function hideBackButton() {
-    d3.select('.backbutton')
-      .on('mouseover', undefined)
-      .on('mouseout', undefined)
-      .on('click', undefined);
-    scaleBackButton(0);
-  }
-
-  function showForwardButton() {
-    d3.select('.forwardbutton')
-      .on('mouseover', onForwardbuttonMouseOver)
-      .on('mouseout', onForwardbuttonMouseOut)
-      .on('click', onForwardbuttonClick);
-    scaleForwardButton(1);
-  }
-
-  function hideForwardButton() {
-    d3.select('.forwardbutton')
-      .on('mouseover', undefined)
-      .on('mouseout', undefined)
-      .on('click', undefined);
-    scaleForwardButton(0);
-  }
-
-  function scaleBackButton(scale) {
-    d3.select('.backbutton')
-      .transition()
-      .duration(DEFAULT_DURATION)
-      .ease(STOCK_EASE)
-      .attr('transform', 'scale(' + scale + ')');
-  }
-
-  function scaleForwardButton(scale) {
-    d3.select('.forwardbutton')
-      .transition()
-      .duration(DEFAULT_DURATION)
-      .ease(STOCK_EASE)
-      .attr('transform', 'scale(' + scale + ')');
-  }
-
   function onNodeClick(node) {
     var stopSinner = startSpinner(node);
-    querySubject(node.getId(), true, false, stopSinner);
-    clearFuture();
+    querySubject(node.getId(), stopSinner);
   }
 
   function startSpinner(node) {
