@@ -23,8 +23,8 @@ WHERE { \
   OPTIONAL { ?person dbo:birthPlace ?birthPlace. } \
   OPTIONAL { ?person dbo:birthDate ?birthDate. } \
   OPTIONAL { ?person dbo:deathDate ?deathDate. } \
-  ?person dbpedia-owl:influencedBy ?influencedBy. \
-  ?person dbpedia-owl:influenced ?influenced \
+  OPTIONAL { ?person dbpedia-owl:influencedBy ?influencedBy. } \
+  OPTIONAL { ?person dbpedia-owl:influenced ?influenced. } \
   filter( regex(str(?name), "%search_query%", "i") ) \
   filter( lang(?abstract) = "en" ). \
 }'
