@@ -21,8 +21,6 @@ const { getURLParameter } = require('../../util')
 require('./main.css')
 
 type AppProps = {
-  influencers: number,
-  influenced: number,
   searchResults: Array<PersonAbstract>,
   showAboutPage: boolean,
   subjectId: string,
@@ -30,10 +28,9 @@ type AppProps = {
   wikiUri: string,
 
   goHome: void => void,
+  saveSearchResults: Array<PersonAbstract> => void,
   setWikiUri: Uri => void,
   toggleAboutPage: void => void,
-  updateInfluences: number => void,
-  updateInfluencers: number => void,
 }
 type AppState = {
   history: History,
@@ -105,20 +102,12 @@ class App_ extends React.Component<AppProps, AppState> {
     this.props.setWikiUri(url)
   }
 
-  //toggleAboutPage() {
-    //this.setState({ showAboutPage: !this.state.showAboutPage })
-  //}
-
-  //goHome() {
-    //this.setState({ showAboutPage: false })
-  //}
-
   submitSearch(name: string) {
-    searchForPeople(name).then(people => console.log('[searchForPeople results]', people))
+    searchForPeople(name).then(people => this.props.saveSearchResults(people))
   }
 
   render() {
-    const { influencers, influenced, searchResults, } = this.props
+    const { searchResults, } = this.props
     const navbar = React.createElement(Navbar, {
       key: 'navbar',
       goHome: () => this.props.goHome(),
@@ -166,11 +155,13 @@ class App_ extends React.Component<AppProps, AppState> {
 
 export const App = connect(
   state => ({
+    searchResults: store.searchResults(state),
     showAboutPage: store.showAboutPage(state),
     wikiUri: store.wikiUri(state),
   }),
   dispatch => ({
     goHome: () => dispatch(store.setAboutPage(false)),
+    saveSearchResults: (results) => dispatch(store.saveSearchResults(results)),
     setWikiUri: uri => dispatch(store.setWikiUri(uri)),
     toggleAboutPage: () => dispatch(store.toggleAboutPage()),
   }),

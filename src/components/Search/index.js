@@ -51,10 +51,16 @@ class Search extends React.Component<SearchProps, SearchState> {
 
     const submit = React.createElement('button', { onClick: () => this.submit() }, 'GO')
 
+    console.log('[Search]', this.props.searchResults)
+    const searchResult = this.props.searchResults && this.props.searchResults.length > 0
+      ? React.createElement(SearchResult, { searchResults: this.props.searchResults })
+      : null
+
     return React.createElement('div', { className: 'search' }, 
       searchGlyph,
       input,
       submit,
+      searchResult,
     )
   }
 }
