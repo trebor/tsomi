@@ -9,6 +9,15 @@ type SearchResultProps = {
   searchResults: Array<PersonAbstract>
 }
 
+const summarize = (msg: string, skipNWords: number, maxlength: number): string => {
+  let res = '...'
+  const lst = msg.split(' ')
+  for (let i = skipNWords; res.length + lst[i].length + 1 < maxlength; i++) {
+    res = res.concat(' ', lst[i])
+  }
+  return res.concat('...')
+}
+
 const makeListItem = (person: PersonAbstract) => {
   const { 
     name, 
@@ -21,26 +30,34 @@ const makeListItem = (person: PersonAbstract) => {
     uri 
   } = person
 
+  /* TODO: get the thumbnail (currently available in other branches) */
   const img = React.createElement('img', { src: 'http://via.placeholder.com/100x100' })
+  /* TODO: make this into a link that centers this person in TSOMI */
   const nodeName = React.createElement('h3', {}, name)
   const dates = birthDate
-    ? React.createElement('p', {}, `${ birthDate } - ${ deathDate || '' }`)
+    ? React.createElement('p', {}, `${ birthDate.format('YYYY-MM-DD') } - ${ deathDate ? deathDate.format('YYYY-MM-DD') : '' }`)
     : undefined
 
+  /* TODO: get the proper birthplace name in the search
   const where = birthPlace 
     ? React.createElement('p', {}, birthPlace)
     : undefined
+    */
 
   const influencers = React.createElement('div', { className: 'search-influence' },
     React.createElement('span', {}, `Influenced ${ influencedCount }`),
     React.createElement('span', {}, `Influenced By ${ influencedByCount }`)
   )
-  const summary = React.createElement('p', {}, abstract)
+  const summary = abstract != null
+    ? React.createElement('p', {}, summarize(abstract, 10, 80))
+    : null
+
+  /* TODO: replace this with the `isPrimaryTopicOf` field */
   const link = React.createElement('a', { href: uri }, 'Go to Wikipedia Entry')
 
   return React.createElement('div', { className: 'search-result' }, 
     img, 
-    React.createElement('div', {}, nodeName, dates, where, influencers, summary, link)
+    React.createElement('div', {}, nodeName, dates /*, where*/, influencers, summary, link)
   )
 }
 

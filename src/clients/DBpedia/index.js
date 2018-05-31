@@ -2,6 +2,7 @@
 
 import type { PersonAbstract } from '../../types'
 
+const moment = require('moment')
 const { runSparqlQuery } = require('../../components/Sparql')
 
 class ParseError {
@@ -79,8 +80,8 @@ const personResultFromJS = (js: PersonJSON): PersonAbstract => {
     name: js.name.value,
     abstract: js.abstract.value,
     birthPlace: js.birthPlace ? js.birthPlace.value : undefined,
-    birthDate: js.birthDate ? js.birthDate.value : undefined,
-    deathDate: js.deathDate ? js.deathDate.value : undefined,
+    birthDate: js.birthDate ? moment(js.birthDate.value) : undefined,
+    deathDate: js.deathDate ? moment(js.deathDate.value) : undefined,
     influencedByCount: parseInt(js.influencedByCount.value, 10),
     influencedCount: parseInt(js.influencedCount.value, 10),
   }
