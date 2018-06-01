@@ -14,10 +14,6 @@ type SearchState = {
 }
 
 type SearchProps = {
-  influencers: number,
-  influenced: number,
-  updateInfluencers: Function,
-  updateInfluences: Function,
   submitSearch: Function,
 }
 
@@ -41,7 +37,6 @@ class Search extends React.Component<SearchProps, SearchState> {
   }
 
   render() {
-    const { influencers, influenced } = this.props
     const searchGlyph = React.createElement('span', {}, '🔍')
 
     const slider = createSliderWithTooltip(Slider) //React.createElement(Slider, {})
@@ -53,39 +48,10 @@ class Search extends React.Component<SearchProps, SearchState> {
 
     const submit = React.createElement('button', { onClick: () => this.submit() }, 'GO')
 
-    const sliderGroup = React.createElement('div', { className: 'slider-group' }, 
-      React.createElement('div', { id: 'influencers-slider' },
-        React.createElement('span', {}, 'Influencers'),
-
-        React.createElement(Slider, {
-          defaultValue: influencers,
-          min: 0,
-          max: 25,
-          onChange: this.props.updateInfluencers
-        }),
-        
-        React.createElement('span', {}, influencers.toString())
-      ),
-
-      React.createElement('div', { id: 'influenced-slider' },
-        React.createElement('span', {}, 'Influenced'),
-
-        React.createElement(Slider, {
-          defaultValue: influenced,
-          min: 0,
-          max: 25,
-          onChange: evt => this.props.updateInfluences(evt),
-        }),
-
-        React.createElement('span', {}, influenced.toString())
-      )
-    )
-
     return React.createElement('div', { className: 'search' }, 
       searchGlyph,
       input,
       submit,
-      sliderGroup
     )
   }
 }

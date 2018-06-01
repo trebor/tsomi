@@ -120,11 +120,7 @@ class App_ extends React.Component<AppProps, AppState> {
     const navbar = React.createElement(Navbar, {
       key: 'navbar',
       goHome: () => this.props.goHome(),
-      influencers,
-      influenced,
       toggleAbout: () => this.props.toggleAboutPage(),
-      updateInfluences: val => this.props.updateInfluences(val),
-      updateInfluencers: val => this.props.updateInfluencers(val),
       submitSearch: name => this.submitSearch(name),
     })
 
@@ -167,8 +163,6 @@ class App_ extends React.Component<AppProps, AppState> {
 
 export const App = connect(
   state => ({
-    influencers: store.influencers(state),
-    influenced: store.influenced(state),
     showAboutPage: store.showAboutPage(state),
     wikiUri: store.wikiUri(state),
   }),
@@ -176,8 +170,6 @@ export const App = connect(
     goHome: () => dispatch(store.setAboutPage(false)),
     setWikiUri: uri => dispatch(store.setWikiUri(uri)),
     toggleAboutPage: () => dispatch(store.toggleAboutPage()),
-    updateInfluencers: cnt => dispatch(store.updateInfluencerCount(cnt)),
-    updateInfluences: cnt => dispatch(store.updateInfluencedCount(cnt)),
   }),
 )(App_)
 
