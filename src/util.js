@@ -1,8 +1,6 @@
 // @flow
 
-const d3 = require('d3')
-const $ = require('jquery')
-const dateFormat = d3.time.format('%Y-%m-%d')
+import moment from 'moment'
 
 type Map<T> = {
   [string]: T
@@ -18,17 +16,23 @@ type Viewport = {
   width: number
 }
 
+/*
 const getViewportDimensions = (): Viewport => ({
   // the navbar is 60px tall, so we subtract 60 from the height we report here.
   height: $('#chart').height(),
   width:  $('#chart').width()
 })
+*/
 
-const parseDate = (dateString: string) =>
-  dateFormat.parse(dateString.substr(0, 10))
+const parseDate = (dateString: string, fmt: ?string): ?moment => {
+  const res = fmt ? moment(dateString, fmt) : moment(dateString)
+  return res.isValid() ? res : null
+}
 
 const convertSpaces = (element: string): string =>
   element.replace(/(%20| )/g, '_')
+
+const convertToSafeDOMId = (str: string): string => str.replace(/(%20| |\.)/g, '_')
 
 const angleRadians = (p1: Point, p2: Point): number =>
   Math.atan2(p2.y - p1.y, p2.x - p1.x)
@@ -70,9 +74,20 @@ const getURLElement = (name: string) =>
     ? decodeURI(last(name.split('/')))
     : 'null'
 
+const mapObjKeys = (f: Function, o: Object): Object => {
+  const newObj = {}
+  Object.keys(o).forEach(k => {
+    newObj[f(k)] = o[k]
+  })
+  return newObj
+}
 
-const populate_path = (path: string, points: Array<Point>) => {
+/* TODO: why is Flow allowing points with undefined x or y values through without comment? I'm having trouble reproducing this, but it's a big issue. */
+const populatePath = (path: string, points: Array<Point>) => {
   points.forEach((point: Point, index: number) => {
+    if (isNaN(point.x) || isNaN(point.y)) {
+      debugger
+    }
     path = path
       .replace('X' + index, point.x.toString())
       .replace('Y' + index, point.y.toString())
@@ -82,18 +97,23 @@ const populate_path = (path: string, points: Array<Point>) => {
 
 const isAboutPage = (href: string = window.location.href) => 
   last(href.split('/')) === 'about'
-  
+
+type RequestParameters = {
+  method: string
+}
+
 module.exports = {
   angleRadians,
   convertSpaces,
+  convertToSafeDOMId,
   getURLElement,
   getURLParameter,
-  getViewportDimensions,
   isAboutPage,
   largest,
   last,
+  mapObjKeys,
   parseDate,
-  populate_path,
+  populatePath,
   smallest,
   radial,
   queryParamsToHash,

@@ -1,40 +1,67 @@
 // @flow
 
-import type { PersonAbstract, Uri } from './types'
+import type { PersonAbstract, PersonDetail, SubjectId, Uri } from './types'
+import queryString from 'query-string'
 
-type Store = {
+export type PeopleCache = { [SubjectId]: PersonAbstract | PersonDetail }
+
+export type Store = {
   showAboutPage: bool,
-  subjectId: string,
+  focusedSubject: string,
   wikiDivHidden: bool,
-  cache: { [string]: PersonAbstract },
+  people: PeopleCache,
   currentWikiPageUri: Uri,
 }
 
-const initialState = (): Store => ({
-  showAboutPage: false,
-  subjectId: 'Joyce_Carol_Oates',
-  wikiDivHidden: false,
-  cache: {},
-  currentWikiPageUri: '',
-})
+export const initialState = (): Store => {
+  const params = queryString.parse(location.search)
+  return {
+    showAboutPage: false,
+    focusedSubject: params.subject ? params.subject : 'Ursula_K._Le_Guin',
+    wikiDivHidden: false,
+    people: {},
+    currentWikiPageUri: '',
+  }
+}
 
-type Action = {
+export type Action = {
   type: string,
   [string]: any
 }
 
-const setAboutPage = (state: bool): Action =>
+export const cachePerson = (subjectId: SubjectId, person: PersonAbstract | PersonDetail): Action =>
+  ({ type: 'CACHE_PERSON', subjectId, person })
+export const focusOnPerson = (subjectId: SubjectId): Action =>
+  ({ type: 'FOCUS_ON_PERSON', subjectId })
+export const setAboutPage = (state: bool): Action =>
   ({ type: 'SET_ABOUT_PAGE', state })
-const setWikiUri = (uri: Uri): Action =>
+export const setWikiUri = (uri: Uri): Action =>
   ({ type: 'SET_WIKI_URI', uri })
-const toggleAboutPage = (): Action =>
+export const toggleAboutPage = (): Action =>
   ({ type: 'TOGGLE_ABOUT_PAGE' })
 
-const showAboutPage = (store: Store): bool => store.showAboutPage
-const wikiUri = (store: Store): Uri => store.currentWikiPageUri
+export const focusedSubject = (store: Store): SubjectId => store.focusedSubject
+export const people = (store: Store) => store.people
+export const lookupPerson = (s: SubjectId) =>
+  (store: Store): PersonAbstract | PersonDetail | void => store.people[s]
+export const showAboutPage = (store: Store): bool => store.showAboutPage
+export const wikiUri = (store: Store): Uri => store.currentWikiPageUri
 
-const runState = (state?: Store = initialState(), action: any): Store => {
+export const runState = (state?: Store = initialState(), action: any): Store => {
   switch (action.type) {
+    case 'CACHE_PERSON':
+      return {
+        ...state,
+        people: {
+          ...state.people,
+          [action.subjectId]: action.person,
+        },
+      }
+    case 'FOCUS_ON_PERSON':
+      return {
+        ...state,
+        focusedSubject: state.people[action.subjectId] ? action.subjectId : state.focusedSubject,
+      }
     case 'SET_ABOUT_PAGE':
       return {
         ...state,
@@ -56,17 +83,5 @@ const runState = (state?: Store = initialState(), action: any): Store => {
     default:
       return state
   }
-}
-
-
-module.exports = {
-  runState,
-
-  setWikiUri,
-  showAboutPage,
-
-  setAboutPage,
-  toggleAboutPage,
-  wikiUri,
 }
 

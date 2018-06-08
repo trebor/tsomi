@@ -1,6 +1,6 @@
 // @flow
 
-const { encodeFormBody, httpErrorPromise } = require('../../utils/http')
+const { encodeFormBody, fetchWithTimeout, httpErrorPromise } = require('../../utils/http')
 
 const DBPEDIA_URL = 'http://dbpedia.org/sparql'
 
@@ -54,7 +54,7 @@ const runSparqlQuery = (template: string, variables: QueryVariables): Promise<{ 
 
   const uri = `${DBPEDIA_URL}?${encodeFormBody(params)}`
 
-  return fetch(uri, { method: 'GET' }).then((resp: Response): { [string]: any } => {
+  return fetchWithTimeout(uri, { method: 'GET' }, 10000).then((resp: Response): { [string]: any } => {
     if (!resp.ok) return httpErrorPromise(resp)
     return resp.json()
   })

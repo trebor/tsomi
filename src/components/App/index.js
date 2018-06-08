@@ -1,41 +1,36 @@
 // @flow
 
-import { type Uri } from '../../types'
+import InfluenceChart from '../InfluenceChart'
+import { type Uri, type SubjectId, type PersonAbstract, type PersonDetail, wikipediaMobileUri } from '../../types'
+import dbpedia from '../../clients/DBpedia'
 
 const React = require('react')
 const { connect } = require('react-redux')
 
-const mediator = require('../Mediator/')
-const { render } = require('../Renderer/')
 const { WikiDiv } = require('../Wikidiv/')
 const { Navbar } = require('../Navbar/')
-const { History } = require('../History/')
-//const { subjects } = require('../../constants')
 const { About } = require('../About/')
 
 const store = require('../../store')
-const { searchForPeople } = require('../../tsomi-rdf')
 const { getURLParameter } = require('../../util')
 
 require('./main.css')
 
 type AppProps = {
-  influencers: number,
-  influenced: number,
+  focusedSubject: SubjectId,
+  people: { [SubjectId]: PersonAbstract | PersonDetail },
   showAboutPage: bool,
   subjectId: string,
   wikiDivHidden: bool,
   wikiUri: string,
 
+  cachePerson: (SubjectId, PersonAbstract | PersonDetail) => void,
+  focusOnPerson: SubjectId => void,
   goHome: void => void,
   setWikiUri: Uri => void,
   toggleAboutPage: void => void,
-  updateInfluences: number => void,
-  updateInfluencers: number => void,
 }
-type AppState = {
-  history: History,
-}
+type AppState = { }
 
 const getUrlFromNode = (node: any): string =>
   node.getProperty('wikiTopic').replace(/en./, 'en.m.')
@@ -58,65 +53,57 @@ const changeSubject = (url: string, subject: string) => {
 }
 
 class App_ extends React.Component<AppProps, AppState> {
-  state: AppState
-
-  constructor() {
-    super()
-
-    this.state = {
-      history: new History(),
-    }
-
-    window.mediator = mediator
-    mediator.addEntry('react', 'setWikiPage', this.setWikiPage.bind(this))
+  getAndCachePerson(n: SubjectId): Promise<PersonDetail> { 
+    console.log('[getAndCachePerson]', n)
+    return dbpedia.getPerson(n).then((person: ?PersonDetail) => {
+      return new Promise((res, rej) => {
+        if(person === null || person === undefined) {
+          rej()
+        } else {
+          this.props.cachePerson(n, person)
+          res(person)
+        }
+      })
+    })
   }
 
   componentDidMount() {
-    /*
-    if (!this.state.showAboutPage)
-      render(this.state.history)
-      */
-    render()
+    this.getAndCachePerson(this.props.focusedSubject).then((person: PersonDetail) => {
+      this.focusPerson(person)
+    })
   }
 
-  wikiFrameLoad() {
-    // d3 intercepts popstate events.
-    // when the wikiframe reloads,
-    // we need to pass that event on to
-    // the window so that d3 can see it.
-    // otherwise it'll be swallowed by
-    // the wikiframe itself.
-    console.log('[wikiFrameLoad]')
-    const e = new Event('popstate')
-    console.log('[wikiFrameLoad event]', e)
-    window.dispatchEvent(e)
+  focusPerson(n: PersonAbstract | PersonDetail): void {
+    this.getAndCachePerson(n.id).then(
+      (person: PersonDetail) => {
+        window.history.pushState(
+          '',
+          n.id,
+          `${location.origin}${location.host}${location.pathname}?subject=${n.id}`,
+        )
+        if (person.wikipediaUri) {
+          const uri = person.wikipediaUri
+          const muri = wikipediaMobileUri(uri)
+          this.props.setWikiUri(muri || uri)
+        }
+        return Promise.all([
+          person.influencedBy.map(i => this.getAndCachePerson(i)),
+          person.influenced.map(i => this.getAndCachePerson(i)),
+        ])
+      },
+      (err) => {
+        console.log('whoops!', err)
+      },
+    ).then(() => {
+      this.props.focusOnPerson(n.id)
+    })
   }
-
-  setWikiPage(node: any) {
-    const url = getUrlFromNode(node)
-    console.log('[setWikiPage url]', url)
-
-    window.history.pushState({}, '', changeSubject(
-      window.location.href, 
-      node.properties.name
-    ))
-    this.props.setWikiUri(url)
-  }
-
-  //toggleAboutPage() {
-    //this.setState({ showAboutPage: !this.state.showAboutPage })
-  //}
-
-  //goHome() {
-    //this.setState({ showAboutPage: false })
-  //}
 
   submitSearch(name: string) {
-    searchForPeople(name).then(people => console.log('[searchForPeople results]', people))
+    dbpedia.searchForPeople(name).then(people => console.log('[searchForPeople results]', people))
   }
 
   render() {
-    const { influencers, influenced } = this.props
     const navbar = React.createElement(Navbar, {
       key: 'navbar',
       goHome: () => this.props.goHome(),
@@ -129,16 +116,18 @@ class App_ extends React.Component<AppProps, AppState> {
       goBack: () => this.props.toggleAboutPage()
     })
 
-    const innerChartDiv = React.createElement('div', { id: 'chart' })
+    const influenceChart = React.createElement(InfluenceChart, {
+      label: 'influencechart',
+      selectPerson: (n) => this.focusPerson(n),
+    })
     const chartDiv = React.createElement('div', {
       key: 'chartdiv',
       id: 'chartdiv',
-    }, innerChartDiv)
+    }, influenceChart)
 
     const wikiDiv = React.createElement(WikiDiv, {
       hidden: this.props.wikiDivHidden,
       key: 'wikidiv',
-      onLoad: () => this.wikiFrameLoad(),
       subject: this.props.subjectId,
       url: this.props.wikiUri,
     })
@@ -163,10 +152,14 @@ class App_ extends React.Component<AppProps, AppState> {
 
 export const App = connect(
   state => ({
+    focusedSubject: store.focusedSubject(state),
     showAboutPage: store.showAboutPage(state),
     wikiUri: store.wikiUri(state),
+    people: store.people(state),
   }),
   dispatch => ({
+    cachePerson: (subjectId, person) => dispatch(store.cachePerson(subjectId, person)),
+    focusOnPerson: subjectId => dispatch(store.focusOnPerson(subjectId)),
     goHome: () => dispatch(store.setAboutPage(false)),
     setWikiUri: uri => dispatch(store.setWikiUri(uri)),
     toggleAboutPage: () => dispatch(store.toggleAboutPage()),

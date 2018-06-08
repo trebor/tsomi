@@ -3,7 +3,7 @@
     "transform-flow-strip-types"
   ],
   "presets": [
-    [ "babel-preset-es2015", { "modules": false } ],
+    [ "babel-preset-es2015" ],
     [ "babel-preset-stage-2" ]
   ],
   "ignore": [

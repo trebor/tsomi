@@ -27,9 +27,43 @@ const encodeFormBody = (params: {}): string =>
   Object.keys(params).map(key =>
     `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`).join('&')
 
+
+type FetchRequestParameters = {
+  method: string
+}
+
+
+/* Lifted, with minor modifications, from https://davidwalsh.name/fetch-timeout */
+const fetchWithTimeout = (
+  source: string | Request,
+  parameters: FetchRequestParameters,
+  ttl: number,
+): Promise<any> =>
+  new Promise((resolve, reject) => {
+    let didTimeOut = false
+
+    const timer = setTimeout(() => {
+      didTimeOut = true
+      reject(new Error('request timed out'))
+    }, ttl)
+
+    fetch(source)
+      .then((response) => {
+        clearTimeout(timer)
+        if (!didTimeOut) {
+          resolve(response)
+        }
+      })
+      .catch((err) => {
+        if (didTimeOut) return
+        reject(err)
+      })
+  })
+
 module.exports = {
   HttpError,
   encodeFormBody,
   httpErrorPromise,
+  fetchWithTimeout,
 }
 
