@@ -1,11 +1,17 @@
 // @flow
+/* This provides a client for all APIs that provide a Sparql endpoint.
+ *
+ * *NOTE* it is currently hard-coded for DBpedia. That must be changed so this
+ * can exist as a library independent of DBpedia, or the entire module should
+ * be merged into the DBpedia client.
+ */
 
 const { encodeFormBody, fetchWithTimeout, httpErrorPromise } = require('../../utils/http')
 
 const DBPEDIA_URL = 'http://dbpedia.org/sparql'
 
 /* eslint no-multi-spaces: off */
-const rdfPrefixies = [
+const rdfPrefixes = [
   { prefix: 'rdf',         uri: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' },
   { prefix: 'fn',          uri: 'http://www.w3.org/2005/xpath-functions#' },
   { prefix: 'dbcat',       uri: 'http://dbpedia.org/resource/Category/' },
@@ -32,7 +38,7 @@ type QueryVariables = {
 }
 
 
-const rdfPrefixStr = rdfPrefixies.reduce((acc, { prefix, uri }) => `${acc} PREFIX ${prefix}: <${uri}>\n`, '')
+const rdfPrefixStr = rdfPrefixes.reduce((acc, { prefix, uri }) => `${acc} PREFIX ${prefix}: <${uri}>\n`, '')
 
 const applyQueryTemplate = (template: string, variables: QueryVariables): string => {
   const query = Object.entries(variables).reduce(
@@ -43,7 +49,12 @@ const applyQueryTemplate = (template: string, variables: QueryVariables): string
 }
 
 
+/* runSparqlQuery runs a query against the dbpedia sparql search endpoint. The
+ * function takes a template representing the search (much like an SQL query)
+ * and safely applies variables to the placeholders. */
 const runSparqlQuery = (template: string, variables: QueryVariables): Promise<{ [string]: any}> => {
+  /* TODO: Parameterize the URI */
+  /* TODO: Parameterize the timeout */
   const queryString = applyQueryTemplate(template, variables)
 
   const params = {
@@ -54,26 +65,12 @@ const runSparqlQuery = (template: string, variables: QueryVariables): Promise<{ 
 
   const uri = `${DBPEDIA_URL}?${encodeFormBody(params)}`
 
-  return fetchWithTimeout(uri, { method: 'GET' }, 10000).then((resp: Response): { [string]: any } => {
+  return fetchWithTimeout(uri, { method: 'GET' }, 15000).then((resp: Response): { [string]: any } => {
     if (!resp.ok) return httpErrorPromise(resp)
     return resp.json()
   })
 }
 
 
-class Sparql {
-  /* eslint class-methods-use-this: "off" */
-  /* eslint no-console: "off" */
-  query(query: string, variables: QueryVariables, callback: Function) {
-    runSparqlQuery(query, variables)
-      .then(data => callback(data))
-      .catch((exc) => {
-        console.log(exc)
-        callback(undefined)
-      })
-  }
-}
-
-
-module.exports = { Sparql, runSparqlQuery, rdfPrefixies }
+module.exports = { runSparqlQuery }
 

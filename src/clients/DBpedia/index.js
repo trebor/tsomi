@@ -3,7 +3,7 @@
 import fp from 'lodash/fp'
 import moment from 'moment'
 
-const { runSparqlQuery } = require('../../components/Sparql')
+import { runSparqlQuery } from '../Sparql'
 import { type PersonAbstract, type PersonDetail, type SubjectId, mkSubjectFromDBpediaUri } from '../../types'
 import { last, mapObjKeys, uniqueBy, parseDate } from '../../util'
 
