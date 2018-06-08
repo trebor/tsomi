@@ -1,18 +1,18 @@
-const React = require('react')
-const ReactDOM = require('react-dom')
-const { Provider } = require('react-redux')
-const { createStore, applyMiddleware } = require('redux')
-const { logger } = require('redux-logger')
-const thunk = require('redux-thunk').default
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
+import { createStore, applyMiddleware } from 'redux'
+import { logger } from 'redux-logger'
 
-const { App } = require('./components/App/')
-const { PRINTABLE_PARAM } = require('./constants')
-const { runState } = require('./store')
+import { App } from './components/App/'
+import { PRINTABLE_PARAM } from './constants'
+import { runState } from './store'
 
 const connectToWiki = () =>
   window.open(d3.select('#wikiframe').attr('src').replace(PRINTABLE_PARAM, ''), '_blank')
 
-const store = createStore(runState, applyMiddleware(thunk, logger))
+const store = createStore(runState, applyMiddleware(logger))
+//const store = createStore(runState)
 
 ReactDOM.render(
   React.createElement(
