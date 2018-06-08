@@ -114,7 +114,7 @@ const personAbstractFromJS = (js: PersonJSON): PersonAbstract => {
   return {
     type: 'PersonAbstract',
     id: mkSubjectFromDBpediaUri(js.person.value),
-    thumbnail: js.thumbnail ? js.thumbnail.value : js.thumbnail.value,
+    thumbnail: js.thumbnail ? js.thumbnail.value : undefined,
     uri: js.person.value,
     wikipediaUri: js.wikipediaUri ? js.wikipediaUri.value : undefined,
     name: js.name.value,

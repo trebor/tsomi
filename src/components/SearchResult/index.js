@@ -34,6 +34,7 @@ const makeListItem = (person: PersonAbstract) => {
   console.log('[makeListItem]', person)
 
   const img = React.createElement('img', { src: thumbnail || 'http://via.placeholder.com/100x100' })
+  const imgContainer = React.createElement('div', { className: 'search-thumbnail' }, img)
   /* TODO: make this into a link that centers this person in TSOMI */
   const nodeName = React.createElement('h3', {}, name)
   const dates = birthDate
@@ -57,8 +58,8 @@ const makeListItem = (person: PersonAbstract) => {
   const link = React.createElement('a', { href: wikipediaUri || uri }, 'Go to Wikipedia Entry')
 
   return React.createElement('div', { className: 'search-result' }, 
-    img, 
-    React.createElement('div', {}, nodeName, dates /*, where*/, influencers, summary, link)
+    imgContainer,
+    React.createElement('div', { className: 'search-result-content', }, nodeName, dates /*, where*/, influencers, summary, link)
   )
 }
 
