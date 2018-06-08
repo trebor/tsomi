@@ -16,6 +16,7 @@ type SearchState = {
 }
 
 type SearchProps = {
+  focusPerson: Function,
   submitSearch: Function,
   searchResults: Array<PersonAbstract>,
 }
@@ -52,7 +53,7 @@ class Search extends React.Component<SearchProps, SearchState> {
     const submit = React.createElement('button', { onClick: () => this.submit() }, 'GO')
 
     const searchResult = this.props.searchResults && this.props.searchResults.length > 0
-      ? React.createElement(SearchResult, { searchResults: this.props.searchResults })
+      ? React.createElement(SearchResult, { searchResults: this.props.searchResults, selectPerson: this.props.focusPerson })
       : null
 
     return React.createElement('div', { className: 'search' }, 

@@ -77,6 +77,7 @@ class App_ extends React.Component<AppProps, AppState> {
   }
 
   focusPerson(n: PersonAbstract | PersonDetail): void {
+    console.log('[focusPerson]', n.id)
     this.getAndCachePerson(n.id).then(
       (person: PersonDetail) => {
         window.history.pushState(
@@ -89,6 +90,7 @@ class App_ extends React.Component<AppProps, AppState> {
           const muri = wikipediaMobileUri(uri)
           this.props.setWikiUri(muri || uri)
         }
+        this.props.saveSearchResults([])
         return Promise.all([
           person.influencedBy.map(i => this.getAndCachePerson(i)),
           person.influenced.map(i => this.getAndCachePerson(i)),
@@ -109,6 +111,7 @@ class App_ extends React.Component<AppProps, AppState> {
   render() {
     const navbar = React.createElement(Navbar, {
       key: 'navbar',
+      focusPerson: subjectId => this.focusPerson(subjectId),
       goHome: () => this.props.goHome(),
       toggleAbout: () => this.props.toggleAboutPage(),
       submitSearch: name => this.submitSearch(name),

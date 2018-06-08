@@ -6,7 +6,8 @@ import type { PersonAbstract } from '../../types'
 require('./main.css')
 
 type SearchResultProps = {
-  searchResults: Array<PersonAbstract>
+  searchResults: Array<PersonAbstract>,
+  selectPerson: Function,
 }
 
 const summarize = (msg: string, skipNWords: number, maxlength: number): string => {
@@ -18,7 +19,7 @@ const summarize = (msg: string, skipNWords: number, maxlength: number): string =
   return res.concat('...')
 }
 
-const makeListItem = (person: PersonAbstract) => {
+const makeListItem = (selectPerson: Function) => (person: PersonAbstract) => {
   const { 
     name, 
     birthDate, 
@@ -36,7 +37,11 @@ const makeListItem = (person: PersonAbstract) => {
   const img = React.createElement('img', { src: thumbnail || 'http://via.placeholder.com/100x100' })
   const imgContainer = React.createElement('div', { className: 'search-thumbnail' }, img)
   /* TODO: make this into a link that centers this person in TSOMI */
-  const nodeName = React.createElement('h3', {}, name)
+  const nodeName = React.createElement(
+    'h3',
+    { onClick: () => selectPerson(person) },
+    name
+  )
   const dates = birthDate
     ? React.createElement('p', {}, `${ birthDate.format('YYYY-MM-DD') } - ${ deathDate ? deathDate.format('YYYY-MM-DD') : '' }`)
     : undefined
@@ -63,8 +68,8 @@ const makeListItem = (person: PersonAbstract) => {
   )
 }
 
-const SearchResult = ({ searchResults }: SearchResultProps) => {
-  const results = searchResults.map(makeListItem)
+const SearchResult = ({ searchResults, selectPerson }: SearchResultProps) => {
+  const results = searchResults.map(makeListItem(selectPerson))
   return React.createElement('div', { className: 'search-results' }, ...results)
 }
 

@@ -11,10 +11,11 @@ type NavbarState = {
 }
 
 type NavbarProps = {
+  focusPerson: Function,
   goHome: Function,
   toggleAbout: Function,
   submitSearch: Function,
-  searchResults: Array<PersonAbstract>
+  searchResults: Array<PersonAbstract>,
 }
 
 class Navbar extends React.Component<NavbarProps, NavbarState> {
@@ -25,10 +26,11 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
 
   render() {
     const { 
-      toggleAbout, 
+      focusPerson,
       goHome,
       submitSearch,
       searchResults,
+      toggleAbout, 
     } = this.props
 
     const about = React.createElement('a', { onClick: toggleAbout }, 'About')
@@ -41,6 +43,7 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
       React.createElement('div', { className: 'right' }, about))
 
     const search = React.createElement(Search, {
+      focusPerson,
       submitSearch,
       searchResults,
     })
