@@ -103,7 +103,7 @@ class App_ extends React.Component<AppProps, AppState> {
   }
 
   submitSearch(name: string) {
-    dbpedia.searchForPeople(name).then(people => console.log('[searchForPeople results]', people))
+    dbpedia.searchForPeople(name).then(people => this.props.saveSearchResults(people))
   }
 
   render() {

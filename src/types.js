@@ -14,7 +14,9 @@ export const dbpediaSubjectId = (s: SubjectId): string => `dbpedia:${s}`
 export type PersonAbstract = {|
   type: 'PersonAbstract',
   id: SubjectId,
+  thumbnail: ?string,
   uri: Uri,
+  wikipediaUri: ?Uri,
   name: string,
   abstract: ?string,
   birthPlace: ?string,
@@ -43,7 +45,7 @@ export type PersonDetail = {|
 export const wikipediaMobileUri = (uri: Uri): ?Uri => {
   const idx = uri.search('wikipedia.org')
   if (idx >= 0) {
-    return uri.slice(0, idx - 1) + '.m.' + uri.slice(idx)
+    return `${uri.slice(0, idx - 1)}.m.${uri.slice(idx)}`
   }
   return null
 }

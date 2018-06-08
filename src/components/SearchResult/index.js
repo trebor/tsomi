@@ -12,7 +12,7 @@ type SearchResultProps = {
 const summarize = (msg: string, skipNWords: number, maxlength: number): string => {
   let res = '...'
   const lst = msg.split(' ')
-  for (let i = skipNWords; res.length + lst[i].length + 1 < maxlength; i++) {
+  for (let i = skipNWords; i < lst.length && res.length + lst[i].length + 1 < maxlength; i += 1) {
     res = res.concat(' ', lst[i])
   }
   return res.concat('...')
@@ -26,12 +26,14 @@ const makeListItem = (person: PersonAbstract) => {
     birthPlace, 
     influencedCount, 
     influencedByCount, 
+    thumbnail,
+    wikipediaUri,
     abstract, 
     uri 
   } = person
+  console.log('[makeListItem]', person)
 
-  /* TODO: get the thumbnail (currently available in other branches) */
-  const img = React.createElement('img', { src: 'http://via.placeholder.com/100x100' })
+  const img = React.createElement('img', { src: thumbnail || 'http://via.placeholder.com/100x100' })
   /* TODO: make this into a link that centers this person in TSOMI */
   const nodeName = React.createElement('h3', {}, name)
   const dates = birthDate
@@ -52,8 +54,7 @@ const makeListItem = (person: PersonAbstract) => {
     ? React.createElement('p', {}, summarize(abstract, 10, 80))
     : null
 
-  /* TODO: replace this with the `isPrimaryTopicOf` field */
-  const link = React.createElement('a', { href: uri }, 'Go to Wikipedia Entry')
+  const link = React.createElement('a', { href: wikipediaUri || uri }, 'Go to Wikipedia Entry')
 
   return React.createElement('div', { className: 'search-result' }, 
     img, 
