@@ -1,13 +1,14 @@
 // @flow
 
-const React = require('react')
+import React from 'react'
 
 import type { PersonAbstract } from '../../types'
+
 require('./main.css')
 
 type SearchResultProps = {
   searchResults: Array<PersonAbstract>,
-  selectPerson: Function,
+  selectPerson: PersonAbstract => void,
 }
 
 const summarize = (msg: string, skipNWords: number, maxlength: number): string => {
@@ -19,20 +20,18 @@ const summarize = (msg: string, skipNWords: number, maxlength: number): string =
   return res.concat('...')
 }
 
-const makeListItem = (selectPerson: Function) => (person: PersonAbstract) => {
-  const { 
-    name, 
-    birthDate, 
-    deathDate, 
-    birthPlace, 
-    influencedCount, 
-    influencedByCount, 
+const makeListItem = (selectPerson: PersonAbstract => void) => (person: PersonAbstract) => {
+  const {
+    name,
+    birthDate,
+    deathDate,
+    influencedCount,
+    influencedByCount,
     thumbnail,
     wikipediaUri,
-    abstract, 
-    uri 
+    abstract,
+    uri,
   } = person
-  console.log('[makeListItem]', person)
 
   const img = React.createElement('img', { src: thumbnail || 'http://via.placeholder.com/100x100' })
   const imgContainer = React.createElement('div', { className: 'search-thumbnail' }, img)
@@ -40,21 +39,23 @@ const makeListItem = (selectPerson: Function) => (person: PersonAbstract) => {
   const nodeName = React.createElement(
     'h3',
     { onClick: () => selectPerson(person) },
-    name
+    name,
   )
   const dates = birthDate
-    ? React.createElement('p', {}, `${ birthDate.format('YYYY-MM-DD') } - ${ deathDate ? deathDate.format('YYYY-MM-DD') : '' }`)
+    ? React.createElement('p', {}, `${birthDate.format('YYYY-MM-DD')} - ${deathDate ? deathDate.format('YYYY-MM-DD') : ''}`)
     : undefined
 
   /* TODO: get the proper birthplace name in the search
-  const where = birthPlace 
+  const where = birthPlace
     ? React.createElement('p', {}, birthPlace)
     : undefined
     */
 
-  const influencers = React.createElement('div', { className: 'search-influence' },
-    React.createElement('span', {}, `Influenced ${ influencedCount }`),
-    React.createElement('span', {}, `Influenced By ${ influencedByCount }`)
+  const influencers = React.createElement(
+    'div',
+    { className: 'search-influence' },
+    React.createElement('span', {}, `Influenced ${influencedCount}`),
+    React.createElement('span', {}, `Influenced By ${influencedByCount}`),
   )
   const summary = abstract != null
     ? React.createElement('p', {}, summarize(abstract, 10, 80))
@@ -62,9 +63,19 @@ const makeListItem = (selectPerson: Function) => (person: PersonAbstract) => {
 
   const link = React.createElement('a', { href: wikipediaUri || uri }, 'Go to Wikipedia Entry')
 
-  return React.createElement('div', { className: 'search-result' }, 
+  return React.createElement(
+    'div',
+    { className: 'search-result' },
     imgContainer,
-    React.createElement('div', { className: 'search-result-content', }, nodeName, dates /*, where*/, influencers, summary, link)
+    React.createElement(
+      'div',
+      { className: 'search-result-content' },
+      nodeName,
+      dates,
+      influencers,
+      summary,
+      link,
+    ),
   )
 }
 

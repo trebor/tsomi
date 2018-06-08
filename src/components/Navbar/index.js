@@ -1,20 +1,20 @@
 // @flow
 
-const React = require('react')
+import * as React from 'react'
+
+import { type PersonAbstract } from '../../types'
+import { Search } from '../Search/'
+
 require('./main.css')
-
-const { Search } = require('../Search/')
-
-import type { PersonAbstract } from '../../types'
 
 type NavbarState = {
 }
 
 type NavbarProps = {
-  focusPerson: Function,
-  goHome: Function,
-  toggleAbout: Function,
-  submitSearch: Function,
+  focusPerson: PersonAbstract => void,
+  goHome: () => void,
+  toggleAbout: () => void,
+  submitSearch: string => void,
   searchResults: Array<PersonAbstract>,
 }
 
@@ -25,22 +25,28 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
   }
 
   render() {
-    const { 
+    const {
       focusPerson,
       goHome,
       submitSearch,
       searchResults,
-      toggleAbout, 
+      toggleAbout,
     } = this.props
 
     const about = React.createElement('a', { onClick: toggleAbout }, 'About')
-    const logo = React.createElement('div', { onClick: goHome },
+    const logo = React.createElement(
+      'div',
+      { onClick: goHome },
       React.createElement('img', { src: 'static/images/logo.svg' }),
-      React.createElement('h1', {}, 'THE SPHERE OF MY INFLUENCE'))
+      React.createElement('h1', {}, 'THE SPHERE OF MY INFLUENCE'),
+    )
 
-    const nav = React.createElement('nav', {}, 
-      logo, 
-      React.createElement('div', { className: 'right' }, about))
+    const nav = React.createElement(
+      'nav',
+      {},
+      logo,
+      React.createElement('div', { className: 'right' }, about),
+    )
 
     const search = React.createElement(Search, {
       focusPerson,
@@ -48,8 +54,10 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
       searchResults,
     })
 
-    return React.createElement(React.Fragment, {}, 
-      nav, 
+    return React.createElement(
+      React.Fragment,
+      {},
+      nav,
       search,
     )
   }

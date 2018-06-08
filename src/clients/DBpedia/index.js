@@ -7,6 +7,8 @@ import { runSparqlQuery } from '../Sparql'
 import { type PersonAbstract, type PersonDetail, type SubjectId, mkSubjectFromDBpediaUri } from '../../types'
 import { last, mapObjKeys, uniqueBy, parseDate } from '../../util'
 
+require('isomorphic-fetch')
+
 type PersonJSON = {
   person: { [string]: any },
   name: { [string]: any },

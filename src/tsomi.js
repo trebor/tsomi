@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
 import { logger } from 'redux-logger'
 
-import { App } from './components/App/'
+import App from './components/App/'
 import { PRINTABLE_PARAM } from './constants'
 import { runState } from './store'
 
