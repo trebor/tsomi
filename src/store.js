@@ -1,13 +1,13 @@
 // @flow
 
-import type { PersonAbstract, PersonDetail, SubjectId, Uri } from './types'
+import { type PersonAbstract, type PersonDetail, SubjectId, type Uri } from './types'
 import queryString from 'query-string'
 
-export type PeopleCache = { [SubjectId]: PersonAbstract | PersonDetail }
+export type PeopleCache = { [string]: PersonAbstract | PersonDetail }
 
 export type Store = {
   showAboutPage: bool,
-  focusedSubject: string,
+  focusedSubject: SubjectId,
   wikiDivHidden: bool,
   people: PeopleCache,
   currentWikiPageUri: Uri,
@@ -18,7 +18,7 @@ export const initialState = (): Store => {
   const params = queryString.parse(location.search)
   return {
     showAboutPage: false,
-    focusedSubject: params.subject ? params.subject : 'Ursula_K._Le_Guin',
+    focusedSubject: params.subject ? new SubjectId(params.subject) : new SubjectId('Ursula_K._Le_Guin'),
     wikiDivHidden: false,
     people: {},
     currentWikiPageUri: '',
@@ -47,7 +47,7 @@ export const toggleAboutPage = (): Action =>
 export const focusedSubject = (store: Store): SubjectId => store.focusedSubject
 export const people = (store: Store) => store.people
 export const lookupPerson = (s: SubjectId) =>
-  (store: Store): PersonAbstract | PersonDetail | void => store.people[s]
+  (store: Store): PersonAbstract | PersonDetail | void => store.people[s.asString()]
 export const searchResults = (store: Store): Array<PersonAbstract> => store.searchResults
 export const showAboutPage = (store: Store): bool => store.showAboutPage
 export const wikiUri = (store: Store): Uri => store.currentWikiPageUri
@@ -59,7 +59,7 @@ export const runState = (state?: Store = initialState(), action: any): Store => 
         ...state,
         people: {
           ...state.people,
-          [action.subjectId]: action.person,
+          [action.subjectId.asString()]: action.person,
         },
       }
     case 'FOCUS_ON_PERSON':

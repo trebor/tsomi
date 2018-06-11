@@ -149,22 +149,26 @@ WHERE { \
   filter( lang(?abstract) = "en" ). \
 }'
 
-const mkDataUrl = (s: SubjectId) =>
-  `http://dbpedia.org/data/${s}.json`
+const mkDataUrl = (s: SubjectId): string =>
+  `http://dbpedia.org/data/${s.asString()}.json`
+
+const mkResourceUrl = (s: SubjectId): string =>
+  `http://dbpedia.org/resource/${s.asString()}`
 
 const findByRelationship = (relationship: string, target: SubjectId): (any => [SubjectId]) =>
   fp.compose(
     fp.map(([k]) => mkSubjectFromDBpediaUri(k)),
     fp.filter(([, v]) => v[relationship] !== undefined &&
-      mkSubjectFromDBpediaUri(v[relationship][0].value) === target),
+      mkSubjectFromDBpediaUri(v[relationship][0].value).equals(target)),
   )
 
 const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
+  console.log('[getPerson]', s)
   const dataUrl = mkDataUrl(s)
 
   return fetch(dataUrl).then(r => r.json())
     .then((r) => {
-      const person = mapObjKeys(i => last(i.split('/')), r[`http://dbpedia.org/resource/${s}`])
+      const person = mapObjKeys(i => last(i.split('/')), r[mkResourceUrl(s)])
       /* eslint no-underscore-dangle: off */
       const influenced_ = person.influenced
         ? person.influenced.map(i => mkSubjectFromDBpediaUri(i.value))
@@ -189,7 +193,7 @@ const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
       return {
         type: 'PersonDetail',
         id: s,
-        uri: `http://dbpedia.org/resource/${s}`,
+        uri: mkResourceUrl(s),
         wikipediaUri,
         name: person.name[0].value,
         abstract: person.abstract.filter(i => i.lang === 'en')[0].value,

@@ -1,6 +1,7 @@
 // @flow
 
 import moment from 'moment'
+import fp from 'lodash/fp'
 
 type Map<T> = {
   [string]: T
@@ -32,7 +33,24 @@ const parseDate = (dateString: string, fmt: ?string): ?moment => {
 const convertSpaces = (element: string): string =>
   element.replace(/(%20| )/g, '_')
 
-const convertToSafeDOMId = (str: string): string => str.replace(/(%20| |\.)/g, '_')
+const toHex = (c) => c.charCodeAt(0).toString(16)
+
+/* Got this from @heypano in LGBTQ In Tech slack
+sub toBareword {
+    my ($string) = @_;
+    return if(!defined($string));
+    $string =~ s/_/__/g;
+    $string =~ s/0/00/g;
+    $string =~ s/([0-9]+)/_$1/g;
+    $string =~ s/([^a-zA-Z0-9_]+)/join('',map {'_0_'.ord($_)} split('',$1))/eg;
+    return $string;
+}
+*/
+const convertToSafeDOMId = (str: string): string =>
+  str.replace(/_/g, '__')
+    .replace(/0/g, '00')
+    .replace(/([0-9]+)/g, (match, p1) => `_${p1}`)
+    .replace(/([^a-zA-Z0-9_]+)/g, (match, p1) => fp.map(c => `_0_${toHex(c)}`, p1))
 
 const angleRadians = (p1: Point, p2: Point): number =>
   Math.atan2(p2.y - p1.y, p2.x - p1.x)

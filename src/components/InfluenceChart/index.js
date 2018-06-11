@@ -13,7 +13,7 @@ import {
   type Dimensions,
   type PersonAbstract,
   type PersonDetail,
-  type SubjectId,
+  SubjectId,
 } from '../../types'
 import { difference, union } from '../../utils/Set'
 
@@ -121,7 +121,7 @@ type TLink = {
 
 
 class TGraph {
-  nodes: { [SubjectId]: InvisibleNode | PersonNode }
+  nodes: { [string]: InvisibleNode | PersonNode }
   links: Array<TLink>
   focus: PersonNode
 
@@ -143,7 +143,7 @@ class TGraph {
   }
 
   addPerson(person: PersonAbstract | PersonDetail): PersonNode {
-    const p = this.nodes[person.id]
+    const p = this.nodes[person.id.asString()]
     if (p != null && p.type === 'PersonNode' && p.person.type === person.type) {
       return p
     }
@@ -155,18 +155,16 @@ class TGraph {
       vx: 0,
       vy: 0,
       person,
-      getId: () => person.id,
+      getId: () => person.id.asString(),
     }
     this.addNode(node)
     return node
   }
 
-  removePerson(person: SubjectId | PersonAbstract | PersonDetail): void {
+  removePersonById(personId: SubjectId): void {
     /* remove the person, all links going to or leaving that person, and the
      * middle nodes for thos e links */
-    const personId = typeof person === 'string' ? person : person.id
-
-    delete this.nodes[personId]
+    delete this.nodes[personId.asString()]
 
     const removeLinks = fp.filter(
       (l: TLink): bool => l.source.getId() === personId || l.target.getId() === personId,
@@ -183,6 +181,10 @@ class TGraph {
     })
   }
 
+  removePerson(person: PersonAbstract | PersonDetail): void {
+    this.removePersonById(person.id)
+  }
+
   createLink(source: PersonAbstract | PersonDetail, target: PersonAbstract | PersonDetail): ?TLink {
     if (source === target) {
       return null
@@ -195,7 +197,7 @@ class TGraph {
       y: 0,
       vx: 0,
       vy: 0,
-      getId: () => `${source.id} - ${target.id}`,
+      getId: () => `${source.id.asString()} - ${target.id.asString()}`,
     }
     const link = { source: sourceNode, middle, target: targetNode }
 
@@ -304,7 +306,7 @@ const renderPeople = (
     .on('mouseout', n => mouseOver(n, false))
 
   const canvas = circle.classed('translate', true)
-    .attr('id', node => convertToSafeDOMId(node.person.id))
+    .attr('id', (node: PersonNode): string => convertToSafeDOMId(node.person.id.asString()))
     .append('g')
     .classed('scale', true)
     .attr('clip-path', 'url(#image-clip)')
@@ -314,7 +316,7 @@ const renderPeople = (
     .attr('r', IMAGE_SIZE / 2)
 
   canvas.append('image')
-    .attr('href', node => (node.person.thumbnail ? node.person.thumbnail : ''))
+    .attr('href', (node: PersonNode): string => (node.person.thumbnail ? node.person.thumbnail : ''))
     .attr('preserveAspectRatio', 'xMidYMin slice')
     .attr('height', IMAGE_SIZE)
     .attr('width', IMAGE_SIZE)
@@ -335,7 +337,7 @@ const renderPeople = (
     .attr('text-anchor', 'middle')
     .attr('y', BANNER_Y)
     .attr('dy', '0.3em')
-    .text(node => node.person.name)
+    .text((node: PersonNode): string => node.person.name)
 
   return circle
 }
@@ -456,12 +458,18 @@ const updateInfluenceGraph = (graph: TGraph, focus: PersonDetail, people: store.
   const currentIds = union(new Set([focus.id]), influencedBy, influenced)
   const currentPeople = new Set(fp.compose(
     fp.filter(p => p != null),
-    fp.map(id => people[id]),
+    fp.map(id => people[id.asString()]),
   )(Array.from(currentIds.values())))
   const oldPeople = new Set(fp.map(n => n.person)(graph.getVisibleNodes()))
 
+  console.log('[updateInfluenceGraph currentPeople]', Array.from(currentPeople))
+  console.log('[updateInfluenceGraph oldPeople]', Array.from(oldPeople))
+
   const incomingPeople = difference(currentPeople, oldPeople)
   const outgoingPeople = difference(oldPeople, currentPeople)
+
+  console.log('[updateInfluenceGraph incomingPeople]', Array.from(incomingPeople))
+  console.log('[updateInfluenceGraph outgoingPeople]', Array.from(outgoingPeople))
 
   graph.setFocus(focus)
   incomingPeople.forEach((p) => {
@@ -622,11 +630,11 @@ class InfluenceCanvas {
 
     updateInfluenceGraph(this.graph, this.focus, people)
 
-    this.lifelinesElem.select(`#${convertToSafeDOMId(oldFocus.id)}`)
+    this.lifelinesElem.select(`#${convertToSafeDOMId(oldFocus.id.asString())}`)
       .transition()
       .attr('style', 'opacity: 0.03;')
 
-    this.lifelinesElem.select(`#${convertToSafeDOMId(this.focus.id)}`)
+    this.lifelinesElem.select(`#${convertToSafeDOMId(this.focus.id.asString())}`)
       .transition()
       .attr('style', 'opacity: 0.5;')
 
@@ -646,7 +654,9 @@ class InfluenceCanvas {
 
     const nodeSel = this.nodesElem
       .selectAll('.translate')
-      .data(this.graph.getVisibleNodes(), n => (n ? n.getId() : null))
+      .data(this.graph.getVisibleNodes(), (n: PersonNode): ?string => (n ? n.getId() : null))
+    console.log(nodeSel.enter())
+    console.log(nodeSel.exit())
     renderPeople(
       nodeSel.enter(),
       n => this.selectNode(n.person),
@@ -664,7 +674,7 @@ class InfluenceCanvas {
     linkSel.exit().remove()
 
     const lifespanSel = this.lifelinesElem.selectAll('path')
-      .data(this.graph.getVisibleNodes(), n => (n ? n.getId() : null))
+      .data(this.graph.getVisibleNodes(), (n: PersonNode): ?string => (n ? n.getId() : null))
     renderLifelines(lifespanSel.enter(), this.dimensions, this.timeline)
     lifespanSel.exit().remove()
 
@@ -693,7 +703,7 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
     prevState: InfluenceChartState,
   ): InfluenceChartState {
     const { focusedId } = newProps
-    const focus = newProps.people[focusedId]
+    const focus = newProps.people[focusedId.asString()]
 
     if (focus != null && focus.type === 'PersonDetail') {
       if (prevState.domElem != null && prevState.d3Elem != null) {
@@ -728,7 +738,7 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
     this.state.domElem = document.getElementById(this.props.label)
     this.state.d3Elem = d3.select(`#${this.props.label}`)
 
-    const focus = this.props.people[this.props.focusedId]
+    const focus = this.props.people[this.props.focusedId.asString()]
     if (focus != null && focus.type === 'PersonDetail'
       && this.state.domElem != null && this.state.d3Elem != null) {
       this.state.canvas = new InfluenceCanvas(

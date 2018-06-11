@@ -1,5 +1,6 @@
 const {
  convertSpaces, 
+ convertToSafeDOMId,
  getURLElement,
  getURLParameter,
  largest,
@@ -138,6 +139,51 @@ describe('mapObjKeys', () => {
     pairs.forEach(([i, f, o]) => {
       expect(mapObjKeys(f, i)).toEqual(o)
     })
+  })
+})
+
+describe('make safe DOM ids', () => {
+  it('should leave basic IDs untouched', () => {
+    expect(convertToSafeDOMId('OctaviaButler')).toEqual('OctaviaButler')
+  })
+
+  it('should handle spaces', () => {
+    expect(convertToSafeDOMId('Octavia Butler')).toEqual('Octavia_0_20Butler')
+  })
+
+  it('should leave the original string untouched', () => {
+    const str = 'Octavia Butler'
+    const safe = convertToSafeDOMId(str)
+    expect(safe).toEqual('Octavia_0_20Butler')
+    expect(str).toEqual('Octavia Butler')
+  })
+
+  it('should should handle _', () => {
+    expect(convertToSafeDOMId('Octavia_Butler')).toEqual('Octavia__Butler')
+  })
+
+  it('should should handle numbers', () => {
+    expect(convertToSafeDOMId('ID 1234')).toEqual('ID_0_20_1234')
+  })
+
+  it('should should safely handle a bare 0', () => {
+    expect(convertToSafeDOMId('ID 0')).toEqual('ID_0_20_00')
+  })
+
+  it('should should handle punctuation', () => {
+    expect(convertToSafeDOMId('Octavia_Butler')).toEqual('Octavia__Butler')
+  })
+
+  it('should handle diacritics', () => {
+    expect(convertToSafeDOMId('manĝoj',)).toEqual('mang_0_302oj')
+  })
+
+  it('should handle parenthesis', () => {
+    expect(convertToSafeDOMId('David_Mitchell_(author)')).toEqual('David__Mitchell___0_28author_0_29')
+  })
+
+  it('should handle commas', () => {
+    expect(convertToSafeDOMId('Edward_Plunkett,_18th_Baron_of_Dunsany')).toEqual('Edward__Plunkett_0_2c___18th__Baron__of__Dunsany')
   })
 })
 

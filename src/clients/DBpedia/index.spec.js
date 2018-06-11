@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { SubjectId } from '../../types'
 
 const { getPerson, searchForPeople } = require('./')
 
@@ -37,7 +38,7 @@ describe('DBpedia library', () => {
 
 describe('precise dbpedia gets', () => {
   it('retrieves Joyce Carol Oates with all influencers', (done) => {
-    getPerson('Joyce_Carol_Oates'.trim()).then(person => {
+    getPerson(new SubjectId('Joyce_Carol_Oates')).then(person => {
 
       expect(person.uri).toEqual('http://dbpedia.org/resource/Joyce_Carol_Oates')
       expect(person.name).toEqual('Joyce Carol Oates')
@@ -55,7 +56,7 @@ describe('precise dbpedia gets', () => {
   })
 
   it('retrieves Ernest Hemingway with all influencers', (done) => {
-    getPerson('Ernest_Hemingway'.trim()).then(person => {
+    getPerson(new SubjectId('Ernest_Hemingway')).then(person => {
 
       expect(person.uri).toEqual('http://dbpedia.org/resource/Ernest_Hemingway')
       expect(person.influencedBy.length).toEqual(62)
@@ -69,7 +70,7 @@ describe('precise dbpedia gets', () => {
   })
 
   it('retrieves a person with only a year in their birth date', (done) => {
-    getPerson('Mikhail_Lermontov'.trim()).then(person => {
+    getPerson(new SubjectId('Mikhail_Lermontov')).then(person => {
       expect(person.uri).toEqual('http://dbpedia.org/resource/Mikhail_Lermontov')
       expect(person.birthDate.isSame(moment('1814-01-01'))).toBe(true)
       done()

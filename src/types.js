@@ -6,10 +6,26 @@ export type Uri = string
 
 export type Dimensions = { width: number, height: number }
 
-export type SubjectId = string
-export const mkSubjectId = (s: string): SubjectId => s.trim()
-export const mkSubjectFromDBpediaUri = (url: Uri): SubjectId => url.trim().split('/').reverse()[0]
-export const dbpediaSubjectId = (s: SubjectId): string => `dbpedia:${s}`
+export class SubjectId {
+  id: string
+
+  constructor(s: string) {
+    this.id = s.trim()
+  }
+
+  dbpediaSubjectId() {
+    return `dbpedia:${this.id}`
+  }
+
+  asString() {
+    return this.id
+  }
+
+  equals(other: SubjectId) {
+    return this.id === other.id
+  }
+}
+export const mkSubjectFromDBpediaUri = (url: Uri): SubjectId => new SubjectId(url.trim().split('/').reverse()[0])
 
 export type PersonAbstract = {|
   type: 'PersonAbstract',

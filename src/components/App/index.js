@@ -35,6 +35,7 @@ type AppState = { }
 
 class App_ extends React.Component<AppProps, AppState> {
   componentDidMount() {
+    console.log('[componentDidMount]', this.props.focusedSubject)
     this.getAndCachePerson(this.props.focusedSubject).then((person: PersonDetail) => {
       this.focusPerson(person)
     })
@@ -57,7 +58,7 @@ class App_ extends React.Component<AppProps, AppState> {
       window.history.pushState(
         '',
         n.id,
-        `${location.origin}${location.pathname}?subject=${n.id}`,
+        `${location.origin}${location.pathname}?subject=${n.id.asString()}`,
       )
       if (person.wikipediaUri) {
         const uri = person.wikipediaUri
