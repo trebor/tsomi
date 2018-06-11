@@ -35,7 +35,6 @@ type AppState = { }
 
 class App_ extends React.Component<AppProps, AppState> {
   componentDidMount() {
-    console.log('[componentDidMount]', this.props.focusedSubject)
     this.getAndCachePerson(this.props.focusedSubject).then((person: PersonDetail) => {
       this.focusPerson(person)
     })

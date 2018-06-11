@@ -462,14 +462,8 @@ const updateInfluenceGraph = (graph: TGraph, focus: PersonDetail, people: store.
   )(Array.from(currentIds.values())))
   const oldPeople = new Set(fp.map(n => n.person)(graph.getVisibleNodes()))
 
-  console.log('[updateInfluenceGraph currentPeople]', Array.from(currentPeople))
-  console.log('[updateInfluenceGraph oldPeople]', Array.from(oldPeople))
-
   const incomingPeople = difference(currentPeople, oldPeople)
   const outgoingPeople = difference(oldPeople, currentPeople)
-
-  console.log('[updateInfluenceGraph incomingPeople]', Array.from(incomingPeople))
-  console.log('[updateInfluenceGraph outgoingPeople]', Array.from(outgoingPeople))
 
   graph.setFocus(focus)
   incomingPeople.forEach((p) => {
@@ -655,8 +649,6 @@ class InfluenceCanvas {
     const nodeSel = this.nodesElem
       .selectAll('.translate')
       .data(this.graph.getVisibleNodes(), (n: PersonNode): ?string => (n ? n.getId() : null))
-    console.log(nodeSel.enter())
-    console.log(nodeSel.exit())
     renderPeople(
       nodeSel.enter(),
       n => this.selectNode(n.person),
