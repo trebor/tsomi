@@ -12,6 +12,7 @@ export type Store = {
   people: PeopleCache,
   currentWikiPageUri: Uri,
   searchResults: Array<PersonAbstract>,
+  searchString: ?string,
 }
 
 export const initialState = (): Store => {
@@ -23,20 +24,21 @@ export const initialState = (): Store => {
     people: {},
     currentWikiPageUri: '',
     searchResults: [],
+    searchString: 'Octavia Butler',
   }
 }
 
 export type Action = {
   type: string,
-  [string]: any
+  [string]: any,
 }
 
 export const cachePerson = (subjectId: SubjectId, person: PersonAbstract | PersonDetail): Action =>
   ({ type: 'CACHE_PERSON', subjectId, person })
 export const focusOnPerson = (subjectId: SubjectId): Action =>
   ({ type: 'FOCUS_ON_PERSON', subjectId })
-export const saveSearchResults = (results: Array<PersonAbstract>): Action =>
-  ({ type: 'SAVE_SEARCH_RESULTS', results })
+export const saveSearchResults = (searchString: ?string, results: Array<PersonAbstract>): Action =>
+  ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
 export const setAboutPage = (state: bool): Action =>
   ({ type: 'SET_ABOUT_PAGE', state })
 export const setWikiUri = (uri: Uri): Action =>
@@ -49,6 +51,7 @@ export const people = (store: Store) => store.people
 export const lookupPerson = (s: SubjectId) =>
   (store: Store): PersonAbstract | PersonDetail | void => store.people[s.asString()]
 export const searchResults = (store: Store): Array<PersonAbstract> => store.searchResults
+export const searchString = (store: Store): ?string => store.searchString
 export const showAboutPage = (store: Store): bool => store.showAboutPage
 export const wikiUri = (store: Store): Uri => store.currentWikiPageUri
 
@@ -71,6 +74,7 @@ export const runState = (state?: Store = initialState(), action: any): Store => 
     case 'SAVE_SEARCH_RESULTS':
       return {
         ...state,
+        searchString: action.searchString,
         searchResults: action.results,
       }
 

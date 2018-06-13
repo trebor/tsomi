@@ -1,15 +1,12 @@
 // @flow
 
 import React from 'react'
+import { type Element } from 'react'
 
 import type { PersonAbstract } from '../../types'
+import CloseButton from '../../components/CloseButton'
 
 require('./main.css')
-
-type SearchResultProps = {
-  searchResults: Array<PersonAbstract>,
-  selectPerson: PersonAbstract => void,
-}
 
 const summarize = (msg: string, skipNWords: number, maxlength: number): string => {
   let res = '...'
@@ -35,10 +32,12 @@ const makeListItem = (selectPerson: PersonAbstract => void) => (person: PersonAb
 
   const img = React.createElement('img', { src: thumbnail || 'http://via.placeholder.com/100x100' })
   const imgContainer = React.createElement('div', { className: 'search-thumbnail' }, img)
-  /* TODO: make this into a link that centers this person in TSOMI */
   const nodeName = React.createElement(
     'h3',
-    { onClick: () => selectPerson(person) },
+    {
+      onClick: () => selectPerson(person),
+      className: 'link'
+    },
     name,
   )
   const dates = birthDate
@@ -79,9 +78,75 @@ const makeListItem = (selectPerson: PersonAbstract => void) => (person: PersonAb
   )
 }
 
-const SearchResult = ({ searchResults, selectPerson }: SearchResultProps) => {
-  const results = searchResults.map(makeListItem(selectPerson))
-  return React.createElement('div', { className: 'search-results' }, ...results)
+type NoResultProps = {
+  className: string,
+  searchString: string,
+  closeSearch: () => void,
+}
+
+const NoResult = (props: NoResultProps): Element<'div'> =>
+  React.createElement(
+    'div',
+    { className: props.className },
+    React.createElement(
+      'div',
+      { className: 'no-search-data' },
+      React.createElement(
+        'div',
+        { className: '' },
+        'Did you mean: ',
+        React.createElement(
+          'a',
+          { },
+          props.searchString,
+        ),
+        '?',
+      ),
+      React.createElement(
+        CloseButton,
+        {
+          className: 'close-button',
+          closeSearch: props.closeSearch,
+        },
+      ),
+    ),
+    React.createElement(
+      'div',
+      { className: 'alert' },
+      React.createElement(
+        'div',
+        { },
+        'The page ',
+        React.createElement(
+          'span',
+          { className: 'search-term' },
+          props.searchString,
+        ),
+        ' does not exist.',
+      ),
+    ),
+  )
+
+type SearchResultProps = {
+  searchString: string,
+  searchResults: Array<PersonAbstract>,
+  selectPerson: PersonAbstract => void,
+  closeSearch: () => void,
+}
+
+const SearchResult = (props: SearchResultProps) => {
+  if (props.searchResults.length > 0) {
+    const results = props.searchResults.map(makeListItem(props.selectPerson))
+    return React.createElement('div', { className: 'search-results' }, ...results)
+  }
+  return React.createElement(
+    NoResult,
+    {
+      className: 'search-results',
+      searchString: props.searchString,
+      closeSearch: props.closeSearch,
+    },
+  )
 }
 
 module.exports = { SearchResult }

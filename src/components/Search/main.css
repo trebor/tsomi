@@ -34,7 +34,7 @@ div.search input[type='text'] {
   box-sizing: border-box;
 }
 
-div.search button {
+.search-go {
   color: white;
   background-color: rgb(82, 210, 155);
 }

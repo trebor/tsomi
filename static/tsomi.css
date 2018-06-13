@@ -101,19 +101,26 @@ body {
   opacity: 0.8;
 }
 
+.link {
+  color: #5084C8;
+  cursor: pointer;
+}
+
+/*
 path.link {
   opacity: 0.3;
 }
 path.link.from {
-  /* stroke: #D6FBF9; */
-  /* stroke: #eec; */
+  // stroke: #D6FBF9; 
+  // stroke: #eec; 
   stroke: #888;
 }
 
 path.link.to {
-  /* stroke: #cee; */
+  // stroke: #cee; 
   stroke: #888;
 }
+*/
 
 .title {
   font-weight: bold;
@@ -138,17 +145,18 @@ path.link.to {
 }
 
 path.link {
-  /* opacity: 0.2; */
-  /* stroke: #000; */
+  opacity: 0.2; 
+  stroke: #000; 
   fill: none;
   stroke-linecap: round;
 }
 
+/*
 .axis {
   shape-rendering: crispEdges;
   color: green;
   stroke: #444;
-  /* stroke: blue; */
+  // stroke: blue;
 }
 
 .axis text {
@@ -160,6 +168,7 @@ path.link {
   fill: black;
   opacity: 0.03;
 }
+*/
 
 @media only screen and (min-width: 1200px) {
   #chartdiv {

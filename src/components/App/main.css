@@ -1,7 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
+body {
+  font-family: 'Montserrat', 'Avenir', 'Helvetica', sans-serif;
+}
+
 div.container-wrapper {
-  font-family: 'Montserrat', sans-serif;
   position: absolute;
   top: 140px;
   left: 0;

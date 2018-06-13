@@ -13,8 +13,10 @@ type SearchState = {
 }
 
 type SearchProps = {
+  closeSearch: () => void,
   focusPerson: PersonAbstract => void,
   submitSearch: string => void,
+  searchString: ?string,
   searchResults: Array<PersonAbstract>,
 }
 
@@ -48,12 +50,17 @@ class Search extends React.Component<SearchProps, SearchState> {
       type: 'text',
     })
 
-    const submit = React.createElement('button', { onClick: () => this.submit() }, 'GO')
+    const submit = React.createElement('button', { className: 'link search-go', onClick: () => this.submit() }, 'GO')
 
-    const searchResult = this.props.searchResults && this.props.searchResults.length > 0
+    const searchResult = this.props.searchString
       ? React.createElement(
         SearchResult,
-        { searchResults: this.props.searchResults, selectPerson: this.props.focusPerson },
+        {
+          closeSearch: this.props.closeSearch,
+          searchString: this.props.searchString,
+          searchResults: this.props.searchResults,
+          selectPerson: this.props.focusPerson,
+        },
       )
       : null
 
