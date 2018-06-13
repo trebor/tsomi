@@ -23,6 +23,13 @@
   display: flex;
 }
 
+.search-result-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.4em;
+}
+
 .no-search-data {
   display: flex;
   justify-content: space-between;
@@ -73,7 +80,7 @@
   color: #5084C8;
 }
 
-.search-result-not-present .search-term {
+.search-result-summary .search-term {
   font-weight: bold;
 }
 

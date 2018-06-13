@@ -6,7 +6,6 @@ import { type Element } from 'react'
 require('./main.css')
 
 type CloseButtonProps = {
-  className: string,
   closeSearch: () => void,
 }
 
@@ -22,7 +21,7 @@ const Icon = (): Element<'img'> =>
 const CloseButton = (props: CloseButtonProps): Element<'div'> =>
   React.createElement(
     'div',
-    { className: props.className },
+    {},
     React.createElement(
       'a',
       {
