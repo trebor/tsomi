@@ -381,7 +381,7 @@ const focusHighlight = (
   n: PersonNode,
   over: bool,
 ) => {
-  if (n.getId() === focus.id) {
+  if (n.getId() === focus.id.asString()) {
     return
   }
   if (over) {
