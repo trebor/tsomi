@@ -18,7 +18,7 @@ const summarize = (msg: string, skipNWords: number, maxlength: number): string =
   return res.concat('...')
 }
 
-const makeListItem = (selectPerson: PersonAbstract => void) => (person: PersonAbstract) => {
+const ListItem = (selectPerson: PersonAbstract => void) => (person: PersonAbstract) => {
   const {
     name,
     birthDate,
@@ -37,7 +37,7 @@ const makeListItem = (selectPerson: PersonAbstract => void) => (person: PersonAb
     'h3',
     {
       onClick: () => selectPerson(person),
-      className: 'link'
+      className: 'link',
     },
     name,
   )
@@ -131,55 +131,6 @@ const ResultSummary = (props: ResultSummaryProps): Element<'div'> =>
     ),
   )
 
-
-type NoResultProps = {
-  searchString: string,
-  closeSearch: () => void,
-}
-
-const NoResult = (props: NoResultProps): Element<'div'> =>
-  React.createElement(
-    'div',
-    {},
-    React.createElement(
-      'div',
-      { className: 'no-search-data' },
-      React.createElement(
-        'div',
-        { className: '' },
-        'Did you mean: ',
-        React.createElement(
-          'a',
-          { },
-          props.searchString,
-        ),
-        '?',
-      ),
-      React.createElement(
-        CloseButton,
-        {
-          className: 'close-button',
-          closeSearch: props.closeSearch,
-        },
-      ),
-    ),
-    React.createElement(
-      'div',
-      { className: 'alert' },
-      React.createElement(
-        'div',
-        { },
-        'The page ',
-        React.createElement(
-          'span',
-          { className: 'search-term' },
-          props.searchString,
-        ),
-        ' does not exist.',
-      ),
-    ),
-  )
-
 type SearchResultProps = {
   searchString: string,
   searchResults: Array<PersonAbstract>,
@@ -188,7 +139,7 @@ type SearchResultProps = {
 }
 
 const SearchResult = (props: SearchResultProps) => {
-  const results = fp.map(makeListItem(props.selectPerson))(props.searchResults)
+  const results = fp.map(ListItem(props.selectPerson))(props.searchResults)
   return React.createElement(
     'div',
     { className: 'search-results' },
@@ -200,24 +151,9 @@ const SearchResult = (props: SearchResultProps) => {
         searchString: props.searchString,
       },
     ),
-    React.createElement('div', {}, ...results),
+    React.createElement('div', { className: 'search-result-list' }, ...results),
   )
 }
-
-  /*
-  if (props.searchResults.length > 0) {
-    const results = props.searchResults.map(makeListItem(props.selectPerson))
-    return React.createElement('div', { className: 'search-results' }, ...results)
-  }
-  return React.createElement(
-    NoResult,
-    {
-      className: 'search-results',
-      searchString: props.searchString,
-      closeSearch: props.closeSearch,
-    },
-  )
-  */
 
 module.exports = { SearchResult }
 
