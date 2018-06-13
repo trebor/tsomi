@@ -11,6 +11,7 @@ type NavbarState = {
 }
 
 type NavbarProps = {
+  closeSearch: () => void,
   focusPerson: PersonAbstract => void,
   goHome: () => void,
   toggleAbout: () => void,
@@ -27,6 +28,7 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
 
   render() {
     const {
+      closeSearch,
       focusPerson,
       goHome,
       submitSearch,
@@ -51,7 +53,7 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
     )
 
     const search = React.createElement(Search, {
-      closeSearch: () => undefined,
+      closeSearch,
       focusPerson,
       submitSearch,
       searchString,

@@ -65,7 +65,7 @@ class App_ extends React.Component<AppProps, AppState> {
         const muri = wikipediaMobileUri(uri)
         this.props.setWikiUri(muri || uri)
       }
-      this.props.saveSearchResults(null, [])
+      //this.props.saveSearchResults(null, [])
       return Promise.all([
         person.influencedBy.map(i => this.getAndCachePerson(i)),
         person.influenced.map(i => this.getAndCachePerson(i)),
@@ -88,6 +88,7 @@ class App_ extends React.Component<AppProps, AppState> {
   render() {
     const navbar = React.createElement(Navbar, {
       key: 'navbar',
+      closeSearch: () => this.props.saveSearchResults(null, []),
       focusPerson: subjectId => this.focusPerson(subjectId),
       goHome: () => this.props.goHome(),
       toggleAbout: () => this.props.toggleAboutPage(),

@@ -16,7 +16,7 @@ const Icon = (): Element<'img'> =>
     {
       src: 'static/close-icon.svg',
       className: 'close-button-icon',
-    }
+    },
   )
 
 const CloseButton = (props: CloseButtonProps): Element<'div'> =>
@@ -27,7 +27,7 @@ const CloseButton = (props: CloseButtonProps): Element<'div'> =>
       'a',
       {
         onClick: props.closeSearch,
-        className: 'close-button',
+        className: 'close-button link',
       },
       'close',
       React.createElement(
