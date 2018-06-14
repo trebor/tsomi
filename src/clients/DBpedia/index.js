@@ -134,21 +134,6 @@ const searchForPeople = (name: string): Promise<Array<PersonAbstract>> =>
     .then((js: SearchResultJSON): Array<PersonAbstract> =>
       uniqueBy(i => i.uri, js.results.bindings.map(personAbstractFromJS)))
 
-
-const queryPersonDetail = 'SELECT ?person ?name ?birthPlace ?birthDate ?deathDate ?influencedBy ?influenced ?abstract \
-WHERE { \
-  ?person a foaf:Person. \
-  ?person foaf:name ?name. \
-  OPTIONAL { ?person dbo:abstract ?abstract. } \
-  OPTIONAL { ?person dbo:birthPlace ?birthPlace. } \
-  OPTIONAL { ?person dbo:birthDate ?birthDate. } \
-  OPTIONAL { ?person dbo:deathDate ?deathDate. } \
-  ?person dbpedia-owl:influencedBy ?influencedBy. \
-  ?person dbpedia-owl:influenced ?influenced \
-  filter( regex(str(?person), "%search_query%") ) \
-  filter( lang(?abstract) = "en" ). \
-}'
-
 const mkDataUrl = (s: SubjectId): string =>
   `http://dbpedia.org/data/${s.asString()}.json`
 
@@ -163,7 +148,6 @@ const findByRelationship = (relationship: string, target: SubjectId): (any => [S
   )
 
 const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
-  console.log('[getPerson]', s)
   const dataUrl = mkDataUrl(s)
 
   return fetch(dataUrl).then(r => r.json())
