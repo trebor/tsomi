@@ -91,7 +91,12 @@ const ResultCount = (props: ResultCountProps): Element<'div'> =>
     React.createElement(
       'span',
       {},
-      props.resultCount === 1 ? `${props.resultCount} Result for ` : `${props.resultCount} Results for `,
+      /* eslint no-nested-ternary: off */
+      props.resultCount === 0
+        ? 'No results found for '
+        : props.resultCount === 1
+          ? `${props.resultCount} result for `
+          : `${props.resultCount} results for `,
       React.createElement(
         'span',
         { className: 'search-term' },
