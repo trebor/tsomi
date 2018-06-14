@@ -24,7 +24,7 @@ export const initialState = (): Store => {
     people: {},
     currentWikiPageUri: '',
     searchResults: [],
-    searchString: 'Octavia Butler',
+    searchString: null,
   }
 }
 

@@ -65,7 +65,7 @@ class App_ extends React.Component<AppProps, AppState> {
         const muri = wikipediaMobileUri(uri)
         this.props.setWikiUri(muri || uri)
       }
-      //this.props.saveSearchResults(null, [])
+      this.props.saveSearchResults(null, [])
       return Promise.all([
         person.influencedBy.map(i => this.getAndCachePerson(i)),
         person.influenced.map(i => this.getAndCachePerson(i)),
