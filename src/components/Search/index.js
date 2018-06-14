@@ -56,11 +56,9 @@ class Search_ extends React.Component<SearchProps, SearchState> {
       type: 'text',
     })
 
-    const submit = React.createElement('button', { className: 'link search-go', onClick: () => this.submit() }, 'GO')
-
-    const loadingSpinner = this.props.searchInProgress
+    const submit = this.props.searchInProgress
       ? React.createElement(LoadingSpinner, { className: 'loader-searchbar' })
-    : null
+      : React.createElement('button', { className: 'link search-go', onClick: () => this.submit() }, 'GO')
 
     const searchResult = this.props.searchString
       ? React.createElement(
@@ -80,7 +78,7 @@ class Search_ extends React.Component<SearchProps, SearchState> {
       searchGlyph,
       input,
       submit,
-      loadingSpinner,
+      //loadingSpinner,
       searchResult,
     )
   }
