@@ -17,9 +17,7 @@ require('./main.css')
 
 type AppProps = {
   focusedSubject: SubjectId,
-  searchResults: Array<PersonAbstract>,
   searchString: ?string,
-  showAboutPage: bool,
   showAboutPage: bool,
   subjectId: string,
   wikiDivHidden: bool,
@@ -29,6 +27,7 @@ type AppProps = {
   focusOnPerson: SubjectId => void,
   goHome: void => void,
   saveSearchResults: (?string, Array<PersonAbstract>) => void,
+  setSearchInProgress: bool => void,
   setWikiUri: Uri => void,
   toggleAboutPage: void => void,
 }
@@ -65,7 +64,7 @@ class App_ extends React.Component<AppProps, AppState> {
         const muri = wikipediaMobileUri(uri)
         this.props.setWikiUri(muri || uri)
       }
-      this.props.saveSearchResults(null, [])
+      //this.props.saveSearchResults(null, [])
       return Promise.all([
         person.influencedBy.map(i => this.getAndCachePerson(i)),
         person.influenced.map(i => this.getAndCachePerson(i)),
@@ -78,9 +77,11 @@ class App_ extends React.Component<AppProps, AppState> {
   }
 
   submitSearch(name: string) {
+    this.props.setSearchInProgress(true)
     dbpedia.searchForPeople(name)
       .then(people => this.props.saveSearchResults(name, people))
       .catch((err) => {
+        this.props.setSearchInProgress(false)
         console.log('Searching failed with an error: ', err)
       })
   }
@@ -94,7 +95,6 @@ class App_ extends React.Component<AppProps, AppState> {
       toggleAbout: () => this.props.toggleAboutPage(),
       submitSearch: name => this.submitSearch(name),
       searchString: this.props.searchString,
-      searchResults: this.props.searchResults,
     })
 
     const about = React.createElement(About, {
@@ -144,8 +144,6 @@ class App_ extends React.Component<AppProps, AppState> {
 const App = connect(
   state => ({
     focusedSubject: store.focusedSubject(state),
-    searchString: store.searchString(state),
-    searchResults: store.searchResults(state),
     showAboutPage: store.showAboutPage(state),
     wikiUri: store.wikiUri(state),
   }),
@@ -154,6 +152,7 @@ const App = connect(
     focusOnPerson: subjectId => dispatch(store.focusOnPerson(subjectId)),
     goHome: () => dispatch(store.setAboutPage(false)),
     saveSearchResults: (str, results) => dispatch(store.saveSearchResults(str, results)),
+    setSearchInProgress: (status) => dispatch(store.setSearchInProgress(status)),
     setWikiUri: uri => dispatch(store.setWikiUri(uri)),
     toggleAboutPage: () => dispatch(store.toggleAboutPage()),
   }),

@@ -160,5 +160,5 @@ const SearchResult = (props: SearchResultProps) => {
   )
 }
 
-module.exports = { SearchResult }
+export default SearchResult
 

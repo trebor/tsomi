@@ -11,6 +11,7 @@ export type Store = {
   wikiDivHidden: bool,
   people: PeopleCache,
   currentWikiPageUri: Uri,
+  searchInProgress: bool,
   searchResults: Array<PersonAbstract>,
   searchString: ?string,
 }
@@ -23,6 +24,7 @@ export const initialState = (): Store => {
     wikiDivHidden: false,
     people: {},
     currentWikiPageUri: '',
+    searchInProgress: true,
     searchResults: [],
     searchString: null,
   }
@@ -37,6 +39,8 @@ export const cachePerson = (subjectId: SubjectId, person: PersonAbstract | Perso
   ({ type: 'CACHE_PERSON', subjectId, person })
 export const focusOnPerson = (subjectId: SubjectId): Action =>
   ({ type: 'FOCUS_ON_PERSON', subjectId })
+export const setSearchInProgress = (status: bool) =>
+  ({ type: 'SET_SEARCH_IN_PROGRESS', status })
 export const saveSearchResults = (searchString: ?string, results: Array<PersonAbstract>): Action =>
   ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
 export const setAboutPage = (state: bool): Action =>
@@ -50,6 +54,7 @@ export const focusedSubject = (store: Store): SubjectId => store.focusedSubject
 export const people = (store: Store) => store.people
 export const lookupPerson = (s: SubjectId) =>
   (store: Store): PersonAbstract | PersonDetail | void => store.people[s.asString()]
+export const searchInProgress = (store: Store): bool => store.searchInProgress
 export const searchResults = (store: Store): Array<PersonAbstract> => store.searchResults
 export const searchString = (store: Store): ?string => store.searchString
 export const showAboutPage = (store: Store): bool => store.showAboutPage
@@ -74,8 +79,15 @@ export const runState = (state?: Store = initialState(), action: any): Store => 
     case 'SAVE_SEARCH_RESULTS':
       return {
         ...state,
+        searchInProgress: false,
         searchString: action.searchString,
         searchResults: action.results,
+      }
+
+    case 'SET_SEARCH_IN_PROGRESS':
+      return {
+        ...state,
+        searchInProgress: action.status,
       }
 
     case 'SET_ABOUT_PAGE':

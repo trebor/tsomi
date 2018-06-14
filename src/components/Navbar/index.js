@@ -3,7 +3,7 @@
 import * as React from 'react'
 
 import { type PersonAbstract } from '../../types'
-import { Search } from '../Search/'
+import Search from '../Search/'
 
 require('./main.css')
 
@@ -16,8 +16,6 @@ type NavbarProps = {
   goHome: () => void,
   toggleAbout: () => void,
   submitSearch: string => void,
-  searchString: ?string,
-  searchResults: Array<PersonAbstract>,
 }
 
 class Navbar extends React.Component<NavbarProps, NavbarState> {
@@ -32,8 +30,6 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
       focusPerson,
       goHome,
       submitSearch,
-      searchResults,
-      searchString,
       toggleAbout,
     } = this.props
 
@@ -56,8 +52,6 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
       closeSearch,
       focusPerson,
       submitSearch,
-      searchString,
-      searchResults,
     })
 
     return React.createElement(
