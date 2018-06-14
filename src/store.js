@@ -24,7 +24,7 @@ export const initialState = (): Store => {
     wikiDivHidden: false,
     people: {},
     currentWikiPageUri: '',
-    searchInProgress: true,
+    searchInProgress: false,
     searchResults: [],
     searchString: null,
   }
@@ -39,12 +39,12 @@ export const cachePerson = (subjectId: SubjectId, person: PersonAbstract | Perso
   ({ type: 'CACHE_PERSON', subjectId, person })
 export const focusOnPerson = (subjectId: SubjectId): Action =>
   ({ type: 'FOCUS_ON_PERSON', subjectId })
-export const setSearchInProgress = (status: bool) =>
-  ({ type: 'SET_SEARCH_IN_PROGRESS', status })
-export const saveSearchResults = (searchString: ?string, results: Array<PersonAbstract>): Action =>
-  ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
 export const setAboutPage = (state: bool): Action =>
   ({ type: 'SET_ABOUT_PAGE', state })
+export const saveSearchResults = (searchString: ?string, results: Array<PersonAbstract>): Action =>
+  ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
+export const setSearchInProgress = (status: bool) =>
+  ({ type: 'SET_SEARCH_IN_PROGRESS', status })
 export const setWikiUri = (uri: Uri): Action =>
   ({ type: 'SET_WIKI_URI', uri })
 export const toggleAboutPage = (): Action =>
@@ -76,6 +76,12 @@ export const runState = (state?: Store = initialState(), action: any): Store => 
         focusedSubject: state.people[action.subjectId.asString()] ? action.subjectId : state.focusedSubject,
       }
 
+    case 'SET_ABOUT_PAGE':
+      return {
+        ...state,
+        showAboutPage: action.state,
+      }
+
     case 'SAVE_SEARCH_RESULTS':
       return {
         ...state,
@@ -88,12 +94,6 @@ export const runState = (state?: Store = initialState(), action: any): Store => 
       return {
         ...state,
         searchInProgress: action.status,
-      }
-
-    case 'SET_ABOUT_PAGE':
-      return {
-        ...state,
-        showAboutPage: action.state,
       }
 
     case 'SET_WIKI_URI':
