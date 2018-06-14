@@ -1,15 +1,7 @@
-.loader {
+.spinner {
   border-radius: 50%;
   -webkit-animation: spin 2s linear infinite; /* Safari */
   animation: spin 2s linear infinite;
-}
-
-.loader-searchbar {
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #3498db;
-  width: 30px;
-  height: 30px;
-  margin-left: 5px;
 }
 
 /* Safari */

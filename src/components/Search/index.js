@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { inputElement } from '../../eventtypes'
 import * as store from '../../store'
 import { type PersonAbstract } from '../../types'
-import LoadingSpinner from '../LoadingSpinner/'
+import Spinner from '../Spinner/'
 import SearchResult from '../SearchResult/'
 
 
@@ -47,7 +47,6 @@ class Search_ extends React.Component<SearchProps, SearchState> {
   }
 
   render() {
-    console.log('[Search]', this.props.searchInProgress)
     const searchGlyph = React.createElement('span', {}, '🔍')
 
     const input = React.createElement('input', {
@@ -57,7 +56,7 @@ class Search_ extends React.Component<SearchProps, SearchState> {
     })
 
     const submit = this.props.searchInProgress
-      ? React.createElement(LoadingSpinner, { className: 'loader-searchbar' })
+      ? React.createElement(Spinner, { className: 'spinner-searchbar' })
       : React.createElement('button', { className: 'link search-go', onClick: () => this.submit() }, 'GO')
 
     const searchResult = this.props.searchString
