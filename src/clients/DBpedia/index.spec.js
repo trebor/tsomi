@@ -1,15 +1,15 @@
 import moment from 'moment'
 import { SubjectId } from '../../types'
 
-const { getPerson, searchForPeople } = require('./')
+const { getPerson, extendedSearch, searchByName, searchForPeople } = require('./')
 
-describe('DBpedia library', () => {
+describe('DBpedia searches', () => {
   var originalTimeout;
 
   beforeEach(() => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000
-  });
+  })
 
   afterEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout)
 
@@ -29,6 +29,39 @@ describe('DBpedia library', () => {
         console.log('***** WARNING: request timed out *****')
         done()
       }
+      expect(false).toEqual(true)
+      done()
+    })
+  })
+
+  it('retrieves a list of names with a simple seach', (done) => {
+    searchByName('William Gibson').then(lst => {
+      expect(lst.length).toEqual(14)
+      done()
+    }).catch(err => {
+      if (err === 'Error: request timed out') {
+        console.log('***** WARNING: request timed out *****')
+        done()
+        return
+      }
+      console.log('ERROR: ', err)
+      expect(false).toEqual(true)
+      done()
+    })
+  })
+
+  it('retrieves list of people with extendedSearch', (done) => {
+    extendedSearch('William Gibson').then(lst => {
+      expect(lst.length).toEqual(14)
+      console.log(lst)
+      done()
+    }).catch(err => {
+      if (err === 'Error: request timed out') {
+        console.log('***** WARNING: request timed out *****')
+        done()
+        return
+      }
+      console.log('ERROR: ', err)
       expect(false).toEqual(true)
       done()
     })

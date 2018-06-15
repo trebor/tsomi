@@ -4,7 +4,7 @@ import fp from 'lodash/fp'
 import moment from 'moment'
 
 import { runSparqlQuery } from '../Sparql'
-import { type PersonAbstract, type PersonDetail, type SubjectId, mkSubjectFromDBpediaUri } from '../../types'
+import { type PersonAbstract, type PersonDetail, SubjectId, mkSubjectFromDBpediaUri } from '../../types'
 import { last, mapObjKeys, uniqueBy, parseDate } from '../../util'
 
 require('isomorphic-fetch')
@@ -134,6 +134,25 @@ const searchForPeople = (name: string): Promise<Array<PersonAbstract>> =>
     .then((js: SearchResultJSON): Array<PersonAbstract> =>
       uniqueBy(i => i.uri, js.results.bindings.map(personAbstractFromJS)))
 
+const queryByName = 'SELECT ?person \
+WHERE { ?person a foaf:Person. \
+        ?person foaf:name ?name. \
+        filter( regex(str(?name), "William Gibson", "i") ) \
+}\
+'
+
+const searchByName = (name: string): Promise<Array<SubjectId>> =>
+  runSparqlQuery(queryByName, { search_query: name.trim() })
+    .then((js: SearchResultJSON): Array<SubjectId> =>
+      fp.map(j => mkSubjectFromDBpediaUri(j.person.value))(js.results.bindings))
+
+const extendedSearch = (name: string, limit: ?number): Promise<Array<PersonDetail>> =>
+  searchByName(name).then(lst =>
+    Promise.all(
+      fp.map(getPerson)(lst)
+    ))
+
+
 const mkDataUrl = (s: SubjectId): string =>
   `http://dbpedia.org/data/${s.asString()}.json`
 
@@ -146,6 +165,7 @@ const findByRelationship = (relationship: string, target: SubjectId): (any => [S
     fp.filter(([, v]) => v[relationship] !== undefined &&
       mkSubjectFromDBpediaUri(v[relationship][0].value).equals(target)),
   )
+
 
 const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
   const dataUrl = mkDataUrl(s)
@@ -181,18 +201,20 @@ const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
         wikipediaUri,
         name: person.name[0].value,
         abstract: person.abstract.filter(i => i.lang === 'en')[0].value,
-        birthPlace: person.birthPlace[0].value,
+        birthPlace: person.birthPlace ? person.birthPlace[0].value : null,
         birthDate: person.birthDate ? parseDBpediaDate(person.birthDate[0].value) : null,
         deathDate: person.deathDate ? parseDBpediaDate(person.deathDate[0].value) : null,
         influencedBy: Array.from(influencedBy),
         influenced: Array.from(influenced),
         thumbnail,
       }
-    })
+    }).catch(err => console.log('[getPerson failed]', s, err))
 }
 
 module.exports = {
   getPerson,
+  searchByName,
   searchForPeople,
+  extendedSearch,
 }
 
