@@ -312,7 +312,7 @@ const renderPeople = (
     .attr('clip-path', 'url(#image-clip)')
 
   canvas.append('circle')
-    .classed('backdrop', true)
+    .classed('node-backdrop', true)
     .attr('r', IMAGE_SIZE / 2)
 
   canvas.append('image')
@@ -346,10 +346,9 @@ const renderPeople = (
 const renderLinks = (container: Selection, graph: TGraph): Selection => {
   const path = container.append('path')
 
-  path.classed('link', true)
+  path.classed('influence-link', true)
     .classed('from', (link: TLink): bool => link.source.getId() === graph.focus.getId())
     .classed('to', (link: TLink): bool => link.target.getId() === graph.focus.getId())
-    .style('stroke-width', ARROW_WIDTH)
     .attr('visibity', 'visible')
     .attr('d', (link: TLink): string => calculateLinkPath(link, graph.focus))
     .attr('id', (link: TLink): string => `${link.source.getId()}-${link.target.getId()}`)
@@ -543,8 +542,7 @@ class InfluenceCanvas {
     this.timeline = createTimeline(this.dimensions.width, minYear, maxYear)
     this.timelineAxis = topElem
       .append('g')
-      .classed('axies', true)
-      .attr('class', 'axis')
+      .classed('timeline-axis', true)
       .attr('transform', `translate(0, ${TIMELINE_Y(dimensions.height)})`)
       .call(this.timeline.axis)
 

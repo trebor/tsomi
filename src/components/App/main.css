@@ -1,14 +1,17 @@
-@import url('https://fonts.googleapis.com/css?family=Montserrat');
 
+/*
 body {
   font-family: 'Montserrat', 'Avenir', 'Helvetica', sans-serif;
 }
+*/
 
-div.container-wrapper {
+/*
+.container-wrapper {
   position: absolute;
   top: 140px;
   left: 0;
   height: calc(100vh - 140px);
   width: 100vw;
 }
+*/
 

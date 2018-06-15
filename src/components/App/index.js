@@ -125,7 +125,7 @@ class App_ extends React.Component<AppProps, AppState> {
         navbar,
         React.createElement(
           'div',
-          { className: 'container-wrapper' },
+          {},
           about,
           chartDiv,
           wikiDiv,
@@ -136,7 +136,7 @@ class App_ extends React.Component<AppProps, AppState> {
       React.Fragment,
       {},
       navbar,
-      React.createElement('div', { className: 'container-wrapper' }, chartDiv, wikiDiv),
+      React.createElement('div', { id: 'main-content' }, chartDiv, wikiDiv),
     )
   }
 }

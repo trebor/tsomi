@@ -48,41 +48,6 @@ div.search div.slider-group {
   padding: 0 50px;
 }
 
-#influenced-slider, #influencers-slider { 
-  flex: 1; 
-  margin: 0 10px;
-  display: flex;
-  align-items: center;
-}
-
-#influenced-slider span,
-#influencers-slider span {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1.3em;
-  padding: 0 10px;
-}
-
-#influenced-slider span:last-child,
-#influencers-slider span:last-child {
-  display: inline-block;
-  min-width: 40px;
-}
-
-.rc-slider {
-  display: flex;
-  align-items: center;
-}
-
-.rc-slider-track { background-color: rgba(0, 0, 0, 0); }
-.rc-slider-rail { background-color: white; }
-.rc-slider-handle {
-  height: 25px;
-  margin: 0;
-  background-color: rgb(82, 210, 155);
-  border-radius: 0;
-  border: none;
-}
-
 .spinner-searchbar {
   border: 5px solid #f3f3f3;
   border-top: 5px solid #3498db;
