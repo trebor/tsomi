@@ -35,11 +35,15 @@ const ListItem = (selectPerson: PersonAbstract => void) => (person: PersonAbstra
   const imgContainer = React.createElement('div', { className: 'search-thumbnail' }, img)
   const nodeName = React.createElement(
     'h3',
-    {
-      onClick: () => selectPerson(person),
-      className: 'link',
-    },
-    name,
+    {},
+    React.createElement(
+      'a',
+      {
+        onClick: () => selectPerson(person),
+        className: 'link',
+      },
+      name,
+    ),
   )
   const dates = birthDate
     ? React.createElement('p', {}, `${birthDate.format('YYYY-MM-DD')} - ${deathDate ? deathDate.format('YYYY-MM-DD') : ''}`)

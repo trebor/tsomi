@@ -21,10 +21,6 @@ body {
   font-family: 'Montserrat', 'Avenir', 'Helvetica', 'sans-serif';
 }
 
-a {
-  color: #5084C8;
-}
-
 /*** LAYOUT RULES ***/
 
 #navbar {
@@ -58,7 +54,7 @@ html {
   font-size: 11px;
 }
 
-.link {
+a, .link {
   color: #5084C8;
   cursor: pointer;
 }
