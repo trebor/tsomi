@@ -27,21 +27,6 @@ export class SubjectId {
 }
 export const mkSubjectFromDBpediaUri = (url: Uri): SubjectId => new SubjectId(url.trim().split('/').reverse()[0])
 
-export type PersonAbstract = {|
-  type: 'PersonAbstract',
-  id: SubjectId,
-  thumbnail: ?string,
-  uri: Uri,
-  wikipediaUri: ?Uri,
-  name: string,
-  abstract: ?string,
-  birthPlace: ?string,
-  birthDate: ?moment,
-  deathDate: ?moment,
-  influencedByCount: number,
-  influencedCount: number,
-|}
-
 export type PersonDetail = {|
   type: 'PersonDetail',
   id: SubjectId,
@@ -55,6 +40,8 @@ export type PersonDetail = {|
   deathDate: ?moment,
   influencedBy: Array<SubjectId>,
   influenced: Array<SubjectId>,
+  influencedByCount: number,
+  influencedCount: number,
 |}
 
 

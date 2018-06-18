@@ -1,8 +1,8 @@
 // @flow
 
 import InfluenceChart from '../InfluenceChart'
-import { type Uri, type SubjectId, type PersonAbstract, type PersonDetail, wikipediaMobileUri } from '../../types'
-import dbpedia from '../../clients/DBpedia'
+import { type Uri, type SubjectId, type PersonDetail, wikipediaMobileUri } from '../../types'
+import * as dbpedia from '../../clients/DBpedia'
 
 const React = require('react')
 const { connect } = require('react-redux')
@@ -23,10 +23,10 @@ type AppProps = {
   wikiDivHidden: bool,
   wikiUri: string,
 
-  cachePerson: (SubjectId, PersonAbstract | PersonDetail) => void,
+  cachePerson: (SubjectId, PersonDetail) => void,
   focusOnPerson: SubjectId => void,
   goHome: void => void,
-  saveSearchResults: (?string, Array<PersonAbstract>) => void,
+  saveSearchResults: (?string, Array<PersonDetail>) => void,
   setSearchInProgress: bool => void,
   setWikiUri: Uri => void,
   toggleAboutPage: void => void,
@@ -52,7 +52,7 @@ class App_ extends React.Component<AppProps, AppState> {
       }))
   }
 
-  focusPerson(n: PersonAbstract | PersonDetail): void {
+  focusPerson(n: PersonDetail): void {
     this.getAndCachePerson(n.id).then((person: PersonDetail) => {
       window.history.pushState(
         '',
@@ -151,7 +151,7 @@ const App = connect(
     cachePerson: (subjectId, person) => dispatch(store.cachePerson(subjectId, person)),
     focusOnPerson: subjectId => dispatch(store.focusOnPerson(subjectId)),
     goHome: () => dispatch(store.setAboutPage(false)),
-    saveSearchResults: (str, results) => dispatch(store.saveSearchResults(str, results)),
+    saveSearchResults: (str: ?string, results: Array<PersonDetail>): void => dispatch(store.saveSearchResults(str, results)),
     setSearchInProgress: (status) => dispatch(store.setSearchInProgress(status)),
     setWikiUri: uri => dispatch(store.setWikiUri(uri)),
     toggleAboutPage: () => dispatch(store.toggleAboutPage()),

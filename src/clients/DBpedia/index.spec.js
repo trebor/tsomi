@@ -3,13 +3,13 @@ import { SubjectId } from '../../types'
 
 const { getPerson, searchForPeople } = require('./')
 
-describe('DBpedia library', () => {
+describe('DBpedia searches', () => {
   var originalTimeout;
 
   beforeEach(() => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000
-  });
+  })
 
   afterEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout)
 
@@ -20,15 +20,49 @@ describe('DBpedia library', () => {
       expect(lst[0].name).toEqual('Joyce Carol Oates')
       expect(lst[0].birthPlace).toEqual('http://dbpedia.org/resource/Lockport_(city),_New_York')
       expect(lst[0].birthDate.isSame(moment('1938-06-16'))).toBe(true)
-      expect(lst[0].deathDate).toEqual(undefined)
-      expect(lst[0].influencedByCount).toEqual(14)
-      expect(lst[0].influencedCount).toEqual(4)
+      expect(lst[0].deathDate).toEqual(null)
+      expect(lst[0].influencedByCount).toEqual(18)
+      expect(lst[0].influencedCount).toEqual(6)
       done()
     }).catch(err => {
-      if (err === 'Error: request timed out') {
+      if (err.startsWith('Error: request timed out')) {
         console.log('***** WARNING: request timed out *****')
         done()
       }
+      console.log('ERROR: ', err)
+      expect(false).toEqual(true)
+      done()
+    })
+  })
+
+  it('retrieves a list of names with a simple seach', (done) => {
+    searchForPeople('William Gibson').then(lst => {
+      expect(lst.length).toEqual(14)
+      done()
+    }).catch(err => {
+      if (err.startsWith('Error: request timed out')) {
+        console.log('***** WARNING: request timed out *****')
+        done()
+        return
+      }
+      console.log('ERROR: ', err)
+      expect(false).toEqual(true)
+      done()
+    })
+  })
+
+  it('retrieves list of people with searchForPeople', (done) => {
+    searchForPeople('William Gibson').then(lst => {
+      expect(lst.length).toEqual(14)
+      //console.log(lst)
+      done()
+    }).catch(err => {
+      if (err.startsWith('Error: request timed out')) {
+        console.log('***** WARNING: request timed out *****')
+        done()
+        return
+      }
+      console.log('ERROR: ', err)
       expect(false).toEqual(true)
       done()
     })

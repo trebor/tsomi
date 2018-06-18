@@ -1,9 +1,9 @@
 // @flow
 
-import { type PersonAbstract, type PersonDetail, SubjectId, type Uri } from './types'
+import { type PersonDetail, SubjectId, type Uri } from './types'
 import queryString from 'query-string'
 
-export type PeopleCache = { [string]: PersonAbstract | PersonDetail }
+export type PeopleCache = { [string]: PersonDetail }
 
 export type Store = {
   showAboutPage: bool,
@@ -12,7 +12,7 @@ export type Store = {
   people: PeopleCache,
   currentWikiPageUri: Uri,
   searchInProgress: bool,
-  searchResults: Array<PersonAbstract>,
+  searchResults: Array<PersonDetail>,
   searchString: ?string,
 }
 
@@ -35,13 +35,13 @@ export type Action = {
   [string]: any,
 }
 
-export const cachePerson = (subjectId: SubjectId, person: PersonAbstract | PersonDetail): Action =>
+export const cachePerson = (subjectId: SubjectId, person: PersonDetail): Action =>
   ({ type: 'CACHE_PERSON', subjectId, person })
 export const focusOnPerson = (subjectId: SubjectId): Action =>
   ({ type: 'FOCUS_ON_PERSON', subjectId })
 export const setAboutPage = (state: bool): Action =>
   ({ type: 'SET_ABOUT_PAGE', state })
-export const saveSearchResults = (searchString: ?string, results: Array<PersonAbstract>): Action =>
+export const saveSearchResults = (searchString: ?string, results: Array<PersonDetail>): Action =>
   ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
 export const setSearchInProgress = (status: bool) =>
   ({ type: 'SET_SEARCH_IN_PROGRESS', status })
@@ -53,9 +53,9 @@ export const toggleAboutPage = (): Action =>
 export const focusedSubject = (store: Store): SubjectId => store.focusedSubject
 export const people = (store: Store) => store.people
 export const lookupPerson = (s: SubjectId) =>
-  (store: Store): PersonAbstract | PersonDetail | void => store.people[s.asString()]
+  (store: Store): PersonDetail | void => store.people[s.asString()]
 export const searchInProgress = (store: Store): bool => store.searchInProgress
-export const searchResults = (store: Store): Array<PersonAbstract> => store.searchResults
+export const searchResults = (store: Store): Array<PersonDetail> => store.searchResults
 export const searchString = (store: Store): ?string => store.searchString
 export const showAboutPage = (store: Store): bool => store.showAboutPage
 export const wikiUri = (store: Store): Uri => store.currentWikiPageUri

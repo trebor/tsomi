@@ -11,7 +11,6 @@ import { connect } from 'react-redux'
 import * as store from '../../store'
 import {
   type Dimensions,
-  type PersonAbstract,
   type PersonDetail,
   SubjectId,
 } from '../../types'
@@ -36,12 +35,12 @@ const {
   CHARGE_RANDOM,
   DEFAULT_ANIMATION_DURATION,
   GRAVITY,
-  HEAD_ANGLE,
   IMAGE_SIZE,
   LINK_MIN_OFFSET,
   LINK_RANDOM,
   LINK_STRENGTH,
   MARGIN,
+  MAX_SCREEN_NODES,
   NODE_SIZE,
   TIMELINE_Y,
 } = require('../../constants')
@@ -108,7 +107,7 @@ type PersonNode = {|
   y: number,
   vx: number,
   vy: number,
-  person: PersonAbstract | PersonDetail,
+  person: PersonDetail,
   getId: () => string,
 |}
 
@@ -142,7 +141,7 @@ class TGraph {
     this.nodes[pn.getId()] = pn
   }
 
-  addPerson(person: PersonAbstract | PersonDetail): PersonNode {
+  addPerson(person: PersonDetail): PersonNode {
     const p = this.nodes[person.id.asString()]
     if (p != null && p.type === 'PersonNode' && p.person.type === person.type) {
       return p
@@ -181,11 +180,11 @@ class TGraph {
     })
   }
 
-  removePerson(person: PersonAbstract | PersonDetail): void {
+  removePerson(person: PersonDetail): void {
     this.removePersonById(person.id)
   }
 
-  createLink(source: PersonAbstract | PersonDetail, target: PersonAbstract | PersonDetail): ?TLink {
+  createLink(source: PersonDetail, target: PersonDetail): ?TLink {
     if (source === target) {
       return null
     }
@@ -404,12 +403,12 @@ const focusHighlight = (
 const listOfPeopleInGraph = (
   graph: TGraph,
   people: store.PeopleCache,
-): Array<PersonAbstract | PersonDetail> => (
+): Array<PersonDetail> => (
   fp.filter(p => p != null)(fp.map(node => people[node.getId()])(graph.nodes))
 )
 
 
-const calculateTimeRange = (people: Array<PersonAbstract | PersonDetail>): [moment, moment] => {
+const calculateTimeRange = (people: Array<PersonDetail>): [moment, moment] => {
   let minDate = null
   let maxDate = null
 
@@ -451,11 +450,25 @@ const calculateTimeRange = (people: Array<PersonAbstract | PersonDetail>): [mome
 }
 
 
-const updateInfluenceGraph = (graph: TGraph, focus: PersonDetail, people: store.PeopleCache) => {
+const updateInfluenceGraph = (
+  graph: TGraph,
+  focus: PersonDetail,
+  people: store.PeopleCache,
+  maxNodes: number,
+) => {
+  const influenceLimit: Set<PersonDetail> => Set<PersonDetail> = fp.compose(
+    arr => new Set(arr),
+    fp.take(maxNodes),
+    fp.reverse,
+    fp.sortBy(p => p.influencedByCount + p.influencedBy),
+    s => Array.from(s),
+  )
+
   const influencedBy = new Set(focus.influencedBy)
   const influenced = new Set(focus.influenced)
   const currentIds = union(new Set([focus.id]), influencedBy, influenced)
   const currentPeople = new Set(fp.compose(
+    influenceLimit,
     fp.filter(p => p != null),
     fp.map(id => people[id.asString()]),
   )(Array.from(currentIds.values())))
@@ -501,7 +514,7 @@ class InfluenceCanvas {
   fdl: ForceSimulation
   fdlLinks: LinkForces
 
-  selectNode: (PersonAbstract | PersonDetail) => void
+  selectNode: (PersonDetail) => void
 
   highlight: ?PersonNode
 
@@ -510,7 +523,7 @@ class InfluenceCanvas {
     dimensions: Dimensions,
     focus: PersonDetail,
     people: store.PeopleCache,
-    selectNode: (PersonAbstract | PersonDetail) => void,
+    selectNode: (PersonDetail) => void,
   ) {
     this.topElem = topElem
     this.dimensions = dimensions
@@ -620,7 +633,7 @@ class InfluenceCanvas {
     this.focus = focus
     this.people = people
 
-    updateInfluenceGraph(this.graph, this.focus, people)
+    updateInfluenceGraph(this.graph, this.focus, people, MAX_SCREEN_NODES)
 
     this.lifelinesElem.select(`#${convertToSafeDOMId(oldFocus.id.asString())}`)
       .transition()
@@ -678,7 +691,7 @@ type InfluenceChartProps = {
   label: string,
   focusedId: SubjectId,
   people: store.PeopleCache,
-  selectPerson: (PersonAbstract | PersonDetail) => void,
+  selectPerson: (PersonDetail) => void,
 }
 
 type InfluenceChartState = {
