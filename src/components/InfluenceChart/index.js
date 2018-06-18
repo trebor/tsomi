@@ -36,12 +36,12 @@ const {
   CHARGE_RANDOM,
   DEFAULT_ANIMATION_DURATION,
   GRAVITY,
-  HEAD_ANGLE,
   IMAGE_SIZE,
   LINK_MIN_OFFSET,
   LINK_RANDOM,
   LINK_STRENGTH,
   MARGIN,
+  MAX_SCREEN_NODES,
   NODE_SIZE,
   TIMELINE_Y,
 } = require('../../constants')
@@ -452,11 +452,25 @@ const calculateTimeRange = (people: Array<PersonAbstract | PersonDetail>): [mome
 }
 
 
-const updateInfluenceGraph = (graph: TGraph, focus: PersonDetail, people: store.PeopleCache) => {
+const updateInfluenceGraph = (
+  graph: TGraph,
+  focus: PersonDetail,
+  people: store.PeopleCache,
+  maxNodes: number,
+) => {
+  const influenceLimit: Set<PersonDetail> => Set<PersonDetail> = fp.compose(
+    arr => new Set(arr),
+    fp.take(maxNodes),
+    fp.reverse,
+    fp.sortBy(p => p.influencedByCount + p.influencedBy),
+    s => Array.from(s),
+  )
+
   const influencedBy = new Set(focus.influencedBy)
   const influenced = new Set(focus.influenced)
   const currentIds = union(new Set([focus.id]), influencedBy, influenced)
   const currentPeople = new Set(fp.compose(
+    influenceLimit,
     fp.filter(p => p != null),
     fp.map(id => people[id.asString()]),
   )(Array.from(currentIds.values())))
@@ -622,7 +636,7 @@ class InfluenceCanvas {
     this.focus = focus
     this.people = people
 
-    updateInfluenceGraph(this.graph, this.focus, people)
+    updateInfluenceGraph(this.graph, this.focus, people, MAX_SCREEN_NODES)
 
     this.lifelinesElem.select(`#${convertToSafeDOMId(oldFocus.id.asString())}`)
       .transition()
