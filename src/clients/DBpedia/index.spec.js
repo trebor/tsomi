@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { SubjectId } from '../../types'
 
-const { getPerson, searchByName, searchForPeople } = require('./')
+const { getPerson, searchForPeople } = require('./')
 
 describe('DBpedia searches', () => {
   var originalTimeout;
@@ -36,7 +36,7 @@ describe('DBpedia searches', () => {
   })
 
   it('retrieves a list of names with a simple seach', (done) => {
-    searchByName('William Gibson').then(lst => {
+    searchForPeople('William Gibson').then(lst => {
       expect(lst.length).toEqual(14)
       done()
     }).catch(err => {
