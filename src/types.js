@@ -55,6 +55,8 @@ export type PersonDetail = {|
   deathDate: ?moment,
   influencedBy: Array<SubjectId>,
   influenced: Array<SubjectId>,
+  influencedByCount: number,
+  influencedCount: number,
 |}
 
 

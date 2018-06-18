@@ -41,7 +41,7 @@ export const focusOnPerson = (subjectId: SubjectId): Action =>
   ({ type: 'FOCUS_ON_PERSON', subjectId })
 export const setAboutPage = (state: bool): Action =>
   ({ type: 'SET_ABOUT_PAGE', state })
-export const saveSearchResults = (searchString: ?string, results: Array<PersonAbstract>): Action =>
+export const saveSearchResults = (searchString: ?string, results: Array<PersonDetail>): Action =>
   ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
 export const setSearchInProgress = (status: bool) =>
   ({ type: 'SET_SEARCH_IN_PROGRESS', status })

@@ -129,24 +129,26 @@ const personAbstractFromJS = (js: PersonJSON): PersonAbstract => {
   }
 }
 
+/*
 const searchForPeople = (name: string): Promise<Array<PersonAbstract>> =>
   runSparqlQuery(queryPersonAbstract, { search_query: name.trim() })
     .then((js: SearchResultJSON): Array<PersonAbstract> =>
       uniqueBy(i => i.uri, js.results.bindings.map(personAbstractFromJS)))
+      */
 
 const queryByName = 'SELECT ?person \
 WHERE { ?person a foaf:Person. \
         ?person foaf:name ?name. \
-        filter( regex(str(?name), "William Gibson", "i") ) \
+        filter( regex(str(?name), "%search_query%", "i") ) \
 }\
 '
 
 const searchByName = (name: string): Promise<Array<SubjectId>> =>
   runSparqlQuery(queryByName, { search_query: name.trim() })
     .then((js: SearchResultJSON): Array<SubjectId> =>
-      fp.map(j => mkSubjectFromDBpediaUri(j.person.value))(js.results.bindings))
+      Array.from(new Set(fp.map(j => mkSubjectFromDBpediaUri(j.person.value))(js.results.bindings))))
 
-const extendedSearch = (name: string, limit: ?number): Promise<Array<PersonDetail>> =>
+const searchForPeople = (name: string, limit: ?number): Promise<Array<PersonDetail>> =>
   searchByName(name).then(lst =>
     Promise.all(
       fp.map(getPerson)(lst)
@@ -178,13 +180,13 @@ const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
         ? person.influenced.map(i => mkSubjectFromDBpediaUri(i.value))
         : []
       const influenced__ = findByRelationship('http://dbpedia.org/ontology/influenced', s)(Object.entries(r))
-      const influenced = new Set(influenced_.concat(influenced__))
+      const influenced = Array.from(new Set(influenced_.concat(influenced__)))
 
       const influencedBy_ = person.influencedBy
         ? person.influencedBy.map(i => mkSubjectFromDBpediaUri(i.value))
         : []
       const influencedBy__ = findByRelationship('http://dbpedia.org/ontology/influencedBy', s)(Object.entries(r))
-      const influencedBy = new Set(influencedBy_.concat(influencedBy__))
+      const influencedBy = Array.from(new Set(influencedBy_.concat(influencedBy__)))
 
       const wikipediaUri = person.isPrimaryTopicOf
         ? person.isPrimaryTopicOf[0].value
@@ -204,8 +206,10 @@ const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
         birthPlace: person.birthPlace ? person.birthPlace[0].value : null,
         birthDate: person.birthDate ? parseDBpediaDate(person.birthDate[0].value) : null,
         deathDate: person.deathDate ? parseDBpediaDate(person.deathDate[0].value) : null,
-        influencedBy: Array.from(influencedBy),
-        influenced: Array.from(influenced),
+        influencedBy: influencedBy,
+        influenced: influenced,
+        influencedByCount: influencedBy.length,
+        influencedCount: influenced.length,
         thumbnail,
       }
     }).catch(err => console.log('[getPerson failed]', s, err))
@@ -215,6 +219,5 @@ module.exports = {
   getPerson,
   searchByName,
   searchForPeople,
-  extendedSearch,
 }
 
