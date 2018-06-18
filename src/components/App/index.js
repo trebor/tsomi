@@ -1,8 +1,8 @@
 // @flow
 
 import InfluenceChart from '../InfluenceChart'
-import { type Uri, type SubjectId, type PersonAbstract, type PersonDetail, wikipediaMobileUri } from '../../types'
-import dbpedia from '../../clients/DBpedia'
+import { type Uri, type SubjectId, type PersonDetail, wikipediaMobileUri } from '../../types'
+import * as dbpedia from '../../clients/DBpedia'
 
 const React = require('react')
 const { connect } = require('react-redux')
@@ -23,7 +23,7 @@ type AppProps = {
   wikiDivHidden: bool,
   wikiUri: string,
 
-  cachePerson: (SubjectId, PersonAbstract | PersonDetail) => void,
+  cachePerson: (SubjectId, PersonDetail) => void,
   focusOnPerson: SubjectId => void,
   goHome: void => void,
   saveSearchResults: (?string, Array<PersonDetail>) => void,
@@ -52,7 +52,7 @@ class App_ extends React.Component<AppProps, AppState> {
       }))
   }
 
-  focusPerson(n: PersonAbstract | PersonDetail): void {
+  focusPerson(n: PersonDetail): void {
     this.getAndCachePerson(n.id).then((person: PersonDetail) => {
       window.history.pushState(
         '',

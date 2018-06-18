@@ -11,7 +11,6 @@ import { connect } from 'react-redux'
 import * as store from '../../store'
 import {
   type Dimensions,
-  type PersonAbstract,
   type PersonDetail,
   SubjectId,
 } from '../../types'
@@ -108,7 +107,7 @@ type PersonNode = {|
   y: number,
   vx: number,
   vy: number,
-  person: PersonAbstract | PersonDetail,
+  person: PersonDetail,
   getId: () => string,
 |}
 
@@ -142,7 +141,7 @@ class TGraph {
     this.nodes[pn.getId()] = pn
   }
 
-  addPerson(person: PersonAbstract | PersonDetail): PersonNode {
+  addPerson(person: PersonDetail): PersonNode {
     const p = this.nodes[person.id.asString()]
     if (p != null && p.type === 'PersonNode' && p.person.type === person.type) {
       return p
@@ -181,11 +180,11 @@ class TGraph {
     })
   }
 
-  removePerson(person: PersonAbstract | PersonDetail): void {
+  removePerson(person: PersonDetail): void {
     this.removePersonById(person.id)
   }
 
-  createLink(source: PersonAbstract | PersonDetail, target: PersonAbstract | PersonDetail): ?TLink {
+  createLink(source: PersonDetail, target: PersonDetail): ?TLink {
     if (source === target) {
       return null
     }
@@ -405,12 +404,12 @@ const focusHighlight = (
 const listOfPeopleInGraph = (
   graph: TGraph,
   people: store.PeopleCache,
-): Array<PersonAbstract | PersonDetail> => (
+): Array<PersonDetail> => (
   fp.filter(p => p != null)(fp.map(node => people[node.getId()])(graph.nodes))
 )
 
 
-const calculateTimeRange = (people: Array<PersonAbstract | PersonDetail>): [moment, moment] => {
+const calculateTimeRange = (people: Array<PersonDetail>): [moment, moment] => {
   let minDate = null
   let maxDate = null
 
@@ -516,7 +515,7 @@ class InfluenceCanvas {
   fdl: ForceSimulation
   fdlLinks: LinkForces
 
-  selectNode: (PersonAbstract | PersonDetail) => void
+  selectNode: (PersonDetail) => void
 
   highlight: ?PersonNode
 
@@ -525,7 +524,7 @@ class InfluenceCanvas {
     dimensions: Dimensions,
     focus: PersonDetail,
     people: store.PeopleCache,
-    selectNode: (PersonAbstract | PersonDetail) => void,
+    selectNode: (PersonDetail) => void,
   ) {
     this.topElem = topElem
     this.dimensions = dimensions
@@ -694,7 +693,7 @@ type InfluenceChartProps = {
   label: string,
   focusedId: SubjectId,
   people: store.PeopleCache,
-  selectPerson: (PersonAbstract | PersonDetail) => void,
+  selectPerson: (PersonDetail) => void,
 }
 
 type InfluenceChartState = {
