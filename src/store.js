@@ -8,12 +8,12 @@ export type PeopleCache = { [string]: PersonDetail }
 export type Store = {
   showAboutPage: bool,
   focusedSubject: SubjectId,
-  wikiDivHidden: bool,
   people: PeopleCache,
   currentWikiPageUri: Uri,
   searchInProgress: bool,
   searchResults: Array<PersonDetail>,
   searchString: ?string,
+  wikiDivHidden: bool,
 }
 
 export const initialState = (): Store => {
@@ -21,12 +21,12 @@ export const initialState = (): Store => {
   return {
     showAboutPage: false,
     focusedSubject: params.subject ? new SubjectId(params.subject) : new SubjectId('Ursula_K._Le_Guin'),
-    wikiDivHidden: false,
     people: {},
     currentWikiPageUri: '',
     searchInProgress: false,
     searchResults: [],
     searchString: null,
+    wikiDivHidden: false,
   }
 }
 
@@ -45,6 +45,8 @@ export const saveSearchResults = (searchString: ?string, results: Array<PersonDe
   ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
 export const setSearchInProgress = (status: bool) =>
   ({ type: 'SET_SEARCH_IN_PROGRESS', status })
+export const setWikiDivHidden = (state: bool): Action =>
+  ({ type: 'SET_WIKI_DIV_HIDDEN', state })
 export const setWikiUri = (uri: Uri): Action =>
   ({ type: 'SET_WIKI_URI', uri })
 export const toggleAboutPage = (): Action =>
@@ -58,6 +60,7 @@ export const searchInProgress = (store: Store): bool => store.searchInProgress
 export const searchResults = (store: Store): Array<PersonDetail> => store.searchResults
 export const searchString = (store: Store): ?string => store.searchString
 export const showAboutPage = (store: Store): bool => store.showAboutPage
+export const wikiDivHidden = (store: Store): bool => store.wikiDivHidden
 export const wikiUri = (store: Store): Uri => store.currentWikiPageUri
 
 export const runState = (state?: Store = initialState(), action: any): Store => {
@@ -94,6 +97,12 @@ export const runState = (state?: Store = initialState(), action: any): Store => 
       return {
         ...state,
         searchInProgress: action.status,
+      }
+
+    case 'SET_WIKI_DIV_HIDDEN':
+      return {
+        ...state,
+        wikiDivHidden: action.state,
       }
 
     case 'SET_WIKI_URI':

@@ -33,19 +33,65 @@ body {
   position: absolute;
   top: 140px;
   left: 0;
-  height: calc(100vh - 140px);
+  height: calc(100vh - 160px);
   width: 100vw;
 }
 
 #chartdiv {
-  width: 65%;
   height: 100%;
 	float: left;
 }
 
-#wikiframe {
-	width: 100%;
+.chart-div-normal {
+  width: 65%;
+}
+
+.chart-div-expanded {
+  width: calc(100% - 31px);
+}
+
+#wikicollapse {
+  width: 31px;
+  height: 100%;
+  float: left;
+}
+
+#wikidiv {
+  width: calc(35% - 31px);
 	height: 100%;
+  float: right;
+}
+
+@media only screen and (min-width: 1200px) {
+  .chart-div-normal {
+    width: 70%;
+  }
+
+  .chart-div-expanded {
+    width: calc(100% - 31px);
+  }
+}
+
+@media only screen and (min-width: 1500px) {
+  .chart-div-normal {
+    width: 75%;
+  }
+
+  .chart-div-expanded {
+    width: calc(100% - 31px);
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  #wikidiv {
+    width: calc(30% - 31px);
+  }
+}
+
+@media only screen and (min-width: 1500px) {
+  #wikidiv {
+    width: calc(25% - 31px);
+  }
 }
 
 
@@ -153,14 +199,3 @@ path.link.to {
 }
 */
 
-@media only screen and (min-width: 1200px) {
-  #chartdiv {
-    width: 70%;
-  }
-}
-
-@media only screen and (min-width: 1500px) {
-  #chartdiv {
-    width: 75%;
-  }
-}

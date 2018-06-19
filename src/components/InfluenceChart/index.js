@@ -692,6 +692,7 @@ type InfluenceChartProps = {
   focusedId: SubjectId,
   people: store.PeopleCache,
   selectPerson: (PersonDetail) => void,
+  wikiDivHidden: bool,
 }
 
 type InfluenceChartState = {
@@ -708,18 +709,21 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
     const { focusedId } = newProps
     const focus = newProps.people[focusedId.asString()]
 
+    const { d3Elem, domElem } = prevState
+
     if (focus != null && focus.type === 'PersonDetail') {
-      if (prevState.domElem != null && prevState.d3Elem != null) {
+      if (domElem != null && d3Elem != null) {
         const canvas = prevState.canvas
           ? prevState.canvas
           : new InfluenceCanvas(
-            prevState.d3Elem,
-            prevState.domElem.getBoundingClientRect(),
+            d3Elem,
+            domElem.getBoundingClientRect(),
             focus,
             newProps.people,
             newProps.selectPerson,
           )
         canvas.setFocused(focus, newProps.people)
+
         return { ...prevState, canvas, focusedId }
       }
       return { ...prevState, focusedId }
@@ -757,9 +761,16 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
       if (this.state.domElem != null && this.state.canvas != null) {
         const { domElem } = this.state
         this.state.canvas.setDimensions(domElem.getBoundingClientRect())
-        this.forceUpdate()
       }
     })
+  }
+
+  componentDidUpdate() {
+    const { domElem, canvas } = this.state
+    if (domElem != null && canvas != null ) {
+      console.log('[componentDidUpdate]', domElem.getBoundingClientRect())
+      canvas.setDimensions(domElem.getBoundingClientRect())
+    }
   }
 
   render() {
@@ -771,6 +782,7 @@ const InfluenceChart = connect(
   state => ({
     focusedId: store.focusedSubject(state),
     people: store.people(state),
+    wikiDivHidden: store.wikiDivHidden(state),
   }),
   dispatch => ({}),
 )(InfluenceChart_)

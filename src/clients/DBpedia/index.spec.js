@@ -25,7 +25,7 @@ describe('DBpedia searches', () => {
       expect(lst[0].influencedCount).toEqual(6)
       done()
     }).catch(err => {
-      if (err.startsWith('Error: request timed out')) {
+      if (err.message.startsWith('request timed out')) {
         console.log('***** WARNING: request timed out *****')
         done()
       }
@@ -40,7 +40,7 @@ describe('DBpedia searches', () => {
       expect(lst.length).toEqual(14)
       done()
     }).catch(err => {
-      if (err.startsWith('Error: request timed out')) {
+      if (err.message.startsWith('request timed out')) {
         console.log('***** WARNING: request timed out *****')
         done()
         return
@@ -57,7 +57,7 @@ describe('DBpedia searches', () => {
       //console.log(lst)
       done()
     }).catch(err => {
-      if (err.startsWith('Error: request timed out')) {
+      if (err.message.startsWith('request timed out')) {
         console.log('***** WARNING: request timed out *****')
         done()
         return
