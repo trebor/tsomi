@@ -532,6 +532,8 @@ class InfluenceCanvas {
     this.graph = new TGraph(focus)
     this.selectNode = selectNode
 
+    updateInfluenceGraph(this.graph, this.focus, this.people, MAX_SCREEN_NODES)
+
     // create clip path for image
     this.definitions = this.topElem.append('defs')
 
@@ -576,6 +578,8 @@ class InfluenceCanvas {
 
     this.fdl.alpha(ALPHA)
     this.fdl.on('tick', () => this.animate())
+
+    this.refreshCanvas()
   }
 
   animate(): void {

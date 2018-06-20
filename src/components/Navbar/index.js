@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { type PersonDetail } from '../../types'
+import { type SubjectId } from '../../types'
 import Search from '../Search/'
 
 require('./main.css')
@@ -12,7 +12,7 @@ type NavbarState = {
 
 type NavbarProps = {
   closeSearch: () => void,
-  focusPerson: PersonDetail => void,
+  focusPerson: SubjectId => void,
   goHome: () => void,
   toggleAbout: () => void,
   submitSearch: string => void,
