@@ -101,6 +101,7 @@ html {
 }
 
 a, .link {
+  text-decoration: none;
   color: #5084C8;
   cursor: pointer;
 }

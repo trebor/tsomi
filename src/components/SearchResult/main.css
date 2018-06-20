@@ -82,8 +82,16 @@
   font-weight: bold;
 }
 
+/*
 .search-result a {
   text-decoration: none;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+*/
+
+.wikipedia-link {
   position: absolute;
   bottom: 20px;
   right: 20px;

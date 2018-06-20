@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { type PersonDetail } from '../../types'
+import { type SubjectId } from '../../types'
 import Search from '../Search/'
 
 require('./main.css')
@@ -12,7 +12,7 @@ type NavbarState = {
 
 type NavbarProps = {
   closeSearch: () => void,
-  focusPerson: PersonDetail => void,
+  focusPerson: SubjectId => void,
   goHome: () => void,
   toggleAbout: () => void,
   submitSearch: string => void,
@@ -48,11 +48,14 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
       React.createElement('div', { className: 'right' }, about),
     )
 
-    const search = React.createElement(Search, {
-      closeSearch,
-      focusPerson,
-      submitSearch,
-    })
+    const search = React.createElement(
+      Search,
+      {
+        closeSearch,
+        focusPerson,
+        submitSearch,
+      },
+    )
 
     return React.createElement(
       React.Fragment,
@@ -63,5 +66,5 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
   }
 }
 
-module.exports = { Navbar }
+export default Navbar
 

@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 
 import { inputElement } from '../../eventtypes'
 import * as store from '../../store'
-import { type PersonDetail } from '../../types'
+import { type PersonDetail, SubjectId } from '../../types'
 import Spinner from '../Spinner/'
 import SearchResult from '../SearchResult/'
 
@@ -18,7 +18,7 @@ type SearchState = {
 
 type SearchProps = {
   closeSearch: () => void,
-  focusPerson: PersonDetail => void,
+  focusPerson: SubjectId => void,
   submitSearch: string => void,
   searchInProgress: bool,
   searchString: ?string,
@@ -77,7 +77,7 @@ class Search_ extends React.Component<SearchProps, SearchState> {
       searchGlyph,
       input,
       submit,
-      //loadingSpinner,
+      // loadingSpinner,
       searchResult,
     )
   }
