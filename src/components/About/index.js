@@ -1,4 +1,5 @@
 // @flow
+
 import React from 'react'
 import * as fp from 'lodash/fp'
 import { SubjectId } from '../../types'
@@ -9,9 +10,6 @@ type AboutProps = {
   goBack: Function,
   focusPerson: SubjectId => void,
 }
-
-//const linkTo = (name: string): string =>
-  //`${window.location.origin}/?subject=${name}`
 
 const About = ({ goBack, focusPerson }: AboutProps) => {
   const heading = React.createElement('h1', {}, 'The Sphere of My Influence')
