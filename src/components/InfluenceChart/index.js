@@ -63,6 +63,7 @@ type Selection = {
   enter: () => Selection,
   exit: () => Selection,
   filter: Function => Selection,
+  node: () => any,
   on: (string, (any, number) => void) => Selection,
   remove: () => Selection,
   select: string => Selection,
@@ -383,6 +384,8 @@ const focusHighlight = (
     return
   }
   if (over) {
+    nodesElem.append(() => nodesElem.select(`#${convertToSafeDOMId(n.getId())}`).remove().node())
+
     nodesElem.select(`#${convertToSafeDOMId(n.getId())} .scale`)
       .transition()
       .attr('transform', 'scale(0.75)')
@@ -396,6 +399,8 @@ const focusHighlight = (
     lifelinesElem.select(`#${convertToSafeDOMId(n.getId())}`)
       .transition()
       .attr('style', 'opacity: 0.03;')
+
+    nodesElem.append(() => nodesElem.select(`#${convertToSafeDOMId(focus.id.asString())}`).remove().node())
   }
 }
 
@@ -687,6 +692,34 @@ class InfluenceCanvas {
 
     this.fdl.alpha(ALPHA)
     this.fdl.restart()
+
+    /* TODO: this block is meant to move the focus node to the top of the
+     * stack. This can happen if a lot of data is already loaded when this node
+     * gets created. Problem is, it fails intermittently with the error
+     * `Uncaught TypeError: Failed to execute 'appendChild' on 'Node':
+     * parameter 1 is not of type 'Node'.`. This is a problem given that
+     * according to the diagnostics below, `rm.node()` actually is a DOM
+     * element and it is being returned. So, I've commented this out and we
+     * will have an intermittent visual artifact until somebody can make this
+     * logic work. */
+    /*
+    const elem = this.nodesElem.select(`#${convertToSafeDOMId(this.focus.id.asString())}`)
+    console.log('[About to remove]', elem.node())
+    this.nodesElem.append(() => {
+      if (this.focus != null) {
+        const elem = this.nodesElem.select(`#${convertToSafeDOMId(this.focus.id.asString())}`)
+        console.log('[move focus forward]', elem)
+        const rm = elem.remove()
+        console.log('[move focus forward, removed]', rm)
+        console.log('[move focus forward, removed node]', rm.node(), typeof rm.node())
+        if (!rm.node()) {
+          return null
+        }
+        return elem.node()
+      }
+      return null
+    })
+    */
   }
 }
 
