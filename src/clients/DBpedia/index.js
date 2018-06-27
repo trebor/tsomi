@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import { runSparqlQuery } from '../Sparql'
 import { type PersonDetail, SubjectId, mkSubjectFromDBpediaUri } from '../../types'
-import { last, mapObjKeys, maybe_, parseDate } from '../../util'
+import { last, mapObjKeys, maybe, maybe_, parseDate } from '../../util'
 
 require('isomorphic-fetch')
 
@@ -82,19 +82,18 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
         ? person.thumbnail[0].value
         : null
 
-      const abstractLst = fp.map(p => p.value)(fp.filter(i => i.lang == 'en')(person.abstract))
       return {
         type: 'PersonDetail',
         id: s,
         uri: mkResourceUrl(s),
         wikipediaUri,
-        name: maybe_(n => n.value)(fp.head(person.name)),
+        name: (maybe('')(n => n.value)(fp.head(person.name)): string),
         abstract: fp.compose(
           maybe_(n => n.value),
           fp.head,
           fp.filter(js => js.lang == 'en'),
         )(person.abstract),
-        birthPlace: maybe_(n => n.value)(fp.head(person.birthPlace)),
+        birthPlace: (maybe_(n => n.value)(fp.head(person.birthPlace)): ?string),
         birthDate: maybe_(n => parseDBpediaDate(n.value))(fp.head(person.birthDate)),
         deathDate: maybe_(n => parseDBpediaDate(n.value))(fp.head(person.deathDate)),
         influencedBy,

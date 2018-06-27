@@ -120,11 +120,14 @@ type RequestParameters = {
   method: string
 }
 
-const maybe = <A, B>(def: B) => (f: A => B) => (val: ?A) =>
-  val == null ? def : f(val)
+const maybe = <A, B>(def: B): ((A => B) => ?A => B) =>
+  <A>(f: A => B): (?A => B) =>
+    (val: ?A): B =>
+      val == null ? def : f(val)
 
-const maybe_ = <A, B>(f: A => B) => (val: ?A) =>
-  val == null ? null : f(val)
+const maybe_ = <A, B>(f: A => B): (?A => ?B) =>
+  (val: ?A): ?B =>
+    maybe(null)(f)(val)
 
 module.exports = {
   angleRadians,
