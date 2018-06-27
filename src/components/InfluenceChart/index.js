@@ -21,6 +21,7 @@ import {
   type Dimensions,
   type PersonDetail,
   SubjectId,
+  dimensionsEq,
 } from '../../types'
 import { difference, union } from '../../utils/Set'
 
@@ -523,7 +524,10 @@ const updateInfluenceGraph = (
   const incomingPeople = difference(currentPeople, oldPeople)
   const outgoingPeople = difference(oldPeople, currentPeople)
 
-  graph.setFocus(focus)
+  outgoingPeople.forEach((p) => {
+    graph.removePerson(p)
+  })
+
   incomingPeople.forEach((p) => {
     if (p === focus) {
       return
@@ -536,9 +540,7 @@ const updateInfluenceGraph = (
     }
   })
 
-  outgoingPeople.forEach((p) => {
-    graph.removePerson(p)
-  })
+  graph.setFocus(focus)
 }
 
 
@@ -702,6 +704,9 @@ class InfluenceCanvas {
 
   /* Set the current dimensions of the drawing area. This will restart the animation. */
   setDimensions(dimensions: Dimensions) {
+    if (dimensionsEq(dimensions, this.dimensions)) {
+      return
+    }
     this.dimensions = dimensions
 
     // calculateTimeRange here
@@ -809,6 +814,7 @@ class InfluenceCanvas {
 type InfluenceChartProps = {
   label: string,
   focusedId: SubjectId,
+  loadInProgress: bool,
   people: store.PeopleCache,
   selectPerson: (SubjectId) => void,
 }
@@ -855,7 +861,9 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
             newProps.people,
             newProps.selectPerson,
           )
-        canvas.setFocused(focus, newProps.people)
+        if (!newProps.loadInProgress) {
+          canvas.setFocused(focus, newProps.people)
+        }
 
         return { ...prevState, canvas, focusedId }
       }
@@ -923,6 +931,7 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
 
 const InfluenceChart = connect(state => ({
   focusedId: store.focusedSubject(state),
+  loadInProgress: store.loadInProgress(state),
   people: store.people(state),
 }))(InfluenceChart_)
 
