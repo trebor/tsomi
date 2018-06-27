@@ -114,5 +114,20 @@ describe('precise dbpedia gets', () => {
       done()
     })
   })
+
+  it('retrieves Edward Plunkett', (done) => {
+    getPerson(new SubjectId('Edward_Plunkett,_18th_Baron_of_Dunsany')).then(person => {
+      expect(person.uri).toEqual('http://dbpedia.org/resource/Edward_Plunkett,_18th_Baron_of_Dunsany')
+      expect(person.name).toEqual('Edward John Moreton Drax Plunkett Dunsany')
+      expect(person.birthDate.isSame(moment('1878-07-24'))).toBe(true)
+      expect(person.abstract).toBeDefined()
+      expect(person.abstract.startsWith('Edward John Moreton Drax Plunkett, 18th Baron of Dunsany')).toBe(true)
+      done()
+    }).catch(err => {
+      console.log('exception:', err)
+      expect(false).toEqual(true)
+      done()
+    })
+  })
 })
 

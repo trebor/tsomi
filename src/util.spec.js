@@ -6,6 +6,7 @@ const {
  largest,
  last,
  mapObjKeys,
+ maybe,
  smallest,
  queryParamsToHash,
  uniqueBy,
@@ -184,6 +185,20 @@ describe('make safe DOM ids', () => {
 
   it('should handle commas', () => {
     expect(convertToSafeDOMId('Edward_Plunkett,_18th_Baron_of_Dunsany')).toEqual('Edward__Plunkett_0_2c___18th__Baron__of__Dunsany')
+  })
+})
+
+describe('maybe should work', () => {
+  it('should do nothing when receiving an undefined', () => {
+    expect(maybe(null)(p => p + 1)(undefined)).toBe(null)
+  })
+
+  it('should do nothing when receiving an null', () => {
+    expect(maybe(null)(p => p + 1)(null)).toBe(null)
+  })
+
+  it('should operate on a value', () => {
+    expect(maybe(null)(p => p + 1)(1)).toEqual(2)
   })
 })
 
