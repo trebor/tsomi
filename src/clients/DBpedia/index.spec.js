@@ -115,13 +115,26 @@ describe('precise dbpedia gets', () => {
     })
   })
 
-  it('retrieves Edward Plunkett', (done) => {
+  it('retrieves Edward Plunkett, who has shown loading problems in the past', (done) => {
     getPerson(new SubjectId('Edward_Plunkett,_18th_Baron_of_Dunsany')).then(person => {
       expect(person.uri).toEqual('http://dbpedia.org/resource/Edward_Plunkett,_18th_Baron_of_Dunsany')
       expect(person.name).toEqual('Edward John Moreton Drax Plunkett Dunsany')
       expect(person.birthDate.isSame(moment('1878-07-24'))).toBe(true)
       expect(person.abstract).toBeDefined()
       expect(person.abstract.startsWith('Edward John Moreton Drax Plunkett, 18th Baron of Dunsany')).toBe(true)
+      done()
+    }).catch(err => {
+      console.log('exception:', err)
+      expect(false).toEqual(true)
+      done()
+    })
+  })
+
+  it('retrieves Jordan Peterson, whose birth date is only a year integer', (done) => {
+    getPerson(new SubjectId('Jordan_Peterson')).then(person => {
+      expect(person.uri).toEqual('http://dbpedia.org/resource/Jordan_Peterson')
+      expect(person.name).toEqual('Jordan Peterson')
+      expect(person.birthDate.isSame(moment('1962-01-01'))).toBe(true)
       done()
     }).catch(err => {
       console.log('exception:', err)
