@@ -1,24 +1,12 @@
-const $ = require('jquery')
-const { getViewportDimensions } = require('./util')
-
 const ALPHA = 1
-const ARROW_WIDTH = 3
-const BACK_BUTTON = 'static/images/backbutton.png'
 const BANNER_SIZE = 25
 const BANNER_X = 180
 const BANNER_Y = 52
-const CHART_HEIGHT = $('#chart').height()
-const CHART_WIDTH = $('#chart').width()
 const CHARGE_BASE = 200
 const CHARGE_HIDDEN = 25
-const CHARGE_RANDOM = 0
+const CHARGE_RANDOM = 1
 const DEFAULT_ANIMATION_DURATION = 1000
-const FB_BUTTON_SIZE = 34
-const FB_BUTTON_X_OFF = (80 - FB_BUTTON_SIZE) / 2
-const FB_BUTTON_X = () => getViewportDimensions().width - 60
-const FB_BUTTON_Y = 125
-const FORWARD_BUTTON = 'static/images/forwardbutton.png'
-const GRAVITY = 0
+const GRAVITY = 1
 const HEAD_ANGLE = Math.PI / 6
 const IMAGE_SIZE = 180
 const LINK_BASE = 40
@@ -28,61 +16,11 @@ const LINK_STRENGTH = 0.3
 const MAX_SCREEN_NODES = 25
 const MARGIN = 100
 const NODE_SIZE = 150
-const personalDetails = [
-  {name: 'name',       optional: false, language: true,  type: 'literal'},
-  {name: 'thumbnail',  optional: true,  language: false, type: 'url'},
-  {name: 'depiction',  optional: true,  language: false, type: 'url'},
-  {name: 'wikiTopic',  optional: false, language: false, type: 'url'},
-  {name: 'dob',        optional: true,  language: false, type: 'literal'},
-  {name: 'dod',        optional: true,  language: false, type: 'literal'},
-]
-const predicates = {
-  influenced:    'dbpedia-owl:influenced',
-  influencedBy: 'dbpedia-owl:influencedBy',
-  depiction: 'foaf:depiction',
-  thumbnail: 'dbpedia-owl:thumbnail',
-  //name: 'foaf:name',
-  name: 'rdfs:label',
-  wikiTopic: 'foaf:isPrimaryTopicOf',
-  occupation: 'dbprop:occupation',
-  dob: 'dbpedia-owl:birthDate',
-  dod: 'dbpedia-owl:deathDate'
-}
 const PRINTABLE = true
 const PRINTABLE_PARAM = '?printable=yes'
 const QUERY_URL = 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&format=json&query='
 const RIM_SIZE = 15
 const STOCK_EASE = 'elastic'
-const subjects = {
-  dylan:      'dbpedia:Bob_Dylan',
-  bronte:     'dbpedia:Charlotte_Brontë',
-  basil:      'dbpedia:Priya_Basil',
-  munro:      'dbpedia:Alice_Munro',
-  mock:       'dbpedia:Mock_Data',
-  bacon:      'dbpedia:Kevin_Bacon',
-  duckworth:  'dbpedia:Eleanor_Duckworth',
-  vonnegut:   'dbpedia:Kurt_Vonnegut',
-  plath:      'dbpedia:Silvia_Plath',
-  egoldman:   'dbpedia:Emma_Goldman',
-  oats:       'dbpedia:Joyce_Carol_Oates',
-  kahlo:      'dbpedia:Frida_Kahlo',
-  bohm:       'dbpedia:David_Bohm',
-  obama:      'dbpedia:Barack_Obama',
-  chomsky:    'dbpedia:Noam_Chomsky',
-  eroosevelt: 'dbpedia:Eleanor_Roosevelt(Hato_Rey)',
-  sontag:     'dbpedia:Susan_Sontag',
-  einstein:   'dbpedia:Albert_Einstein',
-  silverman:  'dbpedia:Sarah_Silverman',
-  trebor:     'dbpedia:Robert_Boyd_Harris',
-  geerlings:  'dbpedia:Stephanie_Geerlings',
-  kant:       'dbpedia:Immanuel_Kant',
-  tufte:      'dbpedia:Edward_Tufte',
-  hopper:     'dbpedia:Grace_Hopper',
-  dawkins:    'dbpedia:Richard_Dawkins',
-  norman:     'dbpedia:Donald_Norman',
-  mccloud:    'dbpedia:Scott_McCloud',
-  pinker:     'dbpedia:Steven_Pinker'
-}
 const TIMELINE_OPACITY = 0.03
 const TIMELINE_HIGHLIGHT_OPACITY = 0.4
 const TIMELINE_MARGIN = 50
@@ -93,22 +31,13 @@ const WIKI_ICON_WIDTH = 30
 
 module.exports = {
   ALPHA,
-  ARROW_WIDTH,
-  BACK_BUTTON,
   BANNER_X,
   BANNER_Y,
   BANNER_SIZE,
-  CHART_HEIGHT,
-  CHART_WIDTH,
   CHARGE_BASE,
   CHARGE_HIDDEN,
   CHARGE_RANDOM,
   DEFAULT_ANIMATION_DURATION,
-  FB_BUTTON_SIZE,
-  FB_BUTTON_X_OFF,
-  FB_BUTTON_X,
-  FB_BUTTON_Y,
-  FORWARD_BUTTON,
   GRAVITY,
   HEAD_ANGLE,
   IMAGE_SIZE,
@@ -119,14 +48,11 @@ module.exports = {
   MAX_SCREEN_NODES,
   MARGIN,
   NODE_SIZE,
-  personalDetails,
-  predicates,
   PRINTABLE,
   PRINTABLE_PARAM,
   QUERY_URL,
   RIM_SIZE,
   STOCK_EASE,
-  subjects,
   TIMELINE_OPACITY,
   TIMELINE_HIGHLIGHT_OPACITY,
   TIMELINE_MARGIN,
