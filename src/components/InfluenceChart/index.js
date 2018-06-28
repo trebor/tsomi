@@ -544,6 +544,13 @@ const updateInfluenceGraph = (
 }
 
 
+const clamp = (min: number, max: number): (number => number) => (val: number): number => {
+  if (val < min) { return min }
+  if (val > max) { return max }
+  return val
+}
+
+
 /* InfluenceCanvas draws the graph of influences between the focused person and
  * all of their influencers.
  *
@@ -669,12 +676,22 @@ class InfluenceCanvas {
   /* Run one frame of the force animation. This is not a public function. */
   animate(): void {
     const { width, height } = this.dimensions
-    const k = 0.5 * this.fdl.alpha()
+    const [minX, minY] = [MARGIN, MARGIN]
+    const [maxX, maxY] = [width - MARGIN, height - MARGIN]
+    const k = 0.1 * this.fdl.alpha()
     const k2 = 15 * this.fdl.alpha()
 
     const center = { x: width / 2, y: height / 2 }
+    if (this.fdl.alpha() > 0.8) {
+      console.log('[animate focus a]', this.graph.focus)
+    }
     this.graph.focus.x += (center.x - this.graph.focus.x) * k
     this.graph.focus.y += (center.y - this.graph.focus.y) * k
+    this.graph.focus.x = clamp(0, maxX)(this.graph.focus.x)
+    this.graph.focus.y = clamp(0, maxY)(this.graph.focus.y)
+    if (this.fdl.alpha() > 0.8) {
+      console.log('[animate focus b]', this.graph.focus)
+    }
 
     this.graph.getLinks().forEach((link) => {
       if (link.source === this.graph.focus) {
@@ -683,9 +700,6 @@ class InfluenceCanvas {
         link.source.x -= k2
       }
     })
-
-    const [minX, minY] = [MARGIN, MARGIN]
-    const [maxX, maxY] = [width - MARGIN, height - MARGIN]
 
     this.nodesElem
       .selectAll('.translate')

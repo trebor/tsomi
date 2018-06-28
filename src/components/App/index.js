@@ -59,6 +59,7 @@ class App_ extends React.Component<AppProps, AppState> {
 
   focusPerson(n: SubjectId): void {
     console.log('[focusPerson]', n)
+    if (this.props.loadInProgress) { return }
     this.props.setLoadInProgress(true)
     this.getAndCachePerson_(n).then((person: PersonDetail) => {
       window.history.pushState(
@@ -176,6 +177,7 @@ class App_ extends React.Component<AppProps, AppState> {
 const App = connect(
   state => ({
     focusedSubject: store.focusedSubject(state),
+    loadInProgress: store.loadInProgress(state),
     showAboutPage: store.showAboutPage(state),
     wikiDivHidden: store.wikiDivHidden(state),
     wikiUri: store.wikiUri(state),
