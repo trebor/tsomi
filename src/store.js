@@ -10,7 +10,7 @@ export type PeopleCache = { [string]: PersonDetail }
 export type Store = {
   currentWikiPageUri: Uri,
   focusedSubject: SubjectId,
-  loadInProgress: bool,
+  loadInProgress: ?SubjectId,
   people: PeopleCache,
   searchInProgress: bool,
   searchResults: Array<PersonDetail>,
@@ -27,7 +27,7 @@ export const initialState = (): Store => {
       ? new SubjectId(params.subject)
       : new SubjectId('Ursula_K._Le_Guin'),
     currentWikiPageUri: '',
-    loadInProgress: false,
+    loadInProgress: null,
     people: {},
     searchInProgress: false,
     searchResults: [],
@@ -49,8 +49,8 @@ export const saveSearchResults = (searchString: ?string, results: Array<PersonDe
   ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
 export const setAboutPage = (state: bool): Action =>
   ({ type: 'SET_ABOUT_PAGE', state })
-export const setLoadInProgress = (status: bool): Action =>
-  ({ type: 'SET_LOAD_IN_PROGRESS', status })
+export const setLoadInProgress = (subject: ?SubjectId): Action =>
+  ({ type: 'SET_LOAD_IN_PROGRESS', subject })
 export const setSearchInProgress = (status: bool) =>
   ({ type: 'SET_SEARCH_IN_PROGRESS', status })
 export const setWikiDivHidden = (state: bool): Action =>
@@ -62,7 +62,7 @@ export const toggleAboutPage = (): Action =>
 
 export const focusedSubject = (store: Store): SubjectId => store.focusedSubject
 export const people = (store: Store) => store.people
-export const loadInProgress = (store: Store) => store.loadInProgress
+export const loadInProgress = (store: Store): ?SubjectId => store.loadInProgress
 export const lookupPerson = (s: SubjectId) =>
   (store: Store): PersonDetail | void => store.people[s.asString()]
 export const searchInProgress = (store: Store): bool => store.searchInProgress
@@ -107,7 +107,7 @@ export const runState = (state?: Store = initialState(), action: any): Store => 
     case 'SET_LOAD_IN_PROGRESS':
       return {
         ...state,
-        loadInProgress: action.status,
+        loadInProgress: action.subject,
       }
 
     case 'SET_SEARCH_IN_PROGRESS':

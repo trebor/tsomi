@@ -9,7 +9,7 @@ export type LinkSegment = {|
 export type Selection = {|
   append: (string | () => Selection) => Selection,
   attr: (string, ?string | ?number | ?Function) => Selection,
-  call: (Selection) => Selection,
+  call: (Selection | Selection => void) => Selection,
   classed: (string, bool | Function) => Selection,
   data: (Array<any>, ?(any => any)) => Selection,
   duration: number => Selection,

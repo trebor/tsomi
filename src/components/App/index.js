@@ -31,7 +31,7 @@ type AppProps = {
   focusOnPerson: SubjectId => void,
   goHome: void => void,
   saveSearchResults: (?string, Array<PersonDetail>) => void,
-  setLoadInProgress: bool => void,
+  setLoadInProgress: ?SubjectId => void,
   setSearchInProgress: bool => void,
   setWikiUri: Uri => void,
   toggleAboutPage: void => void,
@@ -58,9 +58,7 @@ class App_ extends React.Component<AppProps, AppState> {
   }
 
   focusPerson(n: SubjectId): void {
-    console.log('[focusPerson]', n)
-    if (this.props.loadInProgress) { return }
-    this.props.setLoadInProgress(true)
+    this.props.setLoadInProgress(n)
     this.getAndCachePerson_(n).then((person: PersonDetail) => {
       window.history.pushState(
         '',
@@ -79,8 +77,7 @@ class App_ extends React.Component<AppProps, AppState> {
       ])
     }).then(() => {
       this.props.focusOnPerson(n)
-      this.props.setLoadInProgress(false)
-      console.log('[focusPerson complete]', n)
+      this.props.setLoadInProgress(null)
     }).catch((err) => {
       console.log('Getting a person failed with an error: ', err)
     })
@@ -186,7 +183,7 @@ const App = connect(
     cachePerson: (subjectId, person) => dispatch(store.cachePerson(subjectId, person)),
     focusOnPerson: subjectId => dispatch(store.focusOnPerson(subjectId)),
     goHome: () => dispatch(store.setAboutPage(false)),
-    setLoadInProgress: (status: bool) => dispatch(store.setLoadInProgress(status)),
+    setLoadInProgress: (subject: ?SubjectId) => dispatch(store.setLoadInProgress(subject)),
     saveSearchResults: (str: ?string, results: Array<PersonDetail>): void =>
       dispatch(store.saveSearchResults(str, results)),
     setSearchInProgress: (status: bool) => dispatch(store.setSearchInProgress(status)),

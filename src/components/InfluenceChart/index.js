@@ -50,8 +50,11 @@ const {
   MARGIN,
   MAX_SCREEN_NODES,
   NODE_SIZE,
+  RIM_SIZE,
   TIMELINE_Y,
 } = require('../../constants')
+
+require('./main.css')
 
 
 type LinkForces = {
@@ -81,6 +84,7 @@ type PersonNode = {|
   y: number,
   vx: number,
   vy: number,
+  isLoading: bool,
   person: PersonDetail,
   getId: () => string,
 |}
@@ -139,6 +143,7 @@ class TGraph {
       vx: 0,
       vy: 0,
       person,
+      isLoading: false,
       getId: () => person.id.asString(),
     }
     this.addNode(node)
@@ -336,6 +341,14 @@ const renderPeople = (
     .attr('width', IMAGE_SIZE)
     .attr('x', -IMAGE_SIZE / 2)
     .attr('y', -IMAGE_SIZE / 2)
+
+  canvas.append('circle')
+    .classed('loading-circle', true)
+    .attr('fill', 'none')
+    .attr('visibility', (node: PersonNode) => (node.isLoading ? 'visible' : 'hidden'))
+    .attr('stroke', 'url(#loading-gradient)')
+    .attr('stroke-width', RIM_SIZE)
+    .attr('r', ((IMAGE_SIZE - RIM_SIZE) / 2) - (RIM_SIZE / 2))
 
   canvas.append('path')
     .attr('class', 'banner')
@@ -635,6 +648,27 @@ class InfluenceCanvas {
       .attr('cy', 0)
       .attr('r', IMAGE_SIZE / 2)
 
+    this.definitions.append('svg:linearGradient')
+      .attr('id', 'loading-gradient')
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '100%')
+      .attr('y2', '0%')
+      .call((gradient) => {
+        gradient.append('svg:stop')
+          .attr('offset', '0%')
+          .style('stop-color', 'white')
+          .style('stop-opacity', '1')
+        gradient.append('svg:stop')
+          .attr('offset', '50%')
+          .style('stop-color', 'white')
+          .style('stop-opacity', '0')
+        gradient.append('svg:stop')
+          .attr('offset', '100%')
+          .style('stop-color', 'white')
+          .style('stop-opacity', '0')
+      })
+
     /* I've put these here so that I can force them to be rendered in a
      * particular order. If all of the links appear in one container, and all
      * of the nodes appear in another container, and the nodes container comes
@@ -734,6 +768,16 @@ class InfluenceCanvas {
     this.fdl.restart()
   }
 
+  setLoadInProgress(subject: ?SubjectId) {
+    console.log('[setLoadInProgress]', subject)
+    this.graph.getVisibleNodes().forEach((n: PersonNode) => {
+      n.isLoading = subject ? subject.asString() === n.getId() : false
+      this.nodesElem.select(`#${convertToSafeDOMId(n.getId())} .loading-circle`)
+        .transition()
+        .attr('visibility', n.isLoading ? 'visible' : 'hidden')
+    })
+  }
+
   /* Set the currently focused person. This will restart the animation. */
   setFocused(focus: PersonDetail, people: store.PeopleCache) {
     const oldFocus = this.focus
@@ -828,7 +872,7 @@ class InfluenceCanvas {
 type InfluenceChartProps = {
   label: string,
   focusedId: SubjectId,
-  loadInProgress: bool,
+  loadInProgress: ?SubjectId,
   people: store.PeopleCache,
   selectPerson: (SubjectId) => void,
 }
@@ -875,6 +919,9 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
             newProps.people,
             newProps.selectPerson,
           )
+
+        canvas.setLoadInProgress(newProps.loadInProgress)
+
         if (!newProps.loadInProgress) {
           canvas.setFocused(focus, newProps.people)
         }
