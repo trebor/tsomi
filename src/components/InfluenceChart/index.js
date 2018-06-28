@@ -318,6 +318,7 @@ const renderPeople = (
   sel: D3Types.Selection,
   selectNode: PersonNode => void,
   mouseOver: (PersonNode, bool) => void,
+  dim: Dimensions,
 ) => {
   const circle = sel.append('g')
     .on('click', n => selectNode(n))
@@ -326,6 +327,7 @@ const renderPeople = (
 
   const canvas = circle.classed('translate', true)
     .attr('id', (node: PersonNode): string => convertToSafeDOMId(node.person.id.asString()))
+    .attr('transform', `translate(${dim.width / 2}, ${dim.height / 2})`)
     .append('g')
     .classed('scale', true)
     .attr('clip-path', 'url(#image-clip)')
@@ -512,6 +514,7 @@ const updateInfluenceGraph = (
   focus: PersonDetail,
   people: store.PeopleCache,
   maxNodes: number,
+  dim: Dimensions,
 ) => {
   const influenceLimit: Set<PersonDetail> => Set<PersonDetail> = fp.compose(
     arr => new Set(arr),
@@ -545,15 +548,27 @@ const updateInfluenceGraph = (
     if (p === focus) {
       return
     }
-    graph.addPerson(p)
+    const node = graph.addPerson(p)
+    node.x = dim.width / 2
+    node.y = dim.height / 2
     if (influencedBy.has(p.id)) {
-      graph.createLink(p, focus)
+      const link = graph.createLink(p, focus)
+      if (link) {
+        link.middle.x = (link.target.x + link.source.x) / 2
+        link.middle.y = (link.target.y + link.source.y) / 2
+      }
     } else {
-      graph.createLink(focus, p)
+      const link = graph.createLink(focus, p)
+      if (link) {
+        link.middle.x = (link.target.x + link.source.x) / 2
+        link.middle.y = (link.target.y + link.source.y) / 2
+      }
     }
   })
 
-  graph.setFocus(focus)
+  const node = graph.setFocus(focus)
+  node.x = dim.width / 2
+  node.y = dim.height / 2
 }
 
 
@@ -636,7 +651,7 @@ class InfluenceCanvas {
     this.graph = new TGraph(focus)
     this.selectNode = selectNode
 
-    updateInfluenceGraph(this.graph, this.focus, this.people, MAX_SCREEN_NODES)
+    updateInfluenceGraph(this.graph, this.focus, this.people, MAX_SCREEN_NODES, this.dimensions)
 
     // create clip path for image
     this.definitions = this.topElem.append('defs')
@@ -716,22 +731,18 @@ class InfluenceCanvas {
     const k2 = 15 * this.fdl.alpha()
 
     const center = { x: width / 2, y: height / 2 }
-    if (this.fdl.alpha() > 0.8) {
-      console.log('[animate focus a]', this.graph.focus)
-    }
     this.graph.focus.x += (center.x - this.graph.focus.x) * k
     this.graph.focus.y += (center.y - this.graph.focus.y) * k
     this.graph.focus.x = clamp(0, maxX)(this.graph.focus.x)
     this.graph.focus.y = clamp(0, maxY)(this.graph.focus.y)
-    if (this.fdl.alpha() > 0.8) {
-      console.log('[animate focus b]', this.graph.focus)
-    }
 
     this.graph.getLinks().forEach((link) => {
       if (link.source === this.graph.focus) {
-        link.target.x += k2
+        link.middle.x = clamp(0, maxX)(link.middle.x + k2)
+        link.target.x = clamp(0, maxX)(link.target.x + k2)
       } else if (link.target === this.graph.focus) {
-        link.source.x -= k2
+        link.middle.x = clamp(0, maxX)(link.middle.x - k2)
+        link.source.x = clamp(0, maxX)(link.source.x - k2)
       }
     })
 
@@ -785,7 +796,7 @@ class InfluenceCanvas {
     this.focus = focus
     this.people = people
 
-    updateInfluenceGraph(this.graph, this.focus, people, MAX_SCREEN_NODES)
+    updateInfluenceGraph(this.graph, this.focus, people, MAX_SCREEN_NODES, this.dimensions)
 
     this.lifelinesElem.select(`#${convertToSafeDOMId(oldFocus.id.asString())}`)
       .transition()
@@ -818,6 +829,7 @@ class InfluenceCanvas {
       nodeSel.enter(),
       n => this.selectNode(n.person.id),
       (n, over) => focusHighlight(this.nodesElem, this.lifelinesElem, this.focus, n, over),
+      this.dimensions,
     )
     nodeSel.exit().remove()
 
