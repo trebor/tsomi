@@ -11,8 +11,8 @@ import { runState } from './store'
 const connectToWiki = () =>
   window.open(d3.select('#wikiframe').attr('src').replace(PRINTABLE_PARAM, ''), '_blank')
 
-const store = createStore(runState, applyMiddleware(logger))
-//const store = createStore(runState)
+//const store = createStore(runState, applyMiddleware(logger))
+const store = createStore(runState)
 
 ReactDOM.render(
   React.createElement(
