@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import { runSparqlQuery } from '../Sparql'
 import { type PersonDetail, SubjectId, mkSubjectFromDBpediaUri } from '../../types'
-import { last, mapObjKeys, maybe, maybe_, parseDate } from '../../util'
+import { last, mapObjKeys, maybe, maybe_, parseDate, uniqueBy } from '../../util'
 
 require('isomorphic-fetch')
 
@@ -128,12 +128,15 @@ WHERE { ?person a foaf:Person. \
 }\
 '
 
+const regexName = (name: string) => name.trim().split(' ').join('.*')
+
 const searchByName = (name: string): Promise<Array<SubjectId>> =>
-  runSparqlQuery(queryByName, { search_query: name.trim() })
+  runSparqlQuery(queryByName, { search_query: regexName(name) })
     .then((js: SearchResultJSON): Array<SubjectId> =>
       Array.from(new Set(fp.map(j =>
         mkSubjectFromDBpediaUri(j.person.value))(js.results.bindings))))
 
 export const searchForPeople = (name: string): Promise<Array<?PersonDetail>> =>
   searchByName(name).then(lst => Promise.all(fp.map(getPerson)(lst)))
+    .then(lst => uniqueBy(l => l.id.asString(), fp.filter(l => l)(lst)))
 

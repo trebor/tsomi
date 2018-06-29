@@ -780,7 +780,6 @@ class InfluenceCanvas {
   }
 
   setLoadInProgress(subject: ?SubjectId) {
-    console.log('[setLoadInProgress]', subject)
     this.graph.getVisibleNodes().forEach((n: PersonNode) => {
       n.isLoading = subject ? subject.asString() === n.getId() : false
       this.nodesElem.select(`#${convertToSafeDOMId(n.getId())} .loading-circle`)

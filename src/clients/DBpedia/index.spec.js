@@ -35,9 +35,9 @@ describe('DBpedia searches', () => {
     })
   })
 
-  it('retrieves a list of names with a simple seach', (done) => {
+  it('retrieves list of people with searchForPeople', (done) => {
     searchForPeople('William Gibson').then(lst => {
-      expect(lst.length).toEqual(14)
+      expect(lst.length).toEqual(18)
       done()
     }).catch(err => {
       if (err.message.startsWith('request timed out')) {
@@ -51,10 +51,9 @@ describe('DBpedia searches', () => {
     })
   })
 
-  it('retrieves list of people with searchForPeople', (done) => {
-    searchForPeople('William Gibson').then(lst => {
-      expect(lst.length).toEqual(14)
-      //console.log(lst)
+  it('retrieve Octavia E. Butler without including her middle initial', (done) => {
+    searchForPeople('Octavia Butler').then(lst => {
+      expect(lst.length).toEqual(1)
       done()
     }).catch(err => {
       if (err.message.startsWith('request timed out')) {
