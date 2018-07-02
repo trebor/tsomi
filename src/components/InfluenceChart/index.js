@@ -36,6 +36,7 @@ const {
 
 const {
   ALPHA,
+  BANNER_SIZE,
   BANNER_X,
   BANNER_Y,
   CHARGE_BASE,
@@ -354,7 +355,7 @@ const renderPeople = (
 
   canvas.append('path')
     .attr('class', 'banner')
-    .attr('style', 'stroke-width: 25;')
+    .attr('style', `stroke-width: ${BANNER_SIZE}`)
     .attr('d', populatePath(
       'M X0 Y0 L X1 Y1',
       [{ x: -BANNER_X, y: BANNER_Y },

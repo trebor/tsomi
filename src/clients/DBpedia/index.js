@@ -5,7 +5,8 @@ import moment from 'moment'
 
 import { runSparqlQuery } from '../Sparql'
 import { type PersonDetail, SubjectId, mkSubjectFromDBpediaUri } from '../../types'
-import { last, mapObjKeys, maybe, maybe_, parseDate, uniqueBy } from '../../util'
+import { mapObjKeys, parseDate } from '../../util'
+import { last, maybe, maybe_, uniqueBy } from '../../utils/fp'
 
 require('isomorphic-fetch')
 

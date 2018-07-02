@@ -1,64 +1,19 @@
-const ALPHA = 1
-const BANNER_SIZE = 25
-const BANNER_X = 180
-const BANNER_Y = 52
-const CHARGE_BASE = 200
-const CHARGE_HIDDEN = 25
-const CHARGE_RANDOM = 1
-const DEFAULT_ANIMATION_DURATION = 1000
-const GRAVITY = 1
-const HEAD_ANGLE = Math.PI / 6
-const IMAGE_SIZE = 180
-const LINK_BASE = 40
-const LINK_MIN_OFFSET = 25
-const LINK_RANDOM = 100
-const LINK_STRENGTH = 0.3
-const MAX_SCREEN_NODES = 25
-const MARGIN = 100
-const NODE_SIZE = 150
-const PRINTABLE = true
-const PRINTABLE_PARAM = '?printable=yes'
-const QUERY_URL = 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&format=json&query='
-const RIM_SIZE = 15
-const STOCK_EASE = 'elastic'
-const TIMELINE_OPACITY = 0.03
-const TIMELINE_HIGHLIGHT_OPACITY = 0.4
-const TIMELINE_MARGIN = 50
-const TIMELINE_Y = (height) => height - 30
-const UNKNOWN_PERSON = 'static/images/unknown.png'
-const WIKI_LOGO = 'static/images/Wikipedia-logo.png'
-const WIKI_ICON_WIDTH = 30
-
-module.exports = {
-  ALPHA,
-  BANNER_X,
-  BANNER_Y,
-  BANNER_SIZE,
-  CHARGE_BASE,
-  CHARGE_HIDDEN,
-  CHARGE_RANDOM,
-  DEFAULT_ANIMATION_DURATION,
-  GRAVITY,
-  HEAD_ANGLE,
-  IMAGE_SIZE,
-  LINK_BASE,
-  LINK_MIN_OFFSET,
-  LINK_RANDOM,
-  LINK_STRENGTH,
-  MAX_SCREEN_NODES,
-  MARGIN,
-  NODE_SIZE,
-  PRINTABLE,
-  PRINTABLE_PARAM,
-  QUERY_URL,
-  RIM_SIZE,
-  STOCK_EASE,
-  TIMELINE_OPACITY,
-  TIMELINE_HIGHLIGHT_OPACITY,
-  TIMELINE_MARGIN,
-  TIMELINE_Y,
-  UNKNOWN_PERSON,
-  WIKI_LOGO,
-  WIKI_ICON_WIDTH
-}
+export const ALPHA = 1
+export const BANNER_SIZE = 25
+export const BANNER_X = 180
+export const BANNER_Y = 52
+export const CHARGE_BASE = 200
+export const CHARGE_HIDDEN = 25
+export const CHARGE_RANDOM = 1
+export const DEFAULT_ANIMATION_DURATION = 1000
+export const GRAVITY = 1
+export const IMAGE_SIZE = 180
+export const LINK_MIN_OFFSET = 25
+export const LINK_RANDOM = 100
+export const LINK_STRENGTH = 0.3
+export const MARGIN = 100
+export const MAX_SCREEN_NODES = 25
+export const NODE_SIZE = 150
+export const RIM_SIZE = 15
+export const TIMELINE_Y = height => height - 30
 

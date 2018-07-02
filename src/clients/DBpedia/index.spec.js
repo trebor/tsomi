@@ -3,7 +3,7 @@ import { SubjectId } from '../../types'
 
 const { getPerson, searchForPeople } = require('./')
 
-describe('DBpedia searches', () => {
+xdescribe('DBpedia searches', () => {
   var originalTimeout;
 
   beforeEach(() => {
@@ -69,7 +69,7 @@ describe('DBpedia searches', () => {
 })
 
 
-describe('precise dbpedia gets', () => {
+xdescribe('precise dbpedia gets', () => {
   it('retrieves Joyce Carol Oates with all influencers', (done) => {
     getPerson(new SubjectId('Joyce_Carol_Oates')).then(person => {
 
