@@ -40,26 +40,32 @@ type AppState = { }
 
 class App_ extends React.Component<AppProps, AppState> {
   componentDidMount() {
-    this.getAndCachePerson_(this.props.focusedSubject).then((person: PersonDetail) => {
-      this.focusPerson(person.id)
+    this.getAndCachePerson_(this.props.focusedSubject).then((person: ?PersonDetail) => {
+      if (person !== null && person !== undefined) {
+        this.focusPerson(person.id)
+      }
     })
   }
 
-  getAndCachePerson_(n: SubjectId): Promise<PersonDetail> {
-    return dbpedia.getPerson(n).then((person: ?PersonDetail) =>
-      new Promise((res, rej) => {
-        if (person === null || person === undefined) {
-          rej()
-        } else {
-          this.props.cachePerson(n, person)
-          res(person)
+  getAndCachePerson_(n: SubjectId): Promise<?PersonDetail> {
+    return dbpedia.getPerson(n)
+      .then((person: ?PersonDetail): Promise<PersonDetail> =>
+        new Promise((res, rej) => {
+          if (person === null || person === undefined) {
+            rej()
+          } else {
+            this.props.cachePerson(n, person)
+            res(person)
+          }
         }
-      }))
+      )).catch((err) => console.log('[getAndCachePerson_ handler]', err))
   }
 
   focusPerson(n: SubjectId): void {
     this.props.setLoadInProgress(n)
-    this.getAndCachePerson_(n).then((person: PersonDetail) => {
+    this.getAndCachePerson_(n).then((person: ?PersonDetail) => {
+      if (person === null || person === undefined) return
+
       window.history.pushState(
         '',
         n,
