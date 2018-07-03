@@ -344,7 +344,7 @@ const renderPeople = (
         if (imageLst != null) {
           const image = imageLst[cnt]
           if (image != null) {
-            image.setAttribute('href', 'static/wikipedia-logo.svg')
+            image.setAttribute('href', 'static/default-icon.svg')
           }
         }
       },
