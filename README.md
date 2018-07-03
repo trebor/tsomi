@@ -21,3 +21,16 @@ This project is fairly bare bones, and could use some love.  Some ideas for futu
   - URL update to current subject
 
 This project is opensourced under the [MIT License](http://opensource.org/licenses/MIT).  Your contributions are encouraged, please clone and fork.
+
+# Development
+
+The development environment requires only a current version of Node. If using the Nix package manager, the `shell.nix` file will install node 8.11.1 and npm 5.6.0 directly from the NodeJS website.
+
+Get a complete build with `npm run build`. Get a development continuous rebuild with `npm run dev`. The build is available in a local browser at `file:///path-to-repository/index.html`.
+
+This project uses [Jasmine](https://jasmine.github.io/2.0/introduction.html) in a Node server to run tests and [Flow](https://flow.org/en/) for type checking.
+
+# Cloud City Deployment
+
+Staging: The [staging application](http://cloudcity.github.io/tsomi/) is stored in the `gh-pages` branch. Go to Travis and select "More Options > Trigger Build". This will cause a build, merge, and commit of the final result in `gh-pages` and a deployment to staging within a few minutes.
+

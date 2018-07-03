@@ -1,18 +1,21 @@
 // @flow
+/* eslint no-restricted-globals: off */
+
+import queryString from 'query-string'
 
 import { type PersonDetail, SubjectId, type Uri } from './types'
-import queryString from 'query-string'
 
 export type PeopleCache = { [string]: PersonDetail }
 
 export type Store = {
-  showAboutPage: bool,
-  focusedSubject: SubjectId,
-  people: PeopleCache,
   currentWikiPageUri: Uri,
+  focusedSubject: SubjectId,
+  loadInProgress: ?SubjectId,
+  people: PeopleCache,
   searchInProgress: bool,
   searchResults: Array<PersonDetail>,
   searchString: ?string,
+  showAboutPage: bool,
   wikiDivHidden: bool,
 }
 
@@ -20,9 +23,12 @@ export const initialState = (): Store => {
   const params = queryString.parse(location.search)
   return {
     showAboutPage: false,
-    focusedSubject: params.subject ? new SubjectId(params.subject) : new SubjectId('Ursula_K._Le_Guin'),
-    people: {},
+    focusedSubject: params.subject
+      ? new SubjectId(params.subject)
+      : new SubjectId('Ursula_K._Le_Guin'),
     currentWikiPageUri: '',
+    loadInProgress: null,
+    people: {},
     searchInProgress: false,
     searchResults: [],
     searchString: null,
@@ -39,10 +45,12 @@ export const cachePerson = (subjectId: SubjectId, person: PersonDetail): Action 
   ({ type: 'CACHE_PERSON', subjectId, person })
 export const focusOnPerson = (subjectId: SubjectId): Action =>
   ({ type: 'FOCUS_ON_PERSON', subjectId })
-export const setAboutPage = (state: bool): Action =>
-  ({ type: 'SET_ABOUT_PAGE', state })
 export const saveSearchResults = (searchString: ?string, results: Array<PersonDetail>): Action =>
   ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
+export const setAboutPage = (state: bool): Action =>
+  ({ type: 'SET_ABOUT_PAGE', state })
+export const setLoadInProgress = (subject: ?SubjectId): Action =>
+  ({ type: 'SET_LOAD_IN_PROGRESS', subject })
 export const setSearchInProgress = (status: bool) =>
   ({ type: 'SET_SEARCH_IN_PROGRESS', status })
 export const setWikiDivHidden = (state: bool): Action =>
@@ -54,6 +62,7 @@ export const toggleAboutPage = (): Action =>
 
 export const focusedSubject = (store: Store): SubjectId => store.focusedSubject
 export const people = (store: Store) => store.people
+export const loadInProgress = (store: Store): ?SubjectId => store.loadInProgress
 export const lookupPerson = (s: SubjectId) =>
   (store: Store): PersonDetail | void => store.people[s.asString()]
 export const searchInProgress = (store: Store): bool => store.searchInProgress
@@ -76,7 +85,9 @@ export const runState = (state?: Store = initialState(), action: any): Store => 
     case 'FOCUS_ON_PERSON':
       return {
         ...state,
-        focusedSubject: state.people[action.subjectId.asString()] ? action.subjectId : state.focusedSubject,
+        focusedSubject: state.people[action.subjectId.asString()]
+          ? action.subjectId
+          : state.focusedSubject,
       }
 
     case 'SET_ABOUT_PAGE':
@@ -91,6 +102,12 @@ export const runState = (state?: Store = initialState(), action: any): Store => 
         searchInProgress: false,
         searchString: action.searchString,
         searchResults: action.results,
+      }
+
+    case 'SET_LOAD_IN_PROGRESS':
+      return {
+        ...state,
+        loadInProgress: action.subject,
       }
 
     case 'SET_SEARCH_IN_PROGRESS':

@@ -5,6 +5,8 @@ import moment from 'moment'
 export type Uri = string
 
 export type Dimensions = { width: number, height: number }
+export const dimensionsEq = (left: Dimensions, right: Dimensions) =>
+  left.width === right.width && left.height === right.height
 
 export class SubjectId {
   id: string

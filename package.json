@@ -66,7 +66,6 @@
     "flow": "^0.2.3",
     "flow-bin": "^0.67.1",
     "flow-webpack-plugin": "^1.2.0",
-    "jquery": "^3.3.1",
     "path": "^0.12.7",
     "style-loader": "^0.20.3",
     "url-loader": "^1.0.1",

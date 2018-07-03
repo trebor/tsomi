@@ -35,9 +35,9 @@ describe('DBpedia searches', () => {
     })
   })
 
-  it('retrieves a list of names with a simple seach', (done) => {
+  it('retrieves list of people with searchForPeople', (done) => {
     searchForPeople('William Gibson').then(lst => {
-      expect(lst.length).toEqual(14)
+      expect(lst.length).toEqual(18)
       done()
     }).catch(err => {
       if (err.message.startsWith('request timed out')) {
@@ -51,10 +51,9 @@ describe('DBpedia searches', () => {
     })
   })
 
-  it('retrieves list of people with searchForPeople', (done) => {
-    searchForPeople('William Gibson').then(lst => {
-      expect(lst.length).toEqual(14)
-      //console.log(lst)
+  it('retrieve Octavia E. Butler without including her middle initial', (done) => {
+    searchForPeople('Octavia Butler').then(lst => {
+      expect(lst.length).toEqual(1)
       done()
     }).catch(err => {
       if (err.message.startsWith('request timed out')) {
@@ -107,6 +106,34 @@ describe('precise dbpedia gets', () => {
     getPerson(new SubjectId('Mikhail_Lermontov')).then(person => {
       expect(person.uri).toEqual('http://dbpedia.org/resource/Mikhail_Lermontov')
       expect(person.birthDate.isSame(moment('1814-01-01'))).toBe(true)
+      done()
+    }).catch(err => {
+      console.log('exception:', err)
+      expect(false).toEqual(true)
+      done()
+    })
+  })
+
+  it('retrieves Edward Plunkett, who has shown loading problems in the past', (done) => {
+    getPerson(new SubjectId('Edward_Plunkett,_18th_Baron_of_Dunsany')).then(person => {
+      expect(person.uri).toEqual('http://dbpedia.org/resource/Edward_Plunkett,_18th_Baron_of_Dunsany')
+      expect(person.name).toEqual('Edward John Moreton Drax Plunkett Dunsany')
+      expect(person.birthDate.isSame(moment('1878-07-24'))).toBe(true)
+      expect(person.abstract).toBeDefined()
+      expect(person.abstract.startsWith('Edward John Moreton Drax Plunkett, 18th Baron of Dunsany')).toBe(true)
+      done()
+    }).catch(err => {
+      console.log('exception:', err)
+      expect(false).toEqual(true)
+      done()
+    })
+  })
+
+  it('retrieves Jordan Peterson, whose birth date is only a year integer', (done) => {
+    getPerson(new SubjectId('Jordan_Peterson')).then(person => {
+      expect(person.uri).toEqual('http://dbpedia.org/resource/Jordan_Peterson')
+      expect(person.name).toEqual('Jordan Peterson')
+      expect(person.birthDate.isSame(moment('1962-01-01'))).toBe(true)
       done()
     }).catch(err => {
       console.log('exception:', err)

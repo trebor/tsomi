@@ -65,7 +65,7 @@ const runSparqlQuery = (template: string, variables: QueryVariables): Promise<{ 
 
   const uri = `${DBPEDIA_URL}?${encodeFormBody(params)}`
 
-  return fetchWithTimeout(uri, { method: 'GET' }, 15000).then((resp: Response): { [string]: any } => {
+  return fetchWithTimeout(uri, { method: 'GET' }, 20000).then((resp: Response): { [string]: any } => {
     if (!resp.ok) return httpErrorPromise(resp)
     return resp.json()
   })

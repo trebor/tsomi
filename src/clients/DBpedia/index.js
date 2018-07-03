@@ -5,7 +5,8 @@ import moment from 'moment'
 
 import { runSparqlQuery } from '../Sparql'
 import { type PersonDetail, SubjectId, mkSubjectFromDBpediaUri } from '../../types'
-import { last, mapObjKeys, parseDate } from '../../util'
+import { mapObjKeys, parseDate } from '../../util'
+import { last, maybe, maybe_, uniqueBy } from '../../utils/fp'
 
 require('isomorphic-fetch')
 
@@ -30,14 +31,27 @@ type SearchResultJSON = {
   }
 }
 
+type RDFTriple = {
+  type: string,
+  value: any,
+  datatype: string,
+}
+
 // Handle a variety of different date format issues. Dates, especially in the
 // distant past, are somewhat uncertain and DBpedia returns dates in a few
 // different formats.
-const parseDBpediaDate = (str: string): ?moment => {
-  if (str.endsWith('-0-0')) {
-    return parseDate(`${str.slice(0, -4)}-01-01`, 'YYYY')
+const parseDBpediaDate = (triple: RDFTriple): ?moment => {
+  if (triple.datatype === 'http://www.w3.org/2001/XMLSchema#integer') {
+    return moment({ year: triple.value })
   }
-  return parseDate(str, 'YYYY-M-D')
+  if (triple.datatype === 'http://www.w3.org/2001/XMLSchema#date') {
+    if (triple.value.endsWith('-0-0')) {
+      return parseDate(`${triple.value.slice(0, -4)}-01-01`, 'YYYY')
+    }
+    return parseDate(triple.value, 'YYYY-M-D')
+  }
+
+  throw Error(`unexpected RDF triple type: ${triple.datatype}`)
 }
 
 
@@ -58,9 +72,11 @@ const findByRelationship = (relationship: string, target: SubjectId): (any => [S
 export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
   const dataUrl = mkDataUrl(s)
 
-  return fetch(dataUrl).then(r => r.json())
+  return fetch(dataUrl)
+    .then(r => r.json())
     .then((r) => {
       const person = mapObjKeys(i => last(i.split('/')), r[mkResourceUrl(s)])
+
       /* eslint no-underscore-dangle: off */
       const influenced_ = person.influenced
         ? person.influenced.map(i => mkSubjectFromDBpediaUri(i.value))
@@ -82,23 +98,33 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
         ? person.thumbnail[0].value
         : null
 
+      const name = fp.head(person.name)
+      if (name === undefined) {
+        return null
+      }
+
       return {
         type: 'PersonDetail',
         id: s,
         uri: mkResourceUrl(s),
         wikipediaUri,
-        name: person.name[0].value,
-        abstract: person.abstract.filter(i => i.lang === 'en')[0].value,
-        birthPlace: person.birthPlace ? person.birthPlace[0].value : null,
-        birthDate: person.birthDate ? parseDBpediaDate(person.birthDate[0].value) : null,
-        deathDate: person.deathDate ? parseDBpediaDate(person.deathDate[0].value) : null,
+        name: name.value,
+        abstract: fp.compose(
+          maybe_(n => n.value),
+          fp.head,
+          fp.filter(js => js.lang === 'en'),
+        )(person.abstract),
+        birthPlace: (maybe_(n => n.value)(fp.head(person.birthPlace)): ?string),
+        birthDate: maybe_(n => parseDBpediaDate(n))(fp.head(person.birthDate)),
+        deathDate: maybe_(n => parseDBpediaDate(n))(fp.head(person.deathDate)),
         influencedBy,
         influenced,
         influencedByCount: influencedBy.length,
         influencedCount: influenced.length,
         thumbnail,
       }
-    }).catch(err => console.log('[getPerson failed]', s, err))
+    })
+    .catch(err => console.log('[getPerson failed]', s, err))
 }
 
 
@@ -110,12 +136,15 @@ WHERE { ?person a foaf:Person. \
 }\
 '
 
+const regexName = (name: string) => name.trim().split(' ').join('.*')
+
 const searchByName = (name: string): Promise<Array<SubjectId>> =>
-  runSparqlQuery(queryByName, { search_query: name.trim() })
+  runSparqlQuery(queryByName, { search_query: regexName(name) })
     .then((js: SearchResultJSON): Array<SubjectId> =>
       Array.from(new Set(fp.map(j =>
         mkSubjectFromDBpediaUri(j.person.value))(js.results.bindings))))
 
-export const searchForPeople = (name: string): Promise<Array<PersonDetail>> =>
+export const searchForPeople = (name: string): Promise<Array<?PersonDetail>> =>
   searchByName(name).then(lst => Promise.all(fp.map(getPerson)(lst)))
+    .then(lst => uniqueBy(l => l.id.asString(), fp.filter(l => l)(lst)))
 
