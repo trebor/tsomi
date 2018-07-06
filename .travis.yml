@@ -7,17 +7,16 @@ script:
   npm run build
 
 deploy:
-  provider: pages
-  local-dir: dist
-  skip-cleanup: true
-  github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
-  keep-history: true
-  on:
-    branch: staging
+  - provider: pages
+    local-dir: dist
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
+    keep-history: true
+    on:
+      branch: staging
 
-deploy:
-  provider: script
-  script: bash deploy-production.sh
-  on:
-    branch: master
+  - provider: script
+    script: bash deploy-production.sh
+    on:
+      branch: master
 
