@@ -4,9 +4,9 @@ node_js:
   - "node"
 
 script:
-  npm run build
-  cp index.html dist/
-  cp -r static dist/
+  - npm run build
+  - cp index.html dist/
+  - cp -r static dist/
 
 deploy:
   - provider: pages
