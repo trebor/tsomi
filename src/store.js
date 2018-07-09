@@ -3,8 +3,8 @@
 
 import queryString from 'query-string'
 
-import { type PersonDetail, SubjectId, type Uri } from './types'
 import config from './config'
+import { type PersonDetail, SubjectId, type Uri } from './types'
 
 export type PeopleCache = { [string]: PersonDetail }
 

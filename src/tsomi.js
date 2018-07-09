@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
 import { logger } from 'redux-logger'
 
+import config from './config'
 import App from './components/App/'
 import { PRINTABLE_PARAM } from './constants'
 import { runState } from './store'
@@ -11,8 +12,9 @@ import { runState } from './store'
 const connectToWiki = () =>
   window.open(d3.select('#wikiframe').attr('src').replace(PRINTABLE_PARAM, ''), '_blank')
 
-//const store = createStore(runState, applyMiddleware(logger))
-const store = createStore(runState)
+const store = config.debug
+  ? createStore(runState, applyMiddleware(logger))
+  : createStore(runState)
 
 ReactDOM.render(
   React.createElement(
