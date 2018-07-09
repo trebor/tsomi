@@ -2,6 +2,7 @@
 
 import React from 'react'
 import * as fp from 'lodash/fp'
+import config from '../../config'
 import { SubjectId } from '../../types'
 
 require('./main.css')
@@ -14,7 +15,7 @@ type AboutProps = {
 const About = ({ goBack, focusPerson }: AboutProps) => {
   const heading = React.createElement('h1', {}, 'The Sphere of My Influence')
   const logo = React.createElement('img', {
-    src: 'static/images/logo.svg',
+    src: `${config.basepath}/static/images/logo.svg`,
   })
 
   const tagline = React.createElement('p', {}, 

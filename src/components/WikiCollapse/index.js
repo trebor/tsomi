@@ -4,6 +4,7 @@ import React from 'react'
 import { type Element } from 'react'
 import { connect } from 'react-redux'
 
+import config from '../../config'
 import * as store from '../../store'
 require('./main.css')
 
@@ -24,7 +25,9 @@ const WikiCollapse_ = ({ collapsed, setWikiDivHidden }: WikiCollapseProps): Elem
     React.createElement(
       'img',
       {
-        src: collapsed ? 'static/wiki-open.svg' : 'static/wiki-close.svg',
+        src: collapsed
+          ? `${config.basepath}/static/wiki-open.svg`
+          : `${config.basepath}/static/wiki-close.svg`,
         className: 'icon',
         onClick: () => setWikiDivHidden(!collapsed),
       },

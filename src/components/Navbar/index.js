@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 
+import config from '../../config'
 import { type SubjectId } from '../../types'
 import Search from '../Search/'
 
@@ -37,7 +38,7 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
     const logo = React.createElement(
       'div',
       { onClick: goHome },
-      React.createElement('img', { src: 'static/images/logo.svg' }),
+      React.createElement('img', { src: `${config.basepath}/static/images/logo.svg` }),
       React.createElement('h1', {}, 'THE SPHERE OF MY INFLUENCE'),
     )
 

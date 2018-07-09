@@ -3,6 +3,8 @@
 import React from 'react'
 import { type Element } from 'react'
 
+import config from '../../config'
+
 require('./main.css')
 
 type CloseButtonProps = {
@@ -13,7 +15,7 @@ const Icon = (): Element<'img'> =>
   React.createElement(
     'img',
     {
-      src: 'static/close-icon.svg',
+      src: `${config.basepath}/static/close-icon.svg`,
       className: 'close-button-icon',
     },
   )
