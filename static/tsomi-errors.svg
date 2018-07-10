@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400px" height="400px" viewBox="0 0 400 400" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51 (57462) - http://www.bohemiancoding.com/sketch -->
+    <title>tsomi-vectors-01</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="200" cy="200" r="200"></circle>
+        <circle id="path-3" cx="152" cy="152" r="152"></circle>
+        <circle id="path-5" cx="92" cy="92" r="92"></circle>
+        <path d="M200,100 C126,100 61.3,140.2 26.8,200 C9.7,170.6 0,136.4 0,100 C0,63.6 9.7,29.4 26.8,0 C61.3,59.8 126,100 200,100" id="path-7"></path>
+        <path d="M0,39.9 C4.4,25.9 10.3,12.5 17.6,0 C52.2,59.8 116.8,100 190.8,100 C116.8,100 52.1,140.2 17.6,200 C10.4,187.5 4.5,174.2 -7.10542736e-15,160.1 C30.8,123.4 77.1,100 128.8,100 C77.1,100 30.8,76.6 0,39.9 Z" id="path-9"></path>
+        <circle id="path-11" cx="29.5" cy="29.5" r="29.5"></circle>
+        <path d="M18.5,0.9 C29,17.4 37.2,35.6 42.5,54.8 C37.7,57.1 32.2,58.2 26.5,57.6 C10.3,55.9 -1.5,41.4 0.2,25.2 C1.5,14 8.8,4.9 18.5,0.9 Z" id="path-13"></path>
+        <path d="M26.9,0.1 C28.3,9.5 29,19.2 29,29 C29,39.2 28.2,49.1 26.8,58.9 C11.8,57.5 0,44.9 0,29.5 C0,14.1 11.8,1.4 26.9,0.1 Z" id="path-15"></path>
+        <path d="M42.2,3 C36.8,22.2 28.5,40.3 17.9,56.8 C8.5,52.7 1.5,43.8 0.3,32.8 C-1.4,16.6 10.4,2.1 26.6,0.4 C32.1,-0.2 37.5,0.8 42.2,3 Z" id="path-17"></path>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="error-logo">
+            <g id="tsomi-vectors-01">
+                <g id="Clipped">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="SVGID_23_"></g>
+                    <rect id="Rectangle-path" fill="#E07C7C" fill-rule="nonzero" mask="url(#mask-2)" x="-5" y="-5" width="410" height="410"></rect>
+                </g>
+                <g id="Clipped" transform="translate(48.000000, 48.000000)">
+                    <mask id="mask-4" fill="white">
+                        <use xlink:href="#path-3"></use>
+                    </mask>
+                    <g id="SVGID_25_"></g>
+                    <rect id="Rectangle-path" fill="#D86C6C" fill-rule="nonzero" mask="url(#mask-4)" x="-5" y="-5" width="314" height="314"></rect>
+                </g>
+                <g id="Clipped" transform="translate(108.000000, 108.000000)">
+                    <mask id="mask-6" fill="white">
+                        <use xlink:href="#path-5"></use>
+                    </mask>
+                    <g id="SVGID_27_"></g>
+                    <rect id="Rectangle-path" fill="#C94C4C" fill-rule="nonzero" mask="url(#mask-6)" x="-5" y="-5" width="194" height="194"></rect>
+                </g>
+                <g id="Clipped" transform="translate(0.000000, 100.000000)">
+                    <mask id="mask-8" fill="white">
+                        <use xlink:href="#path-7"></use>
+                    </mask>
+                    <g id="SVGID_29_"></g>
+                    <g id="Group" opacity="0.3514" mask="url(#mask-8)" fill="#FFFFFF" fill-rule="nonzero">
+                        <g transform="translate(-5.000000, -5.000000)" id="Rectangle-path">
+                            <rect x="0" y="0" width="410" height="210"></rect>
+                        </g>
+                    </g>
+                </g>
+                <g id="Clipped" transform="translate(9.000000, 100.000000)">
+                    <mask id="mask-10" fill="white">
+                        <use xlink:href="#path-9"></use>
+                    </mask>
+                    <g id="SVGID_31_"></g>
+                    <g id="Group" opacity="0.3514" mask="url(#mask-10)" fill="#FFFFFF" fill-rule="nonzero">
+                        <g transform="translate(-5.000000, -5.000000)" id="Rectangle-path">
+                            <rect x="0" y="0" width="200.8" height="210"></rect>
+                        </g>
+                    </g>
+                </g>
+                <g id="Clipped" transform="translate(171.000000, 171.000000)">
+                    <mask id="mask-12" fill="white">
+                        <use xlink:href="#path-11"></use>
+                    </mask>
+                    <g id="SVGID_33_"></g>
+                    <rect id="Rectangle-path" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-12)" x="-5" y="-5" width="69" height="69"></rect>
+                </g>
+                <g id="Clipped" transform="translate(350.000000, 91.000000)">
+                    <mask id="mask-14" fill="white">
+                        <use xlink:href="#path-13"></use>
+                    </mask>
+                    <g id="SVGID_35_"></g>
+                    <rect id="Rectangle-path" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-14)" transform="translate(22.525700, 29.248950) rotate(-84.001491) translate(-22.525700, -29.248950) " x="-10.2234894" y="1.69963187" width="65.4983789" height="55.0986363"></rect>
+                </g>
+                <g id="Clipped" transform="translate(371.000000, 171.000000)">
+                    <mask id="mask-16" fill="white">
+                        <use xlink:href="#path-15"></use>
+                    </mask>
+                    <g id="SVGID_37_"></g>
+                    <rect id="Rectangle-path" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-16)" x="-5" y="-4.9" width="39" height="68.8"></rect>
+                </g>
+                <g id="Clipped" transform="translate(350.000000, 252.000000)">
+                    <mask id="mask-18" fill="white">
+                        <use xlink:href="#path-17"></use>
+                    </mask>
+                    <g id="SVGID_39_"></g>
+                    <rect id="Rectangle-path" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-18)" transform="translate(22.384700, 28.602000) rotate(-5.998509) translate(-22.384700, -28.602000) " x="-5.01462184" y="-3.99719314" width="54.7986437" height="65.1983863"></rect>
+                </g>
+                <g id="Group" transform="translate(216.000000, 198.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                    <path d="M2.5,5.5 C1.1,5.5 0,4.4 0,3 C0,1.6 1.1,0.5 2.5,0.5 L6,0.5 C6,0.5 6,0.5 6,0.5 C7.4,0.5 8.5,1.6 8.5,3 C8.5,4.4 7.4,5.5 6,5.5 L2.5,5.5 C2.5,5.5 2.5,5.5 2.5,5.5 Z" id="Shape"></path>
+                    <path d="M27.9,5.4 C26.5,5.4 25.4,4.3 25.4,2.9 C25.4,1.5 26.5,0.4 27.9,0.4 L34.3,0.4 C34.3,0.4 34.3,0.4 34.3,0.4 C35.7,0.4 36.8,1.5 36.8,2.9 C36.8,4.3 35.7,5.4 34.3,5.4 L27.9,5.4 C27.9,5.4 27.9,5.4 27.9,5.4 Z M56.1,5.3 C54.7,5.3 53.6,4.2 53.6,2.8 C53.6,1.4 54.7,0.3 56.1,0.3 L62.5,0.3 C62.5,0.3 62.5,0.3 62.5,0.3 C63.9,0.3 65,1.4 65,2.8 C65,4.2 63.9,5.3 62.5,5.3 L56.1,5.3 C56.1,5.3 56.1,5.3 56.1,5.3 Z M84.3,5.3 C82.9,5.3 81.8,4.2 81.8,2.8 C81.8,1.4 82.9,0.3 84.3,0.3 L90.7,0.3 C90.7,0.3 90.7,0.3 90.7,0.3 C92.1,0.3 93.2,1.4 93.2,2.8 C93.2,4.2 92.1,5.3 90.7,5.3 L84.3,5.3 C84.3,5.3 84.3,5.3 84.3,5.3 Z M112.5,5.2 C111.1,5.2 110,4.1 110,2.7 C110,1.3 111.1,0.2 112.5,0.2 L118.9,0.2 C118.9,0.2 118.9,0.2 118.9,0.2 C120.3,0.2 121.4,1.3 121.4,2.7 C121.4,4.1 120.3,5.2 118.9,5.2 L112.5,5.2 C112.5,5.2 112.5,5.2 112.5,5.2 Z M140.8,5.1 C139.4,5.1 138.3,4 138.3,2.6 C138.3,1.2 139.4,0.1 140.8,0.1 L147.2,0.1 C147.2,0.1 147.2,0.1 147.2,0.1 C148.6,0.1 149.7,1.2 149.7,2.6 C149.7,4 148.6,5.1 147.2,5.1 L140.8,5.1 C140.8,5.1 140.8,5.1 140.8,5.1 Z" id="Shape"></path>
+                    <path d="M169,5 C167.6,5 166.5,3.9 166.5,2.5 C166.5,1.1 167.6,0 169,0 L172.5,0 C172.5,0 172.5,0 172.5,0 C173.9,0 175,1.1 175,2.5 C175,3.9 173.9,5 172.5,5 L169,5 C169,5 169,5 169,5 Z" id="Shape"></path>
+                </g>
+                <g id="Group" transform="translate(216.000000, 119.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                    <path d="M3.5,77 C2.6,77 1.7,76.5 1.2,75.6 C0.6,74.4 1.1,72.9 2.4,72.3 L5.6,70.8 C6.8,70.2 8.3,70.7 8.9,72 C9.5,73.2 9,74.7 7.7,75.3 L4.5,76.8 C4.2,76.9 3.9,77 3.5,77 Z" id="Shape"></path>
+                    <path d="M30.3,64.3 C29.4,64.3 28.5,63.8 28,62.9 C27.4,61.7 27.9,60.2 29.2,59.6 L36.1,56.3 C37.3,55.7 38.8,56.2 39.4,57.5 C40,58.8 39.5,60.2 38.2,60.8 L31.3,64.1 C31,64.2 30.6,64.3 30.3,64.3 Z M60.8,49.9 C59.9,49.9 59,49.4 58.5,48.5 C57.9,47.3 58.4,45.8 59.7,45.2 L66.6,41.9 C67.8,41.3 69.3,41.8 69.9,43.1 C70.5,44.3 70,45.8 68.7,46.4 L61.8,49.7 C61.5,49.8 61.2,49.9 60.8,49.9 Z M91.3,35.4 C90.4,35.4 89.5,34.9 89,34 C88.4,32.8 88.9,31.3 90.2,30.7 L97.1,27.4 C98.3,26.8 99.8,27.3 100.4,28.6 C101,29.9 100.5,31.3 99.2,31.9 L92.3,35.2 C92,35.3 91.7,35.4 91.3,35.4 Z M121.8,21 C120.9,21 120,20.5 119.5,19.6 C118.9,18.4 119.4,16.9 120.7,16.3 L127.6,13 C128.8,12.4 130.3,12.9 130.9,14.2 C131.5,15.5 131,16.9 129.7,17.5 L122.8,20.8 C122.5,20.9 122.2,21 121.8,21 Z" id="Shape"></path>
+                    <path d="M152.3,6.5 C151.4,6.5 150.5,6 150,5.1 C149.4,3.9 149.9,2.4 151.2,1.8 L154.4,0.3 C155.6,-0.3 157.1,0.2 157.7,1.5 C158.3,2.7 157.8,4.2 156.5,4.8 L153.3,6.3 C153.1,6.4 152.7,6.5 152.3,6.5 Z" id="Shape"></path>
+                </g>
+                <g id="Group" transform="translate(215.000000, 206.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                    <path d="M6.7,6.5 C6.3,6.5 6,6.4 5.6,6.3 L2.4,4.8 C1.2,4.2 0.6,2.7 1.2,1.5 C1.8,0.3 3.3,-0.3 4.5,0.3 L7.7,1.8 C8.9,2.4 9.5,3.9 8.9,5.1 C8.5,6 7.6,6.5 6.7,6.5 Z" id="Shape"></path>
+                    <path d="M129.5,64.3 C129.1,64.3 128.8,64.2 128.4,64.1 L121.5,60.8 C120.3,60.2 119.7,58.7 120.3,57.5 C120.9,56.3 122.4,55.7 123.6,56.3 L130.5,59.6 C131.7,60.2 132.3,61.7 131.7,62.9 C131.4,63.8 130.5,64.3 129.5,64.3 Z M98.8,49.9 C98.4,49.9 98.1,49.8 97.7,49.7 L90.8,46.4 C89.6,45.8 89,44.3 89.6,43.1 C90.2,41.9 91.7,41.3 92.9,41.9 L99.8,45.2 C101,45.8 101.6,47.3 101,48.5 C100.7,49.3 99.8,49.9 98.8,49.9 Z M68.1,35.4 C67.7,35.4 67.4,35.3 67,35.2 L60.1,31.9 C58.9,31.3 58.3,29.8 58.9,28.6 C59.5,27.4 61,26.8 62.2,27.4 L69.1,30.7 C70.3,31.3 70.9,32.8 70.3,34 C69.9,34.9 69,35.4 68.1,35.4 Z M37.4,20.9 C37,20.9 36.7,20.8 36.3,20.7 L29.4,17.4 C28.2,16.8 27.6,15.3 28.2,14.1 C28.8,12.9 30.3,12.3 31.5,12.9 L38.4,16.2 C39.6,16.8 40.2,18.3 39.6,19.5 C39.2,20.4 38.3,20.9 37.4,20.9 Z" id="Shape"></path>
+                    <path d="M156.5,77 C156.1,77 155.8,76.9 155.4,76.8 L152.2,75.3 C151,74.7 150.4,73.2 151,72 C151.6,70.8 153.1,70.2 154.3,70.8 L157.5,72.3 C158.7,72.9 159.3,74.4 158.7,75.6 C158.3,76.5 157.4,77 156.5,77 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

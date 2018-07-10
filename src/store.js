@@ -3,13 +3,13 @@
 
 import queryString from 'query-string'
 
-import config from './config'
 import { type PersonDetail, SubjectId, type Uri } from './types'
 
 export type PeopleCache = { [string]: PersonDetail }
 
 export type Store = {
   currentWikiPageUri: Uri,
+  errorMessage: ?string,
   focusedSubject: SubjectId,
   loadInProgress: ?SubjectId,
   people: PeopleCache,
@@ -21,7 +21,6 @@ export type Store = {
 }
 
 export const initialState = (): Store => {
-  console.log('[initialState config]', config)
   const params = queryString.parse(location.search)
   return {
     showAboutPage: false,
@@ -29,6 +28,7 @@ export const initialState = (): Store => {
       ? new SubjectId(params.subject)
       : new SubjectId('Ursula_K._Le_Guin'),
     currentWikiPageUri: '',
+    errorMessage: 'generic error message',
     loadInProgress: null,
     people: {},
     searchInProgress: false,
@@ -51,6 +51,8 @@ export const saveSearchResults = (searchString: ?string, results: Array<PersonDe
   ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
 export const setAboutPage = (state: bool): Action =>
   ({ type: 'SET_ABOUT_PAGE', state })
+export const setErrorMessage = (msg: ?string): Action =>
+  ({ type: 'SET_ERROR_MESSAGE', msg })
 export const setLoadInProgress = (subject: ?SubjectId): Action =>
   ({ type: 'SET_LOAD_IN_PROGRESS', subject })
 export const setSearchInProgress = (status: bool) =>
@@ -62,6 +64,7 @@ export const setWikiUri = (uri: Uri): Action =>
 export const toggleAboutPage = (): Action =>
   ({ type: 'TOGGLE_ABOUT_PAGE' })
 
+export const errorMessage = (store: Store): ?string => store.errorMessage
 export const focusedSubject = (store: Store): SubjectId => store.focusedSubject
 export const people = (store: Store) => store.people
 export const loadInProgress = (store: Store): ?SubjectId => store.loadInProgress
@@ -116,6 +119,12 @@ export const runState = (state?: Store = initialState(), action: any): Store => 
       return {
         ...state,
         searchInProgress: action.status,
+      }
+
+    case 'SET_ERROR_MESSAGE':
+      return {
+        ...state,
+        errorMessage: action.msg,
       }
 
     case 'SET_WIKI_DIV_HIDDEN':

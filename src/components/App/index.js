@@ -3,6 +3,7 @@
 
 import * as fp from 'lodash/fp'
 
+import ErrorBox from '../ErrorBox'
 import InfluenceChart from '../InfluenceChart'
 import Navbar from '../Navbar/'
 import WikiCollapse from '../WikiCollapse'
@@ -19,7 +20,9 @@ const store = require('../../store')
 
 require('./main.css')
 
+/* eslint react/no-unused-state: off, react/no-unused-prop-types: off */
 type AppProps = {
+  errorMessage: ?string,
   focusedSubject: SubjectId,
   searchString: ?string,
   showAboutPage: bool,
@@ -31,14 +34,43 @@ type AppProps = {
   focusOnPerson: SubjectId => void,
   goHome: void => void,
   saveSearchResults: (?string, Array<PersonDetail>) => void,
+  setErrorMessage: ?string => void,
   setLoadInProgress: ?SubjectId => void,
   setSearchInProgress: bool => void,
   setWikiUri: Uri => void,
   toggleAboutPage: void => void,
 }
-type AppState = { }
+type AppState = {|
+  errorTimer: ?TimeoutID,
+|}
 
 class App_ extends React.Component<AppProps, AppState> {
+  static getDerivedStateFromProps(newProps: AppProps, prevState: AppState): AppState {
+    console.log('[App_ newProps.errorMessage]', newProps.errorMessage)
+    if (newProps.errorMessage && prevState.errorTimer === null) {
+      console.log('[App_ getDerivedStateFromProps setting timer]')
+      return {
+        errorTimer: setTimeout(
+          () => {
+            console.log('[App_ getDerivedStateFromProps timeout]')
+            newProps.setErrorMessage(null)
+          },
+          5 * 1000,
+        ),
+      }
+    } else if (!newProps.errorMessage) {
+      console.log('[App_ getDerivedStateFromProps clearing timer]')
+      return { errorTimer: null }
+    }
+    return prevState
+  }
+
+  constructor(props: AppProps) {
+    super(props)
+
+    this.state = { errorTimer: null }
+  }
+
   componentDidMount() {
     this.getAndCachePerson_(this.props.focusedSubject).then((person: ?PersonDetail) => {
       if (person !== null && person !== undefined) {
@@ -57,8 +89,7 @@ class App_ extends React.Component<AppProps, AppState> {
             this.props.cachePerson(n, person)
             res(person)
           }
-        }
-      )).catch((err) => console.log('[getAndCachePerson_ handler]', err))
+        })).catch(err => console.log('[getAndCachePerson_ handler]', err))
   }
 
   focusPerson(n: SubjectId): void {
@@ -72,7 +103,7 @@ class App_ extends React.Component<AppProps, AppState> {
           n,
           `${location.origin}${location.pathname}?subject=${n.asString()}`,
         )
-      } catch(error) {
+      } catch (error) {
         console.error('Cannot modify window history: ', error)
       }
       if (person.wikipediaUri) {
@@ -152,6 +183,14 @@ class App_ extends React.Component<AppProps, AppState> {
       )
     }
 
+    const errorBox = this.props.errorMessage
+      ? React.createElement(
+        'div',
+        { id: 'main-errors' },
+        ErrorBox({ msg: this.props.errorMessage }),
+      )
+      : null
+
     if (this.props.wikiDivHidden) {
       return React.createElement(
         'div',
@@ -162,6 +201,7 @@ class App_ extends React.Component<AppProps, AppState> {
           { id: 'main-content' },
           chartDiv,
           wikiCollapse,
+          errorBox,
         ),
       )
     }
@@ -176,6 +216,7 @@ class App_ extends React.Component<AppProps, AppState> {
         chartDiv,
         wikiCollapse,
         wikiDiv,
+        errorBox,
       ),
     )
   }
@@ -183,6 +224,7 @@ class App_ extends React.Component<AppProps, AppState> {
 
 const App = connect(
   state => ({
+    errorMessage: store.errorMessage(state),
     focusedSubject: store.focusedSubject(state),
     loadInProgress: store.loadInProgress(state),
     showAboutPage: store.showAboutPage(state),
@@ -196,6 +238,7 @@ const App = connect(
     setLoadInProgress: (subject: ?SubjectId) => dispatch(store.setLoadInProgress(subject)),
     saveSearchResults: (str: ?string, results: Array<PersonDetail>): void =>
       dispatch(store.saveSearchResults(str, results)),
+    setErrorMessage: (msg: ?string) => dispatch(store.setErrorMessage(msg)),
     setSearchInProgress: (status: bool) => dispatch(store.setSearchInProgress(status)),
     setWikiDivHidden: (status: bool) => dispatch(store.setWikiDivHidden(status)),
     setWikiUri: uri => dispatch(store.setWikiUri(uri)),
