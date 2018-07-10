@@ -46,20 +46,16 @@ type AppState = {|
 
 class App_ extends React.Component<AppProps, AppState> {
   static getDerivedStateFromProps(newProps: AppProps, prevState: AppState): AppState {
-    console.log('[App_ newProps.errorMessage]', newProps.errorMessage)
     if (newProps.errorMessage && prevState.errorTimer === null) {
-      console.log('[App_ getDerivedStateFromProps setting timer]')
       return {
         errorTimer: setTimeout(
           () => {
-            console.log('[App_ getDerivedStateFromProps timeout]')
             newProps.setErrorMessage(null)
           },
           5 * 1000,
         ),
       }
     } else if (!newProps.errorMessage) {
-      console.log('[App_ getDerivedStateFromProps clearing timer]')
       return { errorTimer: null }
     }
     return prevState
@@ -89,7 +85,12 @@ class App_ extends React.Component<AppProps, AppState> {
             this.props.cachePerson(n, person)
             res(person)
           }
-        })).catch(err => console.log('[getAndCachePerson_ handler]', err))
+        }))
+      .catch((err) => {
+        if (err === undefined) return
+        console.log('[getAndCachePerson_ handler]', err)
+        this.props.setErrorMessage(`Retrieving ${n.toString()} failed. Give us a few minutes and please try again.`)
+      })
   }
 
   focusPerson(n: SubjectId): void {
@@ -120,7 +121,8 @@ class App_ extends React.Component<AppProps, AppState> {
       this.props.focusOnPerson(n)
       this.props.setLoadInProgress(null)
     }).catch((err) => {
-      console.log('Getting a person failed with an error: ', err)
+      console.log('[focusPerson]', err)
+      this.props.setErrorMessage(`Oops! Focusing on ${n.asString()} failed. Give us a few minutes and please try again.`)
     })
   }
 
@@ -131,7 +133,12 @@ class App_ extends React.Component<AppProps, AppState> {
         this.props.saveSearchResults(name, fp.filter(p => p != null)(people)))
       .catch((err) => {
         this.props.setSearchInProgress(false)
-        console.log('Searching failed with an error: ', err)
+        if (err.message === 'request timed out') {
+          this.props.setErrorMessage(`Searching for ${name} timed out. Please try your search again.`)
+        } else {
+          console.log(err)
+          this.props.setErrorMessage(`Oops! Searching for ${name} failed. Give us a few minutes and please try again.`)
+        }
       })
   }
 

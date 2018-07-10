@@ -963,7 +963,7 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
           canvas.setLoadInProgress(newProps.loadInProgress)
         }
 
-        if (!newProps.loadInProgress) {
+        if (!newProps.loadInProgress && prevState.loadInProgress) {
           canvas.setFocused(focus, newProps.people)
         }
 

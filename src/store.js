@@ -28,7 +28,7 @@ export const initialState = (): Store => {
       ? new SubjectId(params.subject)
       : new SubjectId('Ursula_K._Le_Guin'),
     currentWikiPageUri: '',
-    errorMessage: 'generic error message',
+    errorMessage: null,
     loadInProgress: null,
     people: {},
     searchInProgress: false,
