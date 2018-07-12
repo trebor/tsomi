@@ -264,11 +264,11 @@ const calculateLinkPath = (link: TLink, center: PersonNode): string => {
   const angle = angleRadians(t, m)
   const nodeRadius = ((IMAGE_SIZE / 2) * calculateNodeScale(t, center, false))
 
-  const tip = radial(t, nodeRadius, angle)
+  //const tip = radial(t, nodeRadius, angle)
 
   return populatePath(
     'M X0 Y0 Q X1 Y1 X2 Y2',
-    [s, m, tip],
+    [s, m, t],
   )
 }
 
@@ -719,19 +719,23 @@ class InfluenceCanvas {
       .call(this.timeline.axis)
 
     this.fdl = d3.forceSimulation()
-    this.fdlLinks = d3.forceLink()
-      .strength(LINK_STRENGTH)
-      .distance(() => (Math.random() * LINK_RANDOM) + ((NODE_SIZE / 2) + LINK_MIN_OFFSET))
+    //this.fdlLinks = d3.forceLink()
+      //.strength(LINK_STRENGTH)
+      //.distance(() => (Math.random() * LINK_RANDOM) + ((NODE_SIZE / 2) + LINK_MIN_OFFSET))
+      //.iterations(10)
 
-    this.fdl
-      .force('center', d3.forceCenter(this.dimensions.width / 2, this.dimensions.height / 2))
-      .force('gravity', d3.forceManyBody().strength(GRAVITY))
-      .force('charge', d3.forceManyBody().strength((d: InvisibleNode | PersonNode): number => (
-        d.type === 'InvisibleNode'
-          ? -CHARGE_HIDDEN
-          : -((Math.random() * CHARGE_RANDOM) + CHARGE_BASE)
-      )))
-      .force('links', this.fdlLinks)
+    //this.fdl
+      //.force('animation', forceAnimation(this.dimensions.width, this.dimensions.height))
+      //.force('center', d3.forceCenter(this.dimensions.width / 2, this.dimensions.height / 2))
+      //.force('radial', d3.forceRadial(300, this.dimensions.width / 2, this.dimensions.height / 2))
+      //.force('collision', d3.forceCollide(NODE_SIZE/2))
+      //.force('gravity', d3.forceManyBody().strength(GRAVITY))
+      //.force('charge', d3.forceManyBody().strength((d: InvisibleNode | PersonNode): number => (
+        //d.type === 'InvisibleNode'
+          //? -CHARGE_HIDDEN
+          //: -((Math.random() * CHARGE_RANDOM) + CHARGE_BASE)
+      //)))
+      //.force('links', this.fdlLinks)
 
     this.fdl.alpha(ALPHA)
     this.fdl.on('tick', () => this.animate())
@@ -741,6 +745,7 @@ class InfluenceCanvas {
 
   /* Run one frame of the force animation. This is not a public function. */
   animate(): void {
+    //if (this.fdl.alpha() > 0.90) debugger
     if (this.fdl.alpha() < 0.01) this.fdl.stop()
     const { width, height } = this.dimensions
     const [minX, minY] = [MARGIN, MARGIN]
@@ -754,15 +759,64 @@ class InfluenceCanvas {
     this.graph.focus.x = clamp(0, maxX)(this.graph.focus.x)
     this.graph.focus.y = clamp(0, maxY)(this.graph.focus.y)
 
+    const middleNodes = []
+    const nodes = []
     this.graph.getLinks().forEach((link) => {
       if (link.source === this.graph.focus) {
-        link.middle.x = clamp(0, maxX)(link.middle.x + k2)
-        link.target.x = clamp(0, maxX)(link.target.x + k2)
+        middleNodes.push(link.middle)
+        nodes.push(link.target)
       } else if (link.target === this.graph.focus) {
-        link.middle.x = clamp(0, maxX)(link.middle.x - k2)
-        link.source.x = clamp(0, maxX)(link.source.x - k2)
+        middleNodes.push(link.middle)
+        nodes.push(link.source)
       }
     })
+
+    const radius = smallest(height / 2, width / 2)
+    const maxAngle = Math.PI * 2
+    const angleSlice = maxAngle / nodes.length
+
+    for (var i = 0; i < middleNodes.length; i++) {
+      const angle = (angleSlice * i) - maxAngle
+      const targetLocation = {
+        x: center.x + (radius / 2) * Math.cos(angleSlice * i),
+        y: center.y + (radius / 2) * Math.sin(angleSlice * i),
+      }
+      if (i === 5) {
+        console.log('[middleNode]', center, radius, maxAngle, angleSlice, angle, targetLocation)
+      }
+      //if (nodes.length > 2) debugger
+      //nodes[i].x = (targetLocation.x - nodes[i].x) * k
+      //nodes[i].y = (targetLocation.y - nodes[i].y) * k
+      middleNodes[i].x = targetLocation.x
+      middleNodes[i].y = targetLocation.y
+    }
+
+    for (var i = 0; i < nodes.length; i++) {
+      const angle = (angleSlice * i) - maxAngle
+      const targetLocation = {
+        x: center.x + radius * Math.cos(angleSlice * i),
+        y: center.y + radius * Math.sin(angleSlice * i),
+      }
+      if (i === 5) {
+        console.log('[node]', targetLocation)
+      }
+      //if (nodes.length > 2) debugger
+      //nodes[i].x = (targetLocation.x - nodes[i].x) * k
+      //nodes[i].y = (targetLocation.y - nodes[i].y) * k
+      nodes[i].x = targetLocation.x
+      nodes[i].y = targetLocation.y
+    }
+
+    //const influencedByAngleSlice = 160 / influencedByNodes.length
+    //for (var i = 0; i < influencedByNodes.length; i++) {
+     //const angle = (influencerAngleSlice * i) - maxAngle
+     //const targetLocation = {
+        //x: 300 * Math.cos(influencerAngleSlice * i),
+        //y: 300 * Math.sin(influencerAngleSlice * i),
+      //}
+      //influencerNodes[i].x = (targetLocation.x - influencerNodes[i].x) * k
+      //influencerNodes[i].y = (targetLocation.y - influencerNodes[i].y) * k
+    //}
 
     this.nodesElem
       .selectAll('.translate')
@@ -846,7 +900,7 @@ class InfluenceCanvas {
       .call(this.timeline.axis)
 
     this.fdl.nodes(this.graph.getNodes())
-    this.fdlLinks.links(this.graph.getLinkSegments())
+    //this.fdlLinks.links(this.graph.getLinkSegments())
 
     const nodeSel = this.nodesElem
       .selectAll('.translate')
