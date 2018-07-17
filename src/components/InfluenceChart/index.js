@@ -107,7 +107,7 @@ type TLink = {
 class TGraph {
   nodes: { [string]: InvisibleNode | PersonNode }
   links: Array<TLink>
-  focus: PersonNode
+  focusId: string
 
   constructor(focus: PersonDetail) {
     this.nodes = {}
@@ -119,9 +119,13 @@ class TGraph {
   /* Set the focus on the graph. The provided person will be added to the graph
    * if it is not already present. */
   setFocus(person: PersonDetail): PersonNode {
-    const node = this.addPerson(person)
-    this.focus = node && node.type === 'PersonNode' ? node : this.focus
-    return node
+    this.focusId = person.id.asString()
+    return this.addPerson(person)
+  }
+
+  getFocus(): ?PersonNode {
+    const node = this.nodes[this.focusId]
+    return node && node.type === 'PersonNode' ? node : null
   }
 
   /* Add a PersonNode to the graph. */
@@ -252,17 +256,17 @@ const createTimeline = (width: number, startDate: moment, endDate: moment): Time
 /* Calculate how much a node should be scaled by from information such as the
  * whether the node is the focus and whether the mouse is currently hovering
  * over the node. */
-const calculateNodeScale = (node: PersonNode, centerNode: PersonNode, isMouseOver: bool): number =>
-  (node.getId() === centerNode.getId() || isMouseOver ? 1.0 : 0.5)
+const calculateNodeScale = (node: PersonNode, centerId: string, isMouseOver: bool): number =>
+  (node.getId() === centerId || isMouseOver ? 1.0 : 0.5)
 
 /* Given a full link, calculate the visual path that the link should take. */
-const calculateLinkPath = (link: TLink, center: PersonNode): string => {
+const calculateLinkPath = (link: TLink, centerId: string): string => {
   const s = link.source
   const m = link.middle
   const t = link.target
 
   const angle = angleRadians(t, m)
-  const nodeRadius = ((IMAGE_SIZE / 2) * calculateNodeScale(t, center, false))
+  const nodeRadius = ((IMAGE_SIZE / 2) * calculateNodeScale(t, centerId, false))
 
   //const tip = radial(t, nodeRadius, angle)
 
@@ -329,7 +333,7 @@ const renderPeople = (
 
   const canvas = circle.classed('translate', true)
     .attr('id', (node: PersonNode): string => convertToSafeDOMId(node.person.id.asString()))
-    .attr('transform', `translate(${dim.width / 2}, ${dim.height / 2})`)
+    //.attr('transform', `translate(${dim.width / 2}, ${dim.height / 2})`)
     .append('g')
     .classed('scale', true)
     .attr('clip-path', 'url(#image-clip)')
@@ -399,10 +403,10 @@ const renderLinks = (container: D3Types.Selection, graph: TGraph): D3Types.Selec
   const path = container.append('path')
 
   path.classed('influence-link', true)
-    .classed('from', (link: TLink): bool => link.source.getId() === graph.focus.getId())
-    .classed('to', (link: TLink): bool => link.target.getId() === graph.focus.getId())
+    .classed('from', (link: TLink): bool => link.source.getId() === graph.focusId)
+    .classed('to', (link: TLink): bool => link.target.getId() === graph.focusId)
     .attr('visibity', 'visible')
-    .attr('d', (link: TLink): string => calculateLinkPath(link, graph.focus))
+    .attr('d', (link: TLink): string => calculateLinkPath(link, graph.focusId))
     .attr('id', (link: TLink): string => `${link.source.getId()}-${link.target.getId()}`)
 
   return path
@@ -754,22 +758,25 @@ class InfluenceCanvas {
     const k2 = 15 * this.fdl.alpha()
 
     const center = { x: width / 2, y: height / 2 }
-    this.graph.focus.x += (center.x - this.graph.focus.x) * k
-    this.graph.focus.y += (center.y - this.graph.focus.y) * k
-    this.graph.focus.x = clamp(0, maxX)(this.graph.focus.x)
-    this.graph.focus.y = clamp(0, maxY)(this.graph.focus.y)
-
+    const focus = this.graph.getFocus()
     const middleNodes = []
     const nodes = []
-    this.graph.getLinks().forEach((link) => {
-      if (link.source === this.graph.focus) {
-        middleNodes.push(link.middle)
-        nodes.push(link.target)
-      } else if (link.target === this.graph.focus) {
-        middleNodes.push(link.middle)
-        nodes.push(link.source)
-      }
-    })
+    if (focus) {
+      focus.x += (center.x - focus.x) * k
+      focus.y += (center.y - focus.y) * k
+      focus.x = clamp(0, maxX)(focus.x)
+      focus.y = clamp(0, maxY)(focus.y)
+
+      this.graph.getLinks().forEach((link) => {
+        if (link.source === focus) {
+          middleNodes.push(link.middle)
+          nodes.push(link.target)
+        } else if (link.target === focus) {
+          middleNodes.push(link.middle)
+          nodes.push(link.source)
+        }
+      })
+    }
 
     const radius = smallest(height / 2, width / 2)
     const maxAngle = Math.PI * 2
@@ -826,8 +833,10 @@ class InfluenceCanvas {
         return `translate(${n.x}, ${n.y})`
       })
 
-    this.linksElem.selectAll('path')
-      .attr('d', (link: TLink): string => calculateLinkPath(link, this.graph.focus))
+    if (focus) {
+      this.linksElem.selectAll('path')
+        .attr('d', (link: TLink): string => calculateLinkPath(link, focus.getId()))
+    }
 
     this.lifelinesElem.selectAll('path')
       .attr('d', (node: PersonNode): string => calculateLifelinePath(this.dimensions, this.timeline, node))
@@ -915,7 +924,7 @@ class InfluenceCanvas {
 
     this.nodesElem
       .selectAll('.scale')
-      .attr('transform', d => (d.getId() === this.graph.focus.getId() ? 'scale(1.0)' : 'scale(0.5)'))
+      .attr('transform', d => (d.getId() === this.focus.id.asString() ? 'scale(1.0)' : 'scale(0.5)'))
 
     const linkSel = this.linksElem.selectAll('path')
       .data(this.graph.getLinks())
