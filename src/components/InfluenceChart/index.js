@@ -138,7 +138,7 @@ class TGraph {
    * with a matching ID is already present. */
   addPerson(person: PersonDetail): PersonNode {
     const p = this.nodes[person.id.asString()]
-    if (p != null && p.type === 'PersonNode' && p.person.type === person.type) {
+    if (p != null && p.type === 'PersonNode') {
       return p
     }
 
@@ -1020,7 +1020,8 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
 
     const { d3Elem, domElem } = prevState
 
-    if (focus != null && focus.type === 'PersonDetail') {
+    //debugger
+    if (focus != null) {
       if (domElem != null && d3Elem != null) {
         const canvas = prevState.canvas
           ? prevState.canvas
@@ -1066,12 +1067,13 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
    * canvas and to attach the window resize listener.
    */
   componentDidMount() {
+    //debugger
+
     this.state.domElem = document.getElementById(this.props.label)
     this.state.d3Elem = d3.select(`#${this.props.label}`)
 
     const focus = this.props.people[this.props.focusedId.asString()]
-    if (focus != null && focus.type === 'PersonDetail'
-      && this.state.domElem != null && this.state.d3Elem != null) {
+    if (focus != null && this.state.domElem != null && this.state.d3Elem != null) {
       const { d3Elem, domElem } = this.state
       this.state.canvas = new InfluenceCanvas(
         d3Elem,
