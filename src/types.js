@@ -1,6 +1,10 @@
 // @flow
+/* eslint no-underscore-dangle: off */
 
 import moment from 'moment'
+import { Hashable } from 'luminescent-dreams-base'
+
+//import { Hashable } from './interfaces'
 
 export type Uri = string
 
@@ -8,7 +12,7 @@ export type Dimensions = { width: number, height: number }
 export const dimensionsEq = (left: Dimensions, right: Dimensions) =>
   left.width === right.width && left.height === right.height
 
-export class SubjectId {
+export class SubjectId implements Hashable {
   id: string
 
   constructor(s: string) {
@@ -19,18 +23,36 @@ export class SubjectId {
     return `dbpedia:${this.id}`
   }
 
-  asString() {
+  asString(): string {
     return this.id
   }
 
-  equals(other: SubjectId) {
+  equals(other: SubjectId): bool {
     return this.id === other.id
   }
+
+  hash() {
+    return this.asString()
+  }
 }
+
 export const mkSubjectFromDBpediaUri = (url: Uri): SubjectId => new SubjectId(url.trim().split('/').reverse()[0])
 
-export type PersonDetail = {|
-  type: 'PersonDetail',
+type PersonDetailParams = {
+  id: SubjectId,
+  thumbnail: ?string,
+  uri: Uri,
+  wikipediaUri: ?Uri,
+  name: string,
+  abstract: ?string,
+  birthPlace: ?string,
+  birthDate: ?moment,
+  deathDate: ?moment,
+  influencedBy: Array<SubjectId>,
+  influenced: Array<SubjectId>,
+}
+
+export type PersonDetail = {
   id: SubjectId,
   thumbnail: ?string,
   uri: Uri,
@@ -44,7 +66,16 @@ export type PersonDetail = {|
   influenced: Array<SubjectId>,
   influencedByCount: number,
   influencedCount: number,
-|}
+
+  hash: () => string,
+}
+
+export const mkPersonDetail = (args: PersonDetailParams): PersonDetail => ({
+  ...args,
+  influencedByCount: args.influencedBy.length,
+  influencedCount: args.influenced.length,
+  hash: () => args.id.asString(),
+})
 
 
 export const wikipediaMobileUri = (uri: Uri): ?Uri => {

@@ -4,7 +4,7 @@ import fp from 'lodash/fp'
 import moment from 'moment'
 
 import { runSparqlQuery } from '../Sparql'
-import { type PersonDetail, SubjectId, mkSubjectFromDBpediaUri } from '../../types'
+import { type PersonDetail, mkPersonDetail, SubjectId, mkSubjectFromDBpediaUri } from '../../types'
 import { mapObjKeys, parseDate } from '../../util'
 import { last, maybe, maybe_, uniqueBy } from '../../utils/fp'
 
@@ -17,8 +17,6 @@ export type PersonJSON = {
   birthPlace?: { [string]: any },
   birthDate?: { [string]: any },
   deathDate?: { [string]: any },
-  influencedByCount?: { [string]: any },
-  influencedCount?: { [string]: any },
   influencedBy: { [string]: any },
   influenced: { [string]: any },
   wikipediaUri: { [string]: any },
@@ -103,8 +101,7 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
         return null
       }
 
-      return {
-        type: 'PersonDetail',
+      return mkPersonDetail({
         id: s,
         uri: mkResourceUrl(s),
         wikipediaUri,
@@ -119,10 +116,8 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
         deathDate: maybe_(n => parseDBpediaDate(n))(fp.head(person.deathDate)),
         influencedBy,
         influenced,
-        influencedByCount: influencedBy.length,
-        influencedCount: influenced.length,
         thumbnail,
-      }
+      })
     })
     .catch(err => console.log('[getPerson failed]', s, err))
 }

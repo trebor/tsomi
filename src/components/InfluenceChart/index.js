@@ -7,7 +7,7 @@
  * InfluenceCanvas/D3 system into the quasi-stateless React/Redux world.
  */
 
-/* eslint no-param-assign: off, no-param-reassign: off */
+/* eslint no-param-assign: off, no-param-reassign: off, function-paren-newline: off */
 
 import * as d3 from 'd3'
 import * as fp from 'lodash/fp'
@@ -24,7 +24,7 @@ import {
   SubjectId,
   dimensionsEq,
 } from '../../types'
-import { difference, union } from '../../utils/Set'
+import { HashSet } from 'luminescent-dreams-base'
 
 const {
   angleRadians,
@@ -527,7 +527,7 @@ const calculateTimeRange = (people: Array<PersonDetail>): [moment, moment] => {
 }
 
 
-/* Given the current dictionary of people, the curren focus, and the current
+/* Given the current dictionary of people, the current focus, and the current
  * maximum number of displayable nodes, update the nodes and links in the
  * influence graph. */
 const updateInfluenceGraph = (
@@ -537,52 +537,62 @@ const updateInfluenceGraph = (
   maxNodes: number,
   dim: Dimensions,
 ) => {
-  const influenceLimit: Set<PersonDetail> => Set<PersonDetail> = fp.compose(
-    arr => new Set(arr),
+  const influenceLimit: Array<PersonDetail> => Array<PersonDetail> = fp.compose(
     fp.take(maxNodes),
     fp.reverse,
     fp.sortBy(p => p.influencedByCount + p.influencedBy),
-    s => Array.from(s),
+  )
+  const lookupPeople: Array<SubjectId> => Array<PersonDetail> = fp.compose(
+    fp.filter((p: ?PersonDetail): bool => p != null),
+    fp.map((id: SubjectId): ?PersonDetail => people[id.asString()]),
   )
 
-  const influencedBy = new Set(focus.influencedBy)
-  const influenced = new Set(focus.influenced)
-  const currentIds = union(influencedBy, influenced)
-  const currentPeople = union(
-    new Set([focus]),
-    new Set(fp.compose(
-      influenceLimit,
-      fp.filter(p => p != null),
-      fp.map(id => people[id.asString()]),
-    )(Array.from(currentIds.values()))),
-  )
-  const oldPeople = new Set(fp.map(n => n.person)(graph.getVisibleNodes()))
+  //const influenceIds: HashSet<SubjectId> = new HashSet(...focus.influencedBy, ...focus.influenced)
+  //const influences: HashSet<PersonDetail> =
+    //new HashSet(...lookupPeople(influenceIds.values()))
 
-  const incomingPeople = difference(currentPeople, oldPeople)
-  const outgoingPeople = difference(oldPeople, currentPeople)
+  const influencedBy: HashSet<PersonDetail> = new HashSet(...lookupPeople(focus.influencedBy))
+  const influenced: HashSet<PersonDetail> = new HashSet(...lookupPeople(focus.influenced))
+  const influences: HashSet<PersonDetail> = influenced.union(influencedBy)
 
-  outgoingPeople.forEach((p) => {
-    graph.removePerson(p)
-  })
+  console.log('[updateInfluenceGraph influencedBy]', influencedBy)
+  console.log('[updateInfluenceGraph influenced]', influenced)
+  console.log('[updateInfluenceGraph influencers]', influences)
 
-  incomingPeople.forEach((p) => {
-    if (p === focus) {
-      return
-    }
-    const node = graph.addPerson(p)
-    node.x = dim.width / 2
-    node.y = dim.height / 2
-    if (influencedBy.has(p.id)) {
-      const link = graph.createLink(p, focus)
-      if (link) {
-        link.middle.x = (link.target.x + link.source.x) / 2
-        link.middle.y = (link.target.y + link.source.y) / 2
-      }
-    } else {
-      const link = graph.createLink(focus, p)
-      if (link) {
-        link.middle.x = (link.target.x + link.source.x) / 2
-        link.middle.y = (link.target.y + link.source.y) / 2
+  const currentPeople: HashSet<PersonDetail> =
+    new HashSet(focus).union(
+      new HashSet(...influenceLimit(influences.values()))
+    )
+  console.log('[updateInfluenceGraph currentPeople]', currentPeople)
+
+  const oldPeople: HashSet<PersonDetail> =
+    new HashSet(...fp.map(n => n.person)(graph.getVisibleNodes()))
+  console.log('[updateInfluenceGraph oldPeople]', oldPeople)
+
+  const incomingPeople: HashSet<PersonDetail> = currentPeople.difference(oldPeople)
+  const outgoingPeople: HashSet<PersonDetail> = oldPeople.difference(currentPeople)
+  console.log('[updateInfluenceGraph incomingPeople]', incomingPeople)
+  console.log('[updateInfluenceGraph outgoingPeople]', outgoingPeople)
+
+  outgoingPeople.values().forEach((p: PersonDetail) => graph.removePerson(p))
+
+  incomingPeople.values().forEach((p: PersonDetail) => {
+    if (p !== focus) {
+      const node = graph.addPerson(p)
+      node.x = dim.width / 2
+      node.y = dim.height / 2
+      if (influencedBy.has(p.id)) {
+        const link = graph.createLink(p, focus)
+        if (link) {
+          link.middle.x = (link.target.x + link.source.x) / 2
+          link.middle.y = (link.target.y + link.source.y) / 2
+        }
+      } else {
+        const link = graph.createLink(focus, p)
+        if (link) {
+          link.middle.x = (link.target.x + link.source.x) / 2
+          link.middle.y = (link.target.y + link.source.y) / 2
+        }
       }
     }
   })
@@ -672,7 +682,7 @@ class InfluenceCanvas {
     this.graph = new TGraph(focus)
     this.selectNode = selectNode
 
-    updateInfluenceGraph(this.graph, this.focus, this.people, MAX_SCREEN_NODES, this.dimensions)
+    updateInfluenceGraph(this.graph, this.focus, this.people, MAX_SCREEN_NODES, dimensions)
 
     // create clip path for image
     this.definitions = this.topElem.append('defs')
