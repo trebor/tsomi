@@ -630,7 +630,6 @@ const RadialInfluenceAnimation = (endThreshold: number, g: TGraph, dim: Dimensio
 
     if (focus != null) {
       translateNode(focus, alpha)
-      console.log('[translateNode]', focus)
       for (let i = 0; i < links.length; i += 1) {
         if (focus.person.id.equals(links[i].target.person.id)) {
           translateNode(links[i].source, alpha)
@@ -916,7 +915,7 @@ class InfluenceCanvas {
       (n, over) => focusHighlight(this.nodesElem, this.lifelinesElem, this.focus, n, over),
       this.dimensions,
     )
-    nodeSel.exit().remove()
+    nodeSel.exit().transition().remove()
 
     this.nodesElem
       .selectAll('.scale')
