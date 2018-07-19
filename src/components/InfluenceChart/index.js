@@ -293,27 +293,27 @@ const calculateLifelinePath = (
 ): string => {
   const TIMELINE_UPSET = 50
 
-  if (!node.person.birthDate) {
+  if (node.person.birthDate != null) {
+    const death = node.person.deathDate ? node.person.deathDate : moment()
+
+    const birthPx = { x: timeline.scale(node.person.birthDate), y: TIMELINE_Y(dimensions.height) }
+    const bc1 = { x: node.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
+    const bc2 = { x: birthPx.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
+
+    const deathPx = { x: timeline.scale(death), y: TIMELINE_Y(dimensions.height) }
+    const dc1 = { x: deathPx.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
+    const dc2 = { x: node.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
+
+    if (birthPx.x != null && deathPx.x != null) {
+      return populatePath(
+        'M X0 Y0 C X1 Y1 X2 Y2 X3 Y3 L X4 Y4 C X5 Y5 X6 Y6 X7 Y7',
+        [node, bc1, bc2, birthPx, deathPx, dc1, dc2, node],
+      )
+    }
+
     return ''
   }
-  const death = node.person.deathDate ? node.person.deathDate : moment()
-
-  const birthPx = { x: timeline.scale(node.person.birthDate), y: TIMELINE_Y(dimensions.height) }
-  const bc1 = { x: node.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
-  const bc2 = { x: birthPx.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
-
-  const deathPx = { x: timeline.scale(death), y: TIMELINE_Y(dimensions.height) }
-  const dc1 = { x: deathPx.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
-  const dc2 = { x: node.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
-
-  if (birthPx.x === undefined || deathPx.x === undefined) {
-    return ''
-  }
-
-  return populatePath(
-    'M X0 Y0 C X1 Y1 X2 Y2 X3 Y3 L X4 Y4 C X5 Y5 X6 Y6 X7 Y7',
-    [node, bc1, bc2, birthPx, deathPx, dc1, dc2, node],
-  )
+  return ''
 }
 
 
@@ -579,13 +579,13 @@ const updateInfluenceGraph = (
       node.y = dim.height / 2
       if (influencedBy.has(p.id)) {
         const link = graph.createLink(p, focus)
-        if (link) {
+        if (link != null) {
           link.middle.x = (link.target.x + link.source.x) / 2
           link.middle.y = (link.target.y + link.source.y) / 2
         }
       } else {
         const link = graph.createLink(focus, p)
-        if (link) {
+        if (link != null) {
           link.middle.x = (link.target.x + link.source.x) / 2
           link.middle.y = (link.target.y + link.source.y) / 2
         }
@@ -828,7 +828,7 @@ class InfluenceCanvas {
         return `translate(${n.x}, ${n.y})`
       })
 
-    if (this.focus) {
+    if (this.focus != null) {
       this.linksElem.selectAll('path')
         .attr('d', (link: TLink): string => calculateLinkPath(link, this.focus.id.asString()))
     }
@@ -934,34 +934,6 @@ class InfluenceCanvas {
 
     this.fdl.alpha(ALPHA)
     this.fdl.restart()
-
-    /* TODO: this block is meant to move the focus node to the top of the
-     * stack. This can happen if a lot of data is already loaded when this node
-     * gets created. Problem is, it fails intermittently with the error
-     * `Uncaught TypeError: Failed to execute 'appendChild' on 'Node':
-     * parameter 1 is not of type 'Node'.`. This is a problem given that
-     * according to the diagnostics below, `rm.node()` actually is a DOM
-     * element and it is being returned. So, I've commented this out and we
-     * will have an intermittent visual artifact until somebody can make this
-     * logic work. */
-    /*
-    const elem = this.nodesElem.select(`#${convertToSafeDOMId(this.focus.id.asString())}`)
-    console.log('[About to remove]', elem.node())
-    this.nodesElem.append(() => {
-      if (this.focus != null) {
-        const elem = this.nodesElem.select(`#${convertToSafeDOMId(this.focus.id.asString())}`)
-        console.log('[move focus forward]', elem)
-        const rm = elem.remove()
-        console.log('[move focus forward, removed]', rm)
-        console.log('[move focus forward, removed node]', rm.node(), typeof rm.node())
-        if (!rm.node()) {
-          return null
-        }
-        return elem.node()
-      }
-      return null
-    })
-    */
   }
 }
 
