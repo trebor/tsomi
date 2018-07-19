@@ -11,6 +11,7 @@
 
 import * as d3 from 'd3'
 import * as fp from 'lodash/fp'
+import { HashSet } from 'luminescent-dreams-base'
 import moment from 'moment'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -24,7 +25,6 @@ import {
   SubjectId,
   dimensionsEq,
 } from '../../types'
-import { HashSet } from 'luminescent-dreams-base'
 
 const {
   angleRadians,
@@ -73,6 +73,8 @@ type InvisibleNode = {|
   y: number,
   vx: number,
   vy: number,
+  tx: ?number,
+  ty: ?number,
   getId: () => string,
 |}
 
@@ -86,6 +88,8 @@ type PersonNode = {|
   y: number,
   vx: number,
   vy: number,
+  tx: ?number,
+  ty: ?number,
   isLoading: bool,
   person: PersonDetail,
   getId: () => string,
@@ -148,6 +152,8 @@ class TGraph {
       y: 0,
       vx: 0,
       vy: 0,
+      tx: null,
+      ty: null,
       person,
       isLoading: false,
       getId: () => person.id.asString(),
@@ -200,6 +206,8 @@ class TGraph {
       y: 0,
       vx: 0,
       vy: 0,
+      tx: null,
+      ty: null,
       getId: () => `${source.id.asString()} - ${target.id.asString()}`,
     }
     const link = { source: sourceNode, middle, target: targetNode }
@@ -547,32 +555,20 @@ const updateInfluenceGraph = (
     fp.map((id: SubjectId): ?PersonDetail => people[id.asString()]),
   )
 
-  //const influenceIds: HashSet<SubjectId> = new HashSet(...focus.influencedBy, ...focus.influenced)
-  //const influences: HashSet<PersonDetail> =
-    //new HashSet(...lookupPeople(influenceIds.values()))
-
   const influencedBy: HashSet<PersonDetail> = new HashSet(...lookupPeople(focus.influencedBy))
   const influenced: HashSet<PersonDetail> = new HashSet(...lookupPeople(focus.influenced))
   const influences: HashSet<PersonDetail> = influenced.union(influencedBy)
-
-  console.log('[updateInfluenceGraph influencedBy]', influencedBy)
-  console.log('[updateInfluenceGraph influenced]', influenced)
-  console.log('[updateInfluenceGraph influencers]', influences)
 
   const currentPeople: HashSet<PersonDetail> =
     new HashSet(focus).union(
       new HashSet(...influenceLimit(influences.values()))
     )
-  console.log('[updateInfluenceGraph currentPeople]', currentPeople)
 
   const oldPeople: HashSet<PersonDetail> =
     new HashSet(...fp.map(n => n.person)(graph.getVisibleNodes()))
-  console.log('[updateInfluenceGraph oldPeople]', oldPeople)
 
   const incomingPeople: HashSet<PersonDetail> = currentPeople.difference(oldPeople)
   const outgoingPeople: HashSet<PersonDetail> = oldPeople.difference(currentPeople)
-  console.log('[updateInfluenceGraph incomingPeople]', incomingPeople)
-  console.log('[updateInfluenceGraph outgoingPeople]', outgoingPeople)
 
   outgoingPeople.values().forEach((p: PersonDetail) => graph.removePerson(p))
 
@@ -597,9 +593,7 @@ const updateInfluenceGraph = (
     }
   })
 
-  const node = graph.setFocus(focus)
-  node.x = dim.width / 2
-  node.y = dim.height / 2
+  graph.setFocus(focus)
 }
 
 
@@ -607,6 +601,79 @@ const clamp = (min: number, max: number): (number => number) => (val: number): n
   if (val < min) { return min }
   if (val > max) { return max }
   return val
+}
+
+
+const RadialInfluenceAnimation = (endThreshold: number, g: TGraph, dim: Dimensions) => {
+  const graph = g
+  let dimensions = dim
+
+  /* Possibly something that does an accelaration curve, speeding up until
+   * alpha == 0.5 and then slowing down again? */
+  const calculateVelocity = (current: number, target: ?number, alpha: number): number => (
+    target != null
+      ? (Math.abs(target - current) > endThreshold ? (target - current) * 0.05 : 0)
+      : 0
+  )
+
+  const translateNode = (node: PersonNode | InvisibleNode, alpha: number) => {
+    node.vx = calculateVelocity(node.x, node.tx, alpha)
+    node.vy = calculateVelocity(node.y, node.ty, alpha)
+
+    if (node.vx === 0) node.tx = null
+    if (node.vy === 0) node.ty = null
+  }
+
+  const force = (alpha) => {
+    const links = graph.getLinks()
+    const focus = graph.getFocus()
+
+    if (focus != null) {
+      translateNode(focus, alpha)
+      console.log('[translateNode]', focus)
+      for (let i = 0; i < links.length; i += 1) {
+        if (focus.person.id.equals(links[i].target.person.id)) {
+          translateNode(links[i].source, alpha)
+        } else {
+          translateNode(links[i].target, alpha)
+        }
+      }
+    }
+  }
+
+  force.initialize = () => {
+    const center = { x: dimensions.width / 2, y: dimensions.height / 2 }
+    const links = graph.getLinks()
+    const radius = smallest(dimensions.height / 2, dimensions.width / 2)
+    const maxAngle = Math.PI * 2
+    const angleSlice = maxAngle / links.length
+
+    const focus = graph.getFocus()
+    if (focus != null) {
+      focus.tx = center.x
+      focus.ty = center.y
+      for (let i = 0; i < links.length; i += 1) {
+        const angle = (angleSlice * i) - maxAngle
+        links[i].middle.tx = center.x + ((radius / 2) * Math.cos(angle))
+        links[i].middle.ty = center.y + ((radius / 2) * Math.sin(angle))
+
+        if (focus.person.id.equals(links[i].target.person.id)) {
+          links[i].source.tx = center.x + (radius * Math.cos(angle))
+          links[i].source.ty = center.y + (radius * Math.sin(angle))
+        } else {
+          links[i].target.tx = center.x + (radius * Math.cos(angle))
+          links[i].target.ty = center.y + (radius * Math.sin(angle))
+        }
+      }
+    }
+  }
+
+  force.updateAnimation = (dim: Dimensions) => {
+    dimensions = dim
+    force.initialize()
+  }
+
+  return force
 }
 
 
@@ -667,6 +734,7 @@ class InfluenceCanvas {
   selectNode: (SubjectId) => void
 
   highlight: ?PersonNode
+  radialAnimation: Function
 
   constructor(
     topElem: D3Types.Selection,
@@ -681,6 +749,12 @@ class InfluenceCanvas {
     this.people = people
     this.graph = new TGraph(focus)
     this.selectNode = selectNode
+
+    const focusNode = this.graph.getFocus()
+    if (focusNode != null) {
+      focusNode.x = dimensions.width / 2
+      focusNode.y = dimensions.height / 2
+    }
 
     updateInfluenceGraph(this.graph, this.focus, this.people, MAX_SCREEN_NODES, dimensions)
 
@@ -732,26 +806,9 @@ class InfluenceCanvas {
       .attr('transform', `translate(0, ${TIMELINE_Y(dimensions.height)})`)
       .call(this.timeline.axis)
 
+    this.radialAnimation = RadialInfluenceAnimation(1, this.graph, dimensions)
     this.fdl = d3.forceSimulation()
-    //this.fdlLinks = d3.forceLink()
-      //.strength(LINK_STRENGTH)
-      //.distance(() => (Math.random() * LINK_RANDOM) + ((NODE_SIZE / 2) + LINK_MIN_OFFSET))
-      //.iterations(10)
-
-    //this.fdl
-      //.force('animation', forceAnimation(this.dimensions.width, this.dimensions.height))
-      //.force('center', d3.forceCenter(this.dimensions.width / 2, this.dimensions.height / 2))
-      //.force('radial', d3.forceRadial(300, this.dimensions.width / 2, this.dimensions.height / 2))
-      //.force('collision', d3.forceCollide(NODE_SIZE/2))
-      //.force('gravity', d3.forceManyBody().strength(GRAVITY))
-      //.force('charge', d3.forceManyBody().strength((d: InvisibleNode | PersonNode): number => (
-        //d.type === 'InvisibleNode'
-          //? -CHARGE_HIDDEN
-          //: -((Math.random() * CHARGE_RANDOM) + CHARGE_BASE)
-      //)))
-      //.force('links', this.fdlLinks)
-
-    this.fdl.alpha(ALPHA)
+      .force('my_animation', this.radialAnimation)
     this.fdl.on('tick', () => this.animate())
 
     this.refreshCanvas()
@@ -759,93 +816,21 @@ class InfluenceCanvas {
 
   /* Run one frame of the force animation. This is not a public function. */
   animate(): void {
-    //if (this.fdl.alpha() > 0.90) debugger
-    if (this.fdl.alpha() < 0.01) this.fdl.stop()
     const { width, height } = this.dimensions
     const [minX, minY] = [MARGIN, MARGIN]
     const [maxX, maxY] = [width - MARGIN, height - MARGIN]
-    const k = 0.1 * this.fdl.alpha()
-    const k2 = 15 * this.fdl.alpha()
-
-    const center = { x: width / 2, y: height / 2 }
-    const focus = this.graph.getFocus()
-    const middleNodes = []
-    const nodes = []
-    if (focus) {
-      focus.x += (center.x - focus.x) * k
-      focus.y += (center.y - focus.y) * k
-      focus.x = clamp(0, maxX)(focus.x)
-      focus.y = clamp(0, maxY)(focus.y)
-
-      this.graph.getLinks().forEach((link) => {
-        if (link.source === focus) {
-          middleNodes.push(link.middle)
-          nodes.push(link.target)
-        } else if (link.target === focus) {
-          middleNodes.push(link.middle)
-          nodes.push(link.source)
-        }
-      })
-    }
-
-    const radius = smallest(height / 2, width / 2)
-    const maxAngle = Math.PI * 2
-    const angleSlice = maxAngle / nodes.length
-
-    for (var i = 0; i < middleNodes.length; i++) {
-      const angle = (angleSlice * i) - maxAngle
-      const targetLocation = {
-        x: center.x + (radius / 2) * Math.cos(angleSlice * i),
-        y: center.y + (radius / 2) * Math.sin(angleSlice * i),
-      }
-      if (i === 5) {
-        console.log('[middleNode]', center, radius, maxAngle, angleSlice, angle, targetLocation)
-      }
-      //if (nodes.length > 2) debugger
-      //nodes[i].x = (targetLocation.x - nodes[i].x) * k
-      //nodes[i].y = (targetLocation.y - nodes[i].y) * k
-      middleNodes[i].x = targetLocation.x
-      middleNodes[i].y = targetLocation.y
-    }
-
-    for (var i = 0; i < nodes.length; i++) {
-      const angle = (angleSlice * i) - maxAngle
-      const targetLocation = {
-        x: center.x + radius * Math.cos(angleSlice * i),
-        y: center.y + radius * Math.sin(angleSlice * i),
-      }
-      if (i === 5) {
-        console.log('[node]', targetLocation)
-      }
-      //if (nodes.length > 2) debugger
-      //nodes[i].x = (targetLocation.x - nodes[i].x) * k
-      //nodes[i].y = (targetLocation.y - nodes[i].y) * k
-      nodes[i].x = targetLocation.x
-      nodes[i].y = targetLocation.y
-    }
-
-    //const influencedByAngleSlice = 160 / influencedByNodes.length
-    //for (var i = 0; i < influencedByNodes.length; i++) {
-     //const angle = (influencerAngleSlice * i) - maxAngle
-     //const targetLocation = {
-        //x: 300 * Math.cos(influencerAngleSlice * i),
-        //y: 300 * Math.sin(influencerAngleSlice * i),
-      //}
-      //influencerNodes[i].x = (targetLocation.x - influencerNodes[i].x) * k
-      //influencerNodes[i].y = (targetLocation.y - influencerNodes[i].y) * k
-    //}
 
     this.nodesElem
       .selectAll('.translate')
-      .attr('transform', (n) => {
-        n.x = largest(minX, smallest(maxX, n.x))
-        n.y = largest(minY, smallest(maxY, n.y))
+      .attr('transform', (n: PersonNode) => {
+        n.x = clamp(minX, maxX)(n.x + n.vx)
+        n.y = clamp(minY, maxY)(n.y + n.vy)
         return `translate(${n.x}, ${n.y})`
       })
 
-    if (focus) {
+    if (this.focus) {
       this.linksElem.selectAll('path')
-        .attr('d', (link: TLink): string => calculateLinkPath(link, focus.getId()))
+        .attr('d', (link: TLink): string => calculateLinkPath(link, this.focus.id.asString()))
     }
 
     this.lifelinesElem.selectAll('path')
@@ -918,6 +903,7 @@ class InfluenceCanvas {
       .attr('transform', `translate(0, ${TIMELINE_Y(this.dimensions.height)})`)
       .call(this.timeline.axis)
 
+    this.radialAnimation.updateAnimation(this.dimensions)
     this.fdl.nodes(this.graph.getNodes())
     //this.fdlLinks.links(this.graph.getLinkSegments())
 
