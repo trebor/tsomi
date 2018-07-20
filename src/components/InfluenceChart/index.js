@@ -652,6 +652,10 @@ const RadialInfluenceAnimation = (endThreshold: number, g: TGraph, dim: Dimensio
       focus.tx = center.x
       focus.ty = center.y
       for (let i = 0; i < links.length; i += 1) {
+        // if (links[i].source.getId() === "Susanna_Clarke"
+        //   || links[i].target.getId() === "Susanna_Clarke") {
+        //   debugger
+        // }
         const angle = (angleSlice * i) - maxAngle
         links[i].middle.tx = center.x + ((radius / 2) * Math.cos(angle))
         links[i].middle.ty = center.y + ((radius / 2) * Math.sin(angle))
@@ -667,8 +671,8 @@ const RadialInfluenceAnimation = (endThreshold: number, g: TGraph, dim: Dimensio
     }
   }
 
-  force.updateAnimation = (dim: Dimensions) => {
-    dimensions = dim
+  force.updateAnimation = (dim_: Dimensions) => {
+    dimensions = dim_
     force.initialize()
   }
 
@@ -842,16 +846,8 @@ class InfluenceCanvas {
       return
     }
     this.dimensions = dimensions
+    this.refreshCanvas()
 
-    // calculateTimeRange here
-    this.timeline.scale.range([0, dimensions.width - 1])
-    this.timelineAxis.transition()
-      .duration(DEFAULT_ANIMATION_DURATION)
-      .attr('transform', `translate(0, ${TIMELINE_Y(dimensions.height)})`)
-      .call(this.timeline.axis)
-
-    this.fdl.alpha(ALPHA)
-    this.fdl.restart()
   }
 
   setLoadInProgress(subject: ?SubjectId) {
