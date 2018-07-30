@@ -37,7 +37,7 @@ describe('DBpedia searches', () => {
 
   it('retrieves list of people with searchForPeople', (done) => {
     searchForPeople('William Gibson').then(lst => {
-      expect(lst.length).toEqual(18)
+      expect(lst.length).toEqual(2)
       done()
     }).catch(err => {
       if (err.message.startsWith('request timed out')) {

@@ -17,11 +17,10 @@ export const maybe_ = <A, B>(f: A => B): (?A => ?B) =>
 export const uniqueBy = <T>(f: Function, c: Array<T>): Array<T> => {
   const lookup = c.reduce((acc, item) => {
     const id = f(item)
-    if(!acc[id]) acc[id] = item
+    if (!acc[id]) acc[id] = item
     return acc
   }, {})
 
   return ((Object.values(lookup): any): Array<T>)
 }
-
 

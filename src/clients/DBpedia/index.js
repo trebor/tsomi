@@ -2,11 +2,12 @@
 
 import fp from 'lodash/fp'
 import moment from 'moment'
+import { parseString } from 'xml2js'
 
-import { runSparqlQuery } from '../Sparql'
 import { type PersonDetail, mkPersonDetail, SubjectId, mkSubjectFromDBpediaUri } from '../../types'
 import { mapObjKeys, parseDate } from '../../util'
-import { last, maybe, maybe_, uniqueBy } from '../../utils/fp'
+import { fetchWithTimeout, encodeFormBody } from '../../utils/http'
+import { last, maybe_, uniqueBy } from '../../utils/fp'
 
 require('isomorphic-fetch')
 
@@ -21,12 +22,6 @@ export type PersonJSON = {
   influenced: { [string]: any },
   wikipediaUri: { [string]: any },
   thumbnail: { [string]: any },
-}
-
-type SearchResultJSON = {
-  results: {
-    bindings: Array<PersonJSON>
-  }
 }
 
 type RDFTriple = {
@@ -123,21 +118,36 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
 }
 
 
-/* eslint no-multi-str: off */
-const queryByName = 'SELECT ?person \
-WHERE { ?person a foaf:Person. \
-        ?person foaf:name ?name. \
-        filter( regex(str(?name), "%search_query%", "i") ) \
-}\
-'
+type LookupXMLResult = {
+  ArrayOfResult: {
+    Result: Array<{
+      URI: string
+    }>
+  }
+}
 
-const regexName = (name: string) => name.trim().split(' ').join('.*')
-
-const searchByName = (name: string): Promise<Array<SubjectId>> =>
-  runSparqlQuery(queryByName, { search_query: regexName(name) })
-    .then((js: SearchResultJSON): Array<SubjectId> =>
-      Array.from(new Set(fp.map(j =>
-        mkSubjectFromDBpediaUri(j.person.value))(js.results.bindings))))
+export const searchByName = (name: string): Promise<Array<SubjectId>> => {
+  const queryParams = {
+    QueryClass: 'person',
+    QueryString: name,
+  }
+  return fetchWithTimeout(
+    `http://lookup.dbpedia.org/api/search/KeywordSearch?${encodeFormBody(queryParams)}`,
+    { method: 'GET' },
+    5000,
+  ).then((res: Response): Promise<string> => res.text())
+    .then((text: string): Array<SubjectId> => {
+      let res: Array<SubjectId> = []
+      parseString(text, (err: any, xml: LookupXMLResult): void => {
+        const subjectIds: Array<SubjectId> =
+          fp.flatten(fp.map(result =>
+            fp.map(uri =>
+              mkSubjectFromDBpediaUri(uri))(result.URI))(xml.ArrayOfResult.Result))
+        res = res.concat(subjectIds)
+      })
+      return res
+    })
+}
 
 export const searchForPeople = (name: string): Promise<Array<?PersonDetail>> =>
   searchByName(name).then(lst => Promise.all(fp.map(getPerson)(lst)))
