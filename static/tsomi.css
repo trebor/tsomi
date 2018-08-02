@@ -208,3 +208,11 @@ path.link.to {
 }
 */
 
+.visible-absolute {
+  display: absolute;
+}
+
+.visible-none {
+  display: none;
+}
+

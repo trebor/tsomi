@@ -153,11 +153,17 @@ class App_ extends React.Component<AppProps, AppState> {
       searchString: this.props.searchString,
     })
 
-    const about = React.createElement(About, {
-      key: 'about',
-      goBack: () => this.props.toggleAboutPage(),
-      focusPerson: n => this.focusPerson(n),
-    })
+    const about = React.createElement(
+      'div',
+      {
+        className: this.props.showAboutPage ? 'visible-absolute' : 'visible-none',
+      },
+      React.createElement(About, {
+        key: 'about',
+        goBack: () => this.props.toggleAboutPage(),
+        focusPerson: n => this.focusPerson(n),
+      }),
+    )
 
     const influenceChart = React.createElement(InfluenceChart, {
       label: 'influencechart',
@@ -182,14 +188,6 @@ class App_ extends React.Component<AppProps, AppState> {
       url: this.props.wikiUri,
     })
 
-    if (this.props.showAboutPage) {
-      return React.createElement(
-        'div',
-        {},
-        about,
-      )
-    }
-
     const errorBox = this.props.errorMessage
       ? React.createElement(
         'div',
@@ -198,24 +196,10 @@ class App_ extends React.Component<AppProps, AppState> {
       )
       : null
 
-    if (this.props.wikiDivHidden) {
-      return React.createElement(
-        'div',
-        {},
-        navbar,
-        React.createElement(
-          'div',
-          { id: 'main-content' },
-          chartDiv,
-          wikiCollapse,
-          errorBox,
-        ),
-      )
-    }
-
     return React.createElement(
       'div',
       {},
+      about,
       navbar,
       React.createElement(
         'div',
