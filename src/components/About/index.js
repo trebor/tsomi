@@ -45,7 +45,7 @@ const About = ({ goBack, focusPerson }: AboutProps) => {
   const links = [
     React.createElement('a', { onClick: () => focusAndDismiss(new SubjectId('Simone_de_Beauvoir')) }, 'Simone de Beauvoir'),
     React.createElement('a', { onClick: () => focusAndDismiss(new SubjectId('Bob_Dylan') )}, 'Bob Dylan'),
-    React.createElement('a', { onClick: () => focusAndDismiss(new SubjectId('Frida_Kahlo')) }, 'Frida Kahlo'),
+    React.createElement('a', { onClick: () => focusAndDismiss(new SubjectId('Franz_Kafka')) }, 'Franz Kafka'),
     React.createElement('a', { onClick: () => focusAndDismiss(new SubjectId('Albert_Einstein')) }, 'Albert Einstein'),
   ]
 

@@ -94,6 +94,7 @@ class App_ extends React.Component<AppProps, AppState> {
   }
 
   focusPerson(n: SubjectId): void {
+    console.log('[focusPerson]', n.asString())
     this.props.setLoadInProgress(n)
     this.getAndCachePerson_(n).then((person: ?PersonDetail) => {
       if (person === null || person === undefined) return
