@@ -809,6 +809,27 @@ class InfluenceCanvas {
           .style('stop-color', 'white')
           .style('stop-opacity', '0')
       })
+    this.definitions.append('svg:linearGradient')
+      .attr('id', 'loading-gradient-2')
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '100%')
+      .attr('y2', '0%')
+      .call((gradient) => {
+        gradient.append('svg:stop')
+          .attr('offset', '0%')
+          .style('stop-color', 'black')
+          .style('stop-opacity', '1')
+        gradient.append('svg:stop')
+          .attr('offset', '50%')
+          .style('stop-color', 'black')
+          .style('stop-opacity', '0')
+        gradient.append('svg:stop')
+          .attr('offset', '100%')
+          .style('stop-color', 'black')
+          .style('stop-opacity', '0')
+      })
+
 
     /* I've put these here so that I can force them to be rendered in a
      * particular order. If all of the links appear in one container, and all
@@ -873,12 +894,7 @@ class InfluenceCanvas {
     let nodeUnderLoad = subject ? this.graph.nodes[subject.asString()] : null
 
     console.log('[setLoadInProgress subject and nodeUnderLoad]', subject, nodeUnderLoad)
-    if (subject && ! nodeUnderLoad) {
-      console.log('[setLoadInProgress removing all nodes]')
-      this.graph.nodes = {}
-      this.graph.links = []
-      /* Okay, the node under load isn't present... what do I do here? Do I make the graph optional? */
-    } else {
+    if (subject && nodeUnderLoad) {
       console.log('[setLoadInProgress adding a loading circle]')
       this.graph.getVisibleNodes().forEach((n: PersonNode) => {
         n.isLoading = subject ? subject.asString() === n.getId() : false
@@ -891,10 +907,23 @@ class InfluenceCanvas {
             .attr('stroke', 'url(#loading-gradient)')
             .attr('stroke-width', RIM_SIZE)
             .attr('r', ((IMAGE_SIZE - RIM_SIZE) / 2) - (RIM_SIZE / 2))
-        } else {
-          this.nodesElem.select(`#${convertToSafeDOMId(n.getId())} .loading-circle`).remove()
         }
       })
+    } else if (subject && !nodeUnderLoad) {
+      console.log('[setLoadInProgress removing all nodes]')
+      this.graph.nodes = {}
+      this.graph.links = []
+      this.nodesElem.append('g')
+        .attr('transform', `translate(${this.dimensions.width / 2}, ${this.dimensions.height / 2})`)
+        .append('circle')
+        .classed('loading-circle', true)
+        .attr('fill', 'none')
+        .attr('visibility', 'visible')
+        .attr('stroke', 'url(#loading-gradient-2)')
+        .attr('stroke-width', RIM_SIZE)
+        .attr('r', ((IMAGE_SIZE - RIM_SIZE) / 2) - (RIM_SIZE / 2))
+    } else {
+      this.nodesElem.select('.loading-circle').remove()
     }
     this.refreshCanvas()
   }
