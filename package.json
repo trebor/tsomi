@@ -4,10 +4,10 @@
   "description": "The sphere of my influence",
   "main": "dist/bundle.js",
   "scripts": {
-    "build": "cp configs/$CONFIG_FILE src/config.js && npm run test && npm run flow && webpack",
+    "build": "node scripts/run.js build",
     "test": "babel-node spec/run.js",
     "flow": "flow",
-    "dev": "cp configs/$CONFIG_FILE src/config.js && webpack --watch --colors --progress"
+    "dev": "node scripts/run.js"
   },
   "repository": {
     "type": "git",
