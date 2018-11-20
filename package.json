@@ -4,13 +4,13 @@
   "description": "The sphere of my influence",
   "main": "dist/bundle.js",
   "scripts": {
-    "build": "cp configs/$CONFIG_FILE src/config.js && npm run test && npm run flow && webpack",
-    "test": "babel-node spec/run.js",
+    "build": "node scripts/run.js build",
+    "dev": "node scripts/run.js",
     "flow": "flow",
-    "dev": "cp configs/$CONFIG_FILE src/config.js && webpack --watch --colors --progress",
+    "format": "npm run lint:eslint -- --fix && npm run lint:prettier -- --write",
     "lint:eslint": "eslint --max-warnings 0 .",
     "lint:prettier": "prettier -l '**/*.js'",
-    "format": "npm run lint:eslint -- --fix && npm run lint:prettier -- --write"
+    "test": "babel-node spec/run.js"
   },
   "repository": {
     "type": "git",
