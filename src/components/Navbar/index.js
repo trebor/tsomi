@@ -8,8 +8,7 @@ import Search from '../Search/'
 
 require('./main.css')
 
-type NavbarState = {
-}
+type NavbarState = {}
 
 type NavbarProps = {
   closeSearch: () => void,
@@ -38,7 +37,9 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
     const logo = React.createElement(
       'div',
       { onClick: goHome },
-      React.createElement('img', { src: `${config.basepath}/static/images/logo.svg` }),
+      React.createElement('img', {
+        src: `${config.basepath}/static/images/logo.svg`,
+      }),
       React.createElement('h1', {}, 'THE SPHERE OF MY INFLUENCE'),
     )
 
@@ -49,23 +50,14 @@ class Navbar extends React.Component<NavbarProps, NavbarState> {
       React.createElement('div', { className: 'right' }, about),
     )
 
-    const search = React.createElement(
-      Search,
-      {
-        closeSearch,
-        focusPerson,
-        submitSearch,
-      },
-    )
+    const search = React.createElement(Search, {
+      closeSearch,
+      focusPerson,
+      submitSearch,
+    })
 
-    return React.createElement(
-      React.Fragment,
-      {},
-      nav,
-      search,
-    )
+    return React.createElement(React.Fragment, {}, nav, search)
   }
 }
 
 export default Navbar
-

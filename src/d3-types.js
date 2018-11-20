@@ -5,13 +5,12 @@ export type LinkSegment = {|
   target: any,
 |}
 
-
 export type Selection = {|
-  append: (string | () => Selection) => Selection,
+  append: (string | (() => Selection)) => Selection,
   attr: (string, ?string | ?number | ?Function) => Selection,
-  call: (Selection | Selection => void) => Selection,
-  classed: (string, bool | Function) => Selection,
-  data: (Array<any>, ?(any => any)) => Selection,
+  call: (Selection | (Selection => void)) => Selection,
+  classed: (string, boolean | Function) => Selection,
+  data: (Array<any>, ?(any) => any) => Selection,
   duration: number => Selection,
   ease: number => Selection,
   enter: () => Selection,
@@ -29,18 +28,16 @@ export type Selection = {|
 
 export type D3Scale<D, R> = {|
   (D): D,
-  domain: Array<D> => void,
-  range: Array<R> => void,
+  domain: (Array<D>) => void,
+  range: (Array<R>) => void,
 |}
 
 export type ForceSimulation<T> = {|
   alpha: (?number) => number,
   force: (string, any) => ForceSimulation<T>,
-  nodes: Array<T> => ForceSimulation<T>,
+  nodes: (Array<T>) => ForceSimulation<T>,
   on: (string, () => void) => ForceSimulation<T>,
   restart: () => void,
   start: () => void,
   stop: () => void,
 |}
-
-

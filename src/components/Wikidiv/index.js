@@ -6,20 +6,23 @@ require('./main.css')
 type WikiDivProps = {
   hidden: boolean,
   subject: string,
-  url: string
+  url: string,
 }
 
 const WikiDiv = ({ url, onLoad }: WikiDivProps) => {
-  const iframe = React.createElement('iframe', { 
+  const iframe = React.createElement('iframe', {
     name: 'wiki',
-    id: 'wikiframe', 
+    id: 'wikiframe',
     src: url,
   })
 
-  return React.createElement('div', {
-    id: 'wikidiv',
-  }, iframe)
+  return React.createElement(
+    'div',
+    {
+      id: 'wikidiv',
+    },
+    iframe,
+  )
 }
 
 module.exports = { WikiDiv }
-

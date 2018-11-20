@@ -26,6 +26,7 @@
       "browser": true,
       "es6": true
     },
+    "function-paren-newline": false,
     "parser": "babel-eslint",
     "extends": "airbnb",
     "plugins": [
@@ -50,7 +51,9 @@
     }
   },
   "prettier": {
-    "semi": false
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all"
   },
   "homepage": "https://github.com/cloud-city/tsomi#readme",
   "devDependencies": {

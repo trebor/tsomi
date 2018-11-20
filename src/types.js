@@ -27,7 +27,7 @@ export class SubjectId implements Hashable {
     return this.id
   }
 
-  equals(other: SubjectId): bool {
+  equals(other: SubjectId): boolean {
     return this.id === other.id
   }
 
@@ -37,7 +37,12 @@ export class SubjectId implements Hashable {
 }
 
 export const mkSubjectFromDBpediaUri = (url: Uri): SubjectId =>
-  new SubjectId(url.trim().split('/').reverse()[0])
+  new SubjectId(
+    url
+      .trim()
+      .split('/')
+      .reverse()[0],
+  )
 
 type PersonDetailParams = {
   id: SubjectId,
@@ -78,7 +83,6 @@ export const mkPersonDetail = (args: PersonDetailParams): PersonDetail => ({
   hash: () => args.id.asString(),
 })
 
-
 export const wikipediaMobileUri = (uri: Uri): ?Uri => {
   const idx = uri.search('wikipedia.org')
   if (idx >= 0) {
@@ -86,4 +90,3 @@ export const wikipediaMobileUri = (uri: Uri): ?Uri => {
   }
   return null
 }
-

@@ -11,11 +11,7 @@ describe('uniqueBy', () => {
       { id: 'c' },
     ]
 
-    const output = new Set([
-      { id: 'a' },
-      { id: 'b' },
-      { id: 'c' },
-    ])
+    const output = new Set([{ id: 'a' }, { id: 'b' }, { id: 'c' }])
 
     const uniq = uniqueBy(i => i.id, input)
     expect(new Set(uniq)).toEqual(output)
@@ -39,9 +35,9 @@ describe('maybe should work', () => {
 describe('last', () => {
   it('should return the last element', () => {
     const answers = [
-      [ 'a', 'b', 'c', 'd' ],
-      [ 1, 2, 3, 4, 5 ],
-      [ {}, [], '', undefined, null ]
+      ['a', 'b', 'c', 'd'],
+      [1, 2, 3, 4, 5],
+      [{}, [], '', undefined, null],
     ]
 
     answers.forEach(arr => {
@@ -49,6 +45,3 @@ describe('last', () => {
     })
   })
 })
-
-
-

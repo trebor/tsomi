@@ -10,18 +10,19 @@ import { PRINTABLE_PARAM } from './constants'
 import { runState } from './store'
 
 const connectToWiki = () =>
-  window.open(d3.select('#wikiframe').attr('src').replace(PRINTABLE_PARAM, ''), '_blank')
+  window.open(
+    d3
+      .select('#wikiframe')
+      .attr('src')
+      .replace(PRINTABLE_PARAM, ''),
+    '_blank',
+  )
 
 const store = config.debug
   ? createStore(runState, applyMiddleware(logger))
   : createStore(runState)
 
 ReactDOM.render(
-  React.createElement(
-    Provider,
-    { store },
-    React.createElement(App),
-  ),
+  React.createElement(Provider, { store }, React.createElement(App)),
   document.getElementById('container'),
 )
-

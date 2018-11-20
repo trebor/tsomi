@@ -58,12 +58,10 @@ const {
 
 require('./main.css')
 
-
 type LinkForces = {
-  links: Array<D3Types.LinkSegment> => LinkForces,
+  links: (Array<D3Types.LinkSegment>) => LinkForces,
   strength: number => LinkForces,
 }
-
 
 /* InvisibleNodes help by providing an invisible extra anchor for the physics
  * model, which grants a curve to the influence links. */
@@ -78,7 +76,6 @@ type InvisibleNode = {|
   getId: () => string,
 |}
 
-
 /* PersonNode represents the location of a node on the influence canvas. It is
  * a virtual object that the force engine uses to position and move objects
  * around the field. */
@@ -90,11 +87,10 @@ type PersonNode = {|
   vy: number,
   tx: ?number,
   ty: ?number,
-  isLoading: bool,
+  isLoading: boolean,
   person: PersonDetail,
   getId: () => string,
 |}
-
 
 /* Represent links between two PersonNodes and the InvisibleNode between them. */
 type TLink = {
@@ -102,7 +98,6 @@ type TLink = {
   middle: InvisibleNode,
   target: PersonNode,
 }
-
 
 /* TGraph is a virtual graph that stores and manages all of the nodes and links.
  *
@@ -169,22 +164,24 @@ class TGraph {
     delete this.nodes[personId.asString()]
 
     const removeLinks = fp.filter(
-      (l: TLink): bool =>
-        l.source.getId() === personId.asString()
-        || l.target.getId() === personId.asString(),
+      (l: TLink): boolean =>
+        l.source.getId() === personId.asString() ||
+        l.target.getId() === personId.asString(),
       this.links,
     )
 
     this.links = fp.filter(
-      (l: TLink): bool =>
-        l.source.getId() !== personId.asString()
-        && l.target.getId() !== personId.asString(),
+      (l: TLink): boolean =>
+        l.source.getId() !== personId.asString() &&
+        l.target.getId() !== personId.asString(),
       this.links,
     )
 
-    removeLinks.forEach((l: TLink): void => {
-      delete this.nodes[l.middle.getId()]
-    })
+    removeLinks.forEach(
+      (l: TLink): void => {
+        delete this.nodes[l.middle.getId()]
+      },
+    )
   }
 
   /* Remove a person from the graph by the PersonDetail object. */
@@ -240,37 +237,49 @@ class TGraph {
    * the connections between source links, target links, and their midpoints.
    * */
   getLinkSegments(): Array<D3Types.LinkSegment> {
-    return fp.flatten(fp.map(link => [
-      { source: link.source, target: link.middle },
-      { source: link.middle, target: link.target },
-    ])(this.links))
+    return fp.flatten(
+      fp.map(link => [
+        { source: link.source, target: link.middle },
+        { source: link.middle, target: link.target },
+      ])(this.links),
+    )
   }
 }
-
 
 /* A timeline class represents the time-based axis that appears somewhere
  * towards the bottom of the page.
  */
-type Timeline = { scale: D3Types.D3Scale<moment, number>, axis: D3Types.Selection }
+type Timeline = {
+  scale: D3Types.D3Scale<moment, number>,
+  axis: D3Types.Selection,
+}
 
-const createTimeline = (width: number, startDate: moment, endDate: moment): Timeline => {
-  const scale = d3.scaleTime()
+const createTimeline = (
+  width: number,
+  startDate: moment,
+  endDate: moment,
+): Timeline => {
+  const scale = d3
+    .scaleTime()
     .range([0, width - 1])
     .domain([startDate, endDate])
 
-  const axis = d3.axisBottom(scale)
-    .tickFormat(d3.timeFormat("%Y"))
+  const axis = d3
+    .axisBottom(scale)
+    .tickFormat(d3.timeFormat('%Y'))
     .ticks(10)
 
   return { scale, axis }
 }
 
-
 /* Calculate how much a node should be scaled by from information such as the
  * whether the node is the focus and whether the mouse is currently hovering
  * over the node. */
-const calculateNodeScale = (node: PersonNode, centerId: string, isMouseOver: bool): number =>
-  (node.getId() === centerId || isMouseOver ? 1.0 : 0.5)
+const calculateNodeScale = (
+  node: PersonNode,
+  centerId: string,
+  isMouseOver: boolean,
+): number => (node.getId() === centerId || isMouseOver ? 1.0 : 0.5)
 
 /* Given a full link, calculate the visual path that the link should take. */
 const calculateLinkPath = (link: TLink, centerId: string): string => {
@@ -279,16 +288,12 @@ const calculateLinkPath = (link: TLink, centerId: string): string => {
   const t = link.target
 
   const angle = angleRadians(t, m)
-  const nodeRadius = ((IMAGE_SIZE / 2) * calculateNodeScale(t, centerId, false))
+  const nodeRadius = (IMAGE_SIZE / 2) * calculateNodeScale(t, centerId, false)
 
   //const tip = radial(t, nodeRadius, angle)
 
-  return populatePath(
-    'M X0 Y0 Q X1 Y1 X2 Y2',
-    [s, m, t],
-  )
+  return populatePath('M X0 Y0 Q X1 Y1 X2 Y2', [s, m, t])
 }
-
 
 /* Calculate the visual connection between a node and its start and end dates on the timeline. */
 const calculateLifelinePath = (
@@ -301,12 +306,24 @@ const calculateLifelinePath = (
   if (node.person.birthDate != null) {
     const death = node.person.deathDate ? node.person.deathDate : moment()
 
-    const birthPx = { x: timeline.scale(node.person.birthDate), y: TIMELINE_Y(dimensions.height) }
+    const birthPx = {
+      x: timeline.scale(node.person.birthDate),
+      y: TIMELINE_Y(dimensions.height),
+    }
     const bc1 = { x: node.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
-    const bc2 = { x: birthPx.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
+    const bc2 = {
+      x: birthPx.x,
+      y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET,
+    }
 
-    const deathPx = { x: timeline.scale(death), y: TIMELINE_Y(dimensions.height) }
-    const dc1 = { x: deathPx.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
+    const deathPx = {
+      x: timeline.scale(death),
+      y: TIMELINE_Y(dimensions.height),
+    }
+    const dc1 = {
+      x: deathPx.x,
+      y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET,
+    }
     const dc2 = { x: node.x, y: TIMELINE_Y(dimensions.height) - TIMELINE_UPSET }
 
     if (birthPx.x != null && deathPx.x != null) {
@@ -320,7 +337,6 @@ const calculateLifelinePath = (
   }
   return ''
 }
-
 
 /* Render all of the people in a selection.
  *
@@ -336,56 +352,72 @@ const calculateLifelinePath = (
 const renderPeople = (
   sel: D3Types.Selection,
   selectNode: PersonNode => void,
-  mouseOver: (PersonNode, bool) => void,
+  mouseOver: (PersonNode, boolean) => void,
   dim: Dimensions,
 ) => {
-  const circle = sel.append('g')
+  const circle = sel
+    .append('g')
     .on('click', n => selectNode(n))
     .on('mouseover', n => mouseOver(n, true))
     .on('mouseout', n => mouseOver(n, false))
 
-  const canvas = circle.classed('translate', true)
-    .attr('id', (node: PersonNode): string => convertToSafeDOMId(node.person.id.asString()))
+  const canvas = circle
+    .classed('translate', true)
+    .attr(
+      'id',
+      (node: PersonNode): string =>
+        convertToSafeDOMId(node.person.id.asString()),
+    )
     .attr('transform', `translate(${dim.width / 2}, ${dim.height / 2})`)
     .append('g')
     .classed('scale', true)
     .attr('clip-path', 'url(#image-clip)')
 
-  canvas.append('circle')
+  canvas
+    .append('circle')
     .classed('node-backdrop', true)
     .attr('r', IMAGE_SIZE / 2)
 
-  canvas.append('image')
-    .on(
-      'error',
-      (err, cnt, imageLst) => {
-        if (imageLst != null) {
-          const image = imageLst[cnt]
-          if (image != null) {
-            /* I have no idea why, but using xlink:href here actually causes
-             * the default image to not load. */
-            image.setAttribute('href', `${config.basepath}/static/default-icon.svg`)
-          }
+  canvas
+    .append('image')
+    .on('error', (err, cnt, imageLst) => {
+      if (imageLst != null) {
+        const image = imageLst[cnt]
+        if (image != null) {
+          /* I have no idea why, but using xlink:href here actually causes
+           * the default image to not load. */
+          image.setAttribute(
+            'href',
+            `${config.basepath}/static/default-icon.svg`,
+          )
         }
-      },
+      }
+    })
+    .attr(
+      'xlink:href',
+      (node: PersonNode): string =>
+        node.person.thumbnail ? node.person.thumbnail : '',
     )
-    .attr('xlink:href', (node: PersonNode): string => (node.person.thumbnail ? node.person.thumbnail : ''))
     .attr('preserveAspectRatio', 'xMidYMin slice')
     .attr('height', IMAGE_SIZE)
     .attr('width', IMAGE_SIZE)
     .attr('x', -IMAGE_SIZE / 2)
     .attr('y', -IMAGE_SIZE / 2)
 
-  canvas.append('path')
+  canvas
+    .append('path')
     .attr('class', 'banner')
     .attr('style', `stroke-width: ${BANNER_SIZE}`)
-    .attr('d', populatePath(
-      'M X0 Y0 L X1 Y1',
-      [{ x: -BANNER_X, y: BANNER_Y },
-        { x: +BANNER_X, y: BANNER_Y }],
-    ))
+    .attr(
+      'd',
+      populatePath('M X0 Y0 L X1 Y1', [
+        { x: -BANNER_X, y: BANNER_Y },
+        { x: +BANNER_X, y: BANNER_Y },
+      ]),
+    )
 
-  canvas.append('text')
+  canvas
+    .append('text')
     .attr('class', 'name')
     .attr('text-anchor', 'middle')
     .attr('y', BANNER_Y)
@@ -395,26 +427,37 @@ const renderPeople = (
   return circle
 }
 
-
 /* Render all of the links in the selection.
  *
  * This works in exactly the same way as renderPeople and should be called as such:
  *
  *   renderLinks(sel.enter(), ...)
  */
-const renderLinks = (container: D3Types.Selection, graph: TGraph): D3Types.Selection => {
+const renderLinks = (
+  container: D3Types.Selection,
+  graph: TGraph,
+): D3Types.Selection => {
   const path = container.append('path')
 
-  path.classed('influence-link', true)
-    .classed('from', (link: TLink): bool => link.source.getId() === graph.focusId)
-    .classed('to', (link: TLink): bool => link.target.getId() === graph.focusId)
+  path
+    .classed('influence-link', true)
+    .classed(
+      'from',
+      (link: TLink): boolean => link.source.getId() === graph.focusId,
+    )
+    .classed(
+      'to',
+      (link: TLink): boolean => link.target.getId() === graph.focusId,
+    )
     .attr('visibity', 'visible')
     .attr('d', (link: TLink): string => calculateLinkPath(link, graph.focusId))
-    .attr('id', (link: TLink): string => `${link.source.getId()}-${link.target.getId()}`)
+    .attr(
+      'id',
+      (link: TLink): string => `${link.source.getId()}-${link.target.getId()}`,
+    )
 
   return path
 }
-
 
 /* Render all of lifespan connections
  *
@@ -429,14 +472,18 @@ const renderLifelines = (
 ): D3Types.Selection => {
   const path = container.append('path')
 
-  path.classed('timeline', true)
+  path
+    .classed('timeline', true)
     .attr('id', (node: PersonNode): string => convertToSafeDOMId(node.getId()))
     .attr('style', 'opacity: 0.03;')
-    .attr('d', (node: PersonNode): string => calculateLifelinePath(dimensions, timeline, node))
+    .attr(
+      'd',
+      (node: PersonNode): string =>
+        calculateLifelinePath(dimensions, timeline, node),
+    )
 
   return path
 }
-
 
 /* Highlight a node by making it larger and increasing the opacity of its
  * lifeline, or unhighlight it. The `over` parameter should be set to `true` if
@@ -447,41 +494,52 @@ const focusHighlight = (
   lifelinesElem: D3Types.Selection,
   focus: PersonDetail,
   n: PersonNode,
-  over: bool,
+  over: boolean,
 ) => {
   if (n.getId() === focus.id.asString()) {
     return
   }
   if (over) {
-    nodesElem.append(() => nodesElem.select(`#${convertToSafeDOMId(n.getId())}`).remove().node())
+    nodesElem.append(() =>
+      nodesElem
+        .select(`#${convertToSafeDOMId(n.getId())}`)
+        .remove()
+        .node(),
+    )
 
-    nodesElem.select(`#${convertToSafeDOMId(n.getId())} .scale`)
+    nodesElem
+      .select(`#${convertToSafeDOMId(n.getId())} .scale`)
       .transition()
       .attr('transform', 'scale(0.75)')
-    lifelinesElem.select(`#${convertToSafeDOMId(n.getId())}`)
+    lifelinesElem
+      .select(`#${convertToSafeDOMId(n.getId())}`)
       .transition()
       .attr('style', 'opacity: 0.5;')
   } else {
-    nodesElem.select(`#${convertToSafeDOMId(n.getId())} .scale`)
+    nodesElem
+      .select(`#${convertToSafeDOMId(n.getId())} .scale`)
       .transition()
       .attr('transform', 'scale(0.5)')
-    lifelinesElem.select(`#${convertToSafeDOMId(n.getId())}`)
+    lifelinesElem
+      .select(`#${convertToSafeDOMId(n.getId())}`)
       .transition()
       .attr('style', 'opacity: 0.03;')
 
-    nodesElem.append(() => nodesElem.select(`#${convertToSafeDOMId(focus.id.asString())}`).remove().node())
+    nodesElem.append(() =>
+      nodesElem
+        .select(`#${convertToSafeDOMId(focus.id.asString())}`)
+        .remove()
+        .node(),
+    )
   }
 }
-
 
 /* Get a list of all the people in the graph. */
 const listOfPeopleInGraph = (
   graph: TGraph,
   people: store.PeopleCache,
-): Array<PersonDetail> => (
+): Array<PersonDetail> =>
   fp.filter(p => p != null)(fp.map(node => people[node.getId()])(graph.nodes))
-)
-
 
 /* Calculate the time range that should be on the axis, using the minimum birth
  * date and maximum death date of everyone provided in the list of `people`.
@@ -492,7 +550,7 @@ const calculateTimeRange = (people: Array<PersonDetail>): [moment, moment] => {
   let minDate = null
   let maxDate = null
 
-  people.forEach((p) => {
+  people.forEach(p => {
     if (p.birthDate != null) {
       if (minDate === null || p.birthDate < minDate) {
         minDate = p.birthDate
@@ -529,7 +587,6 @@ const calculateTimeRange = (people: Array<PersonDetail>): [moment, moment] => {
   return [minDate, maxDate]
 }
 
-
 /* Given the current dictionary of people, the current focus, and the current
  * maximum number of displayable nodes, update the nodes and links in the
  * influence graph. */
@@ -540,29 +597,40 @@ const updateInfluenceGraph = (
   maxNodes: number,
   dim: Dimensions,
 ) => {
-  const influenceLimit: Array<PersonDetail> => Array<PersonDetail> = fp.compose(
+  const influenceLimit: (
+    Array<PersonDetail>,
+  ) => Array<PersonDetail> = fp.compose(
     fp.take(maxNodes),
     fp.reverse,
     fp.sortBy(p => p.influencedByCount + p.influencedBy),
   )
-  const lookupPeople: Array<SubjectId> => Array<PersonDetail> = fp.compose(
-    fp.filter((p: ?PersonDetail): bool => p != null),
+  const lookupPeople: (Array<SubjectId>) => Array<PersonDetail> = fp.compose(
+    fp.filter((p: ?PersonDetail): boolean => p != null),
     fp.map((id: SubjectId): ?PersonDetail => people[id.asString()]),
   )
 
-  const influencedBy: HashSet<PersonDetail> = new HashSet(...lookupPeople(focus.influencedBy))
-  const influenced: HashSet<PersonDetail> = new HashSet(...lookupPeople(focus.influenced))
+  const influencedBy: HashSet<PersonDetail> = new HashSet(
+    ...lookupPeople(focus.influencedBy),
+  )
+  const influenced: HashSet<PersonDetail> = new HashSet(
+    ...lookupPeople(focus.influenced),
+  )
   const influences: HashSet<PersonDetail> = influenced.union(influencedBy)
 
-  const currentPeople: HashSet<PersonDetail> =
-    new HashSet(focus).union(
-      new HashSet(...influenceLimit(influences.values())))
+  const currentPeople: HashSet<PersonDetail> = new HashSet(focus).union(
+    new HashSet(...influenceLimit(influences.values())),
+  )
 
-  const oldPeople: HashSet<PersonDetail> =
-    new HashSet(...fp.map(n => n.person)(graph.getVisibleNodes()))
+  const oldPeople: HashSet<PersonDetail> = new HashSet(
+    ...fp.map(n => n.person)(graph.getVisibleNodes()),
+  )
 
-  const incomingPeople: HashSet<PersonDetail> = currentPeople.difference(oldPeople)
-  const outgoingPeople: HashSet<PersonDetail> = oldPeople.difference(currentPeople)
+  const incomingPeople: HashSet<PersonDetail> = currentPeople.difference(
+    oldPeople,
+  )
+  const outgoingPeople: HashSet<PersonDetail> = oldPeople.difference(
+    currentPeople,
+  )
 
   console.log('[updateInfluenceGraph incoming]', incomingPeople)
   console.log('[updateInfluenceGraph outgoing]', outgoingPeople)
@@ -571,7 +639,7 @@ const updateInfluenceGraph = (
   outgoingPeople.values().forEach((p: PersonDetail) => graph.removePerson(p))
 
   const remainingNodes = graph.getVisibleNodes()
-  remainingNodes.forEach((n) => {
+  remainingNodes.forEach(n => {
     if (!n.person.id.equals(focus.id)) {
       if (influencedBy.has(n.person.id)) {
         const link = graph.createLink(n.person, focus)
@@ -613,25 +681,38 @@ const updateInfluenceGraph = (
   graph.setFocus(focus)
 }
 
-
-const clamp = (min: number, max: number): (number => number) => (val: number): number => {
-  if (val < min) { return min }
-  if (val > max) { return max }
+const clamp = (min: number, max: number): (number => number) => (
+  val: number,
+): number => {
+  if (val < min) {
+    return min
+  }
+  if (val > max) {
+    return max
+  }
   return val
 }
 
-
-const RadialInfluenceAnimation = (endThreshold: number, g: TGraph, dim: Dimensions) => {
+const RadialInfluenceAnimation = (
+  endThreshold: number,
+  g: TGraph,
+  dim: Dimensions,
+) => {
   const graph = g
   let dimensions = dim
 
   /* Possibly something that does an accelaration curve, speeding up until
    * alpha == 0.5 and then slowing down again? */
-  const calculateVelocity = (current: number, target: ?number, alpha: number): number => (
+  const calculateVelocity = (
+    current: number,
+    target: ?number,
+    alpha: number,
+  ): number =>
     target != null
-      ? (Math.abs(target - current) > endThreshold ? (target - current) * 0.05 : 0)
+      ? Math.abs(target - current) > endThreshold
+        ? (target - current) * 0.05
+        : 0
       : 0
-  )
 
   const translateNode = (node: PersonNode | InvisibleNode, alpha: number) => {
     node.vx = calculateVelocity(node.x, node.tx, alpha)
@@ -642,7 +723,7 @@ const RadialInfluenceAnimation = (endThreshold: number, g: TGraph, dim: Dimensio
   }
 
   console.log('[RadialInfluenceAnimation]', graph.getLinks())
-  const force = (alpha) => {
+  const force = alpha => {
     const links = graph.getLinks()
     const focus = graph.getFocus()
 
@@ -674,16 +755,16 @@ const RadialInfluenceAnimation = (endThreshold: number, g: TGraph, dim: Dimensio
         //   || links[i].target.getId() === "Susanna_Clarke") {
         //   debugger
         // }
-        const angle = (angleSlice * i) - maxAngle
-        links[i].middle.tx = center.x + ((radius / 2) * Math.cos(angle))
-        links[i].middle.ty = center.y + ((radius / 2) * Math.sin(angle))
+        const angle = angleSlice * i - maxAngle
+        links[i].middle.tx = center.x + (radius / 2) * Math.cos(angle)
+        links[i].middle.ty = center.y + (radius / 2) * Math.sin(angle)
 
         if (focus.person.id.equals(links[i].target.person.id)) {
-          links[i].source.tx = center.x + (radius * Math.cos(angle))
-          links[i].source.ty = center.y + (radius * Math.sin(angle))
+          links[i].source.tx = center.x + radius * Math.cos(angle)
+          links[i].source.ty = center.y + radius * Math.sin(angle)
         } else {
-          links[i].target.tx = center.x + (radius * Math.cos(angle))
-          links[i].target.ty = center.y + (radius * Math.sin(angle))
+          links[i].target.tx = center.x + radius * Math.cos(angle)
+          links[i].target.ty = center.y + radius * Math.sin(angle)
         }
       }
     }
@@ -696,7 +777,6 @@ const RadialInfluenceAnimation = (endThreshold: number, g: TGraph, dim: Dimensio
 
   return force
 }
-
 
 /* InfluenceCanvas draws the graph of influences between the focused person and
  * all of their influencers.
@@ -752,7 +832,7 @@ class InfluenceCanvas {
   fdl: D3Types.ForceSimulation<InvisibleNode | PersonNode>
   fdlLinks: LinkForces
 
-  selectNode: (SubjectId) => void
+  selectNode: SubjectId => void
 
   highlight: ?PersonNode
   radialAnimation: Function
@@ -762,7 +842,7 @@ class InfluenceCanvas {
     dimensions: Dimensions,
     focus: PersonDetail,
     people: store.PeopleCache,
-    selectNode: (SubjectId) => void,
+    selectNode: SubjectId => void,
   ) {
     this.topElem = topElem
     this.dimensions = dimensions
@@ -777,59 +857,73 @@ class InfluenceCanvas {
       focusNode.y = dimensions.height / 2
     }
 
-    updateInfluenceGraph(this.graph, this.focus, this.people, MAX_SCREEN_NODES, dimensions)
+    updateInfluenceGraph(
+      this.graph,
+      this.focus,
+      this.people,
+      MAX_SCREEN_NODES,
+      dimensions,
+    )
 
     // create clip path for image
     this.definitions = this.topElem.append('defs')
 
-    this.definitions.append('svg:clipPath')
+    this.definitions
+      .append('svg:clipPath')
       .attr('id', 'image-clip')
       .append('svg:circle')
       .attr('cx', 0)
       .attr('cy', 0)
       .attr('r', IMAGE_SIZE / 2)
 
-    this.definitions.append('svg:linearGradient')
+    this.definitions
+      .append('svg:linearGradient')
       .attr('id', 'loading-gradient')
       .attr('x1', '0%')
       .attr('y1', '0%')
       .attr('x2', '100%')
       .attr('y2', '0%')
-      .call((gradient) => {
-        gradient.append('svg:stop')
+      .call(gradient => {
+        gradient
+          .append('svg:stop')
           .attr('offset', '0%')
           .style('stop-color', 'white')
           .style('stop-opacity', '1')
-        gradient.append('svg:stop')
+        gradient
+          .append('svg:stop')
           .attr('offset', '50%')
           .style('stop-color', 'white')
           .style('stop-opacity', '0')
-        gradient.append('svg:stop')
+        gradient
+          .append('svg:stop')
           .attr('offset', '100%')
           .style('stop-color', 'white')
           .style('stop-opacity', '0')
       })
-    this.definitions.append('svg:linearGradient')
+    this.definitions
+      .append('svg:linearGradient')
       .attr('id', 'loading-gradient-2')
       .attr('x1', '0%')
       .attr('y1', '0%')
       .attr('x2', '100%')
       .attr('y2', '0%')
-      .call((gradient) => {
-        gradient.append('svg:stop')
+      .call(gradient => {
+        gradient
+          .append('svg:stop')
           .attr('offset', '0%')
           .style('stop-color', 'black')
           .style('stop-opacity', '1')
-        gradient.append('svg:stop')
+        gradient
+          .append('svg:stop')
           .attr('offset', '50%')
           .style('stop-color', 'black')
           .style('stop-opacity', '0')
-        gradient.append('svg:stop')
+        gradient
+          .append('svg:stop')
           .attr('offset', '100%')
           .style('stop-color', 'black')
           .style('stop-opacity', '0')
       })
-
 
     /* I've put these here so that I can force them to be rendered in a
      * particular order. If all of the links appear in one container, and all
@@ -840,7 +934,9 @@ class InfluenceCanvas {
     this.linksElem = this.topElem.append('g').classed('links', true)
     this.nodesElem = this.topElem.append('g').classed('nodes', true)
 
-    const [minYear, maxYear] = calculateTimeRange(listOfPeopleInGraph(this.graph, this.people))
+    const [minYear, maxYear] = calculateTimeRange(
+      listOfPeopleInGraph(this.graph, this.people),
+    )
     this.timeline = createTimeline(this.dimensions.width, minYear, maxYear)
     this.timelineAxis = topElem
       .append('g')
@@ -849,8 +945,7 @@ class InfluenceCanvas {
       .call(this.timeline.axis)
 
     this.radialAnimation = RadialInfluenceAnimation(1, this.graph, dimensions)
-    this.fdl = d3.forceSimulation()
-      .force('my_animation', this.radialAnimation)
+    this.fdl = d3.forceSimulation().force('my_animation', this.radialAnimation)
     this.fdl.on('tick', () => this.animate())
 
     this.refreshCanvas()
@@ -871,12 +966,22 @@ class InfluenceCanvas {
       })
 
     if (this.focus != null) {
-      this.linksElem.selectAll('path')
-        .attr('d', (link: TLink): string => calculateLinkPath(link, this.focus.id.asString()))
+      this.linksElem
+        .selectAll('path')
+        .attr(
+          'd',
+          (link: TLink): string =>
+            calculateLinkPath(link, this.focus.id.asString()),
+        )
     }
 
-    this.lifelinesElem.selectAll('path')
-      .attr('d', (node: PersonNode): string => calculateLifelinePath(this.dimensions, this.timeline, node))
+    this.lifelinesElem
+      .selectAll('path')
+      .attr(
+        'd',
+        (node: PersonNode): string =>
+          calculateLifelinePath(this.dimensions, this.timeline, node),
+      )
   }
 
   /* Set the current dimensions of the drawing area. This will restart the animation. */
@@ -893,35 +998,45 @@ class InfluenceCanvas {
      * the influence graph and display the empty loading circle. */
     let nodeUnderLoad = subject ? this.graph.nodes[subject.asString()] : null
 
-    console.log('[setLoadInProgress subject and nodeUnderLoad]', subject, nodeUnderLoad)
+    console.log(
+      '[setLoadInProgress subject and nodeUnderLoad]',
+      subject,
+      nodeUnderLoad,
+    )
     if (subject && nodeUnderLoad) {
       console.log('[setLoadInProgress adding a loading circle]')
       this.graph.getVisibleNodes().forEach((n: PersonNode) => {
         n.isLoading = subject ? subject.asString() === n.getId() : false
         if (n.isLoading) {
-          this.nodesElem.select(`#${convertToSafeDOMId(n.getId())} .scale`)
+          this.nodesElem
+            .select(`#${convertToSafeDOMId(n.getId())} .scale`)
             .append('circle')
             .classed('loading-circle', true)
             .attr('fill', 'none')
             .attr('visibility', 'visible')
             .attr('stroke', 'url(#loading-gradient)')
             .attr('stroke-width', RIM_SIZE)
-            .attr('r', ((IMAGE_SIZE - RIM_SIZE) / 2) - (RIM_SIZE / 2))
+            .attr('r', (IMAGE_SIZE - RIM_SIZE) / 2 - RIM_SIZE / 2)
         }
       })
     } else if (subject && !nodeUnderLoad) {
       console.log('[setLoadInProgress removing all nodes]')
       this.graph.nodes = {}
       this.graph.links = []
-      this.nodesElem.append('g')
-        .attr('transform', `translate(${this.dimensions.width / 2}, ${this.dimensions.height / 2})`)
+      this.nodesElem
+        .append('g')
+        .attr(
+          'transform',
+          `translate(${this.dimensions.width / 2}, ${this.dimensions.height /
+            2})`,
+        )
         .append('circle')
         .classed('loading-circle', true)
         .attr('fill', 'none')
         .attr('visibility', 'visible')
         .attr('stroke', 'url(#loading-gradient-2)')
         .attr('stroke-width', RIM_SIZE)
-        .attr('r', ((IMAGE_SIZE - RIM_SIZE) / 2) - (RIM_SIZE / 2))
+        .attr('r', (IMAGE_SIZE - RIM_SIZE) / 2 - RIM_SIZE / 2)
     } else {
       this.nodesElem.select('.loading-circle').remove()
     }
@@ -935,13 +1050,21 @@ class InfluenceCanvas {
     this.focus = focus
     this.people = people
 
-    updateInfluenceGraph(this.graph, this.focus, people, MAX_SCREEN_NODES, this.dimensions)
+    updateInfluenceGraph(
+      this.graph,
+      this.focus,
+      people,
+      MAX_SCREEN_NODES,
+      this.dimensions,
+    )
 
-    this.lifelinesElem.select(`#${convertToSafeDOMId(oldFocus.id.asString())}`)
+    this.lifelinesElem
+      .select(`#${convertToSafeDOMId(oldFocus.id.asString())}`)
       .transition()
       .attr('style', 'opacity: 0.03;')
 
-    this.lifelinesElem.select(`#${convertToSafeDOMId(this.focus.id.asString())}`)
+    this.lifelinesElem
+      .select(`#${convertToSafeDOMId(this.focus.id.asString())}`)
       .transition()
       .attr('style', 'opacity: 0.5;')
 
@@ -951,10 +1074,13 @@ class InfluenceCanvas {
   /* This function is a generic trigger to update the drawn data after an
    * unspecified state change. */
   refreshCanvas() {
-    const [minYear, maxYear] = calculateTimeRange(listOfPeopleInGraph(this.graph, this.people))
+    const [minYear, maxYear] = calculateTimeRange(
+      listOfPeopleInGraph(this.graph, this.people),
+    )
     this.timeline.scale.range([0, this.dimensions.width - 1])
     this.timeline.scale.domain([minYear, maxYear])
-    this.timelineAxis.transition()
+    this.timelineAxis
+      .transition()
       .duration(DEFAULT_ANIMATION_DURATION)
       .attr('transform', `translate(0, ${TIMELINE_Y(this.dimensions.height)})`)
       .call(this.timeline.axis)
@@ -965,27 +1091,39 @@ class InfluenceCanvas {
 
     const nodeSel = this.nodesElem
       .selectAll('.translate')
-      .data(this.graph.getVisibleNodes(), (n: PersonNode): ?string => (n ? n.getId() : null))
+      .data(
+        this.graph.getVisibleNodes(),
+        (n: PersonNode): ?string => (n ? n.getId() : null),
+      )
     renderPeople(
       nodeSel.enter(),
       n => this.selectNode(n.person.id),
-      (n, over) => focusHighlight(this.nodesElem, this.lifelinesElem, this.focus, n, over),
+      (n, over) =>
+        focusHighlight(this.nodesElem, this.lifelinesElem, this.focus, n, over),
       this.dimensions,
     )
-    nodeSel.exit().transition().remove()
+    nodeSel
+      .exit()
+      .transition()
+      .remove()
 
     this.nodesElem
       .selectAll('.scale')
-      .attr('transform', d => (d.getId() === this.focus.id.asString() ? 'scale(1.0)' : 'scale(0.5)'))
+      .attr('transform', d =>
+        d.getId() === this.focus.id.asString() ? 'scale(1.0)' : 'scale(0.5)',
+      )
 
     console.log('[refreshCanvas this.graph.getLinks]', this.graph.getLinks())
-    const linkSel = this.linksElem.selectAll('path')
-      .data(this.graph.getLinks())
+    const linkSel = this.linksElem.selectAll('path').data(this.graph.getLinks())
     renderLinks(linkSel.enter(), this.graph)
     linkSel.exit().remove()
 
-    const lifespanSel = this.lifelinesElem.selectAll('path')
-      .data(this.graph.getVisibleNodes(), (n: PersonNode): ?string => (n ? n.getId() : null))
+    const lifespanSel = this.lifelinesElem
+      .selectAll('path')
+      .data(
+        this.graph.getVisibleNodes(),
+        (n: PersonNode): ?string => (n ? n.getId() : null),
+      )
     renderLifelines(lifespanSel.enter(), this.dimensions, this.timeline)
     lifespanSel.exit().remove()
 
@@ -994,13 +1132,12 @@ class InfluenceCanvas {
   }
 }
 
-
 type InfluenceChartProps = {
   label: string,
   focusedId: SubjectId,
   loadInProgress: ?SubjectId,
   people: store.PeopleCache,
-  selectPerson: (SubjectId) => void,
+  selectPerson: SubjectId => void,
 }
 
 type InfluenceChartState = {
@@ -1022,7 +1159,10 @@ type InfluenceChartState = {
  * world, and so this label is necessary in order to create an object that can
  * then be retrieved as a D3 selection.
  */
-class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChartState> {
+class InfluenceChart_ extends React.Component<
+  InfluenceChartProps,
+  InfluenceChartState,
+> {
   /* React property or redux state changes will trigger this function, which is
    * a natural place to convert those changes into underlying canvas changes.
    * */
@@ -1041,12 +1181,12 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
         const canvas = prevState.canvas
           ? prevState.canvas
           : new InfluenceCanvas(
-            d3Elem,
-            domElem.getBoundingClientRect(),
-            focus,
-            newProps.people,
-            newProps.selectPerson,
-          )
+              d3Elem,
+              domElem.getBoundingClientRect(),
+              focus,
+              newProps.people,
+              newProps.selectPerson,
+            )
 
         if (prevState.loadInProgress !== newProps.loadInProgress) {
           canvas.setLoadInProgress(newProps.loadInProgress)
@@ -1056,7 +1196,12 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
           canvas.setFocused(focus, newProps.people)
         }
 
-        return { ...prevState, canvas, focusedId, loadInProgress: newProps.loadInProgress }
+        return {
+          ...prevState,
+          canvas,
+          focusedId,
+          loadInProgress: newProps.loadInProgress,
+        }
       }
       return { ...prevState, focusedId }
     }
@@ -1088,7 +1233,11 @@ class InfluenceChart_ extends React.Component<InfluenceChartProps, InfluenceChar
     this.state.d3Elem = d3.select(`#${this.props.label}`)
 
     const focus = this.props.people[this.props.focusedId.asString()]
-    if (focus != null && this.state.domElem != null && this.state.d3Elem != null) {
+    if (
+      focus != null &&
+      this.state.domElem != null &&
+      this.state.d3Elem != null
+    ) {
       const { d3Elem, domElem } = this.state
       this.state.canvas = new InfluenceCanvas(
         d3Elem,
@@ -1138,6 +1287,4 @@ const InfluenceChart = connect(state => ({
   people: store.people(state),
 }))(InfluenceChart_)
 
-
 export default InfluenceChart
-

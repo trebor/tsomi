@@ -15,20 +15,11 @@ const ErrorBox = (props: ErrorProps): Element<'div'> =>
   React.createElement(
     'div',
     { className: 'error-box' },
-    React.createElement(
-      'img',
-      {
-        src: `${config.basepath}/static/tsomi-errors.svg`,
-        className: 'error-icon',
-      },
-    ),
-    React.createElement(
-      'div',
-      {},
-      props.msg,
-    ),
+    React.createElement('img', {
+      src: `${config.basepath}/static/tsomi-errors.svg`,
+      className: 'error-icon',
+    }),
+    React.createElement('div', {}, props.msg),
   )
 
-
 export default ErrorBox
-

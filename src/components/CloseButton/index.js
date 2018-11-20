@@ -12,13 +12,10 @@ type CloseButtonProps = {
 }
 
 const Icon = (): Element<'img'> =>
-  React.createElement(
-    'img',
-    {
-      src: `${config.basepath}/static/close-icon.svg`,
-      className: 'close-button-icon',
-    },
-  )
+  React.createElement('img', {
+    src: `${config.basepath}/static/close-icon.svg`,
+    className: 'close-button-icon',
+  })
 
 const CloseButton = (props: CloseButtonProps): Element<'div'> =>
   React.createElement(
@@ -31,14 +28,10 @@ const CloseButton = (props: CloseButtonProps): Element<'div'> =>
         className: 'close-button link',
       },
       'close',
-      React.createElement(
-        Icon,
-        {
-          'aria-label': 'Close',
-        },
-      ),
+      React.createElement(Icon, {
+        'aria-label': 'Close',
+      }),
     ),
   )
 
 export default CloseButton
-

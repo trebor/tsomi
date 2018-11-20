@@ -16,4 +16,3 @@ export const MAX_SCREEN_NODES = 25
 export const NODE_SIZE = 150
 export const RIM_SIZE = 15
 export const TIMELINE_Y = height => height - 30
-

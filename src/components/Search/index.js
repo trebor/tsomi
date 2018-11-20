@@ -9,18 +9,17 @@ import { type PersonDetail, SubjectId } from '../../types'
 import Spinner from '../Spinner/'
 import SearchResult from '../SearchResult/'
 
-
 require('./main.css')
 
 type SearchState = {
-  name: string
+  name: string,
 }
 
 type SearchProps = {
   closeSearch: () => void,
   focusPerson: SubjectId => void,
   submitSearch: string => void,
-  searchInProgress: bool,
+  searchInProgress: boolean,
   searchString: ?string,
   searchResults: Array<PersonDetail>,
 }
@@ -39,7 +38,9 @@ class Search_ extends React.Component<SearchProps, SearchState> {
   }
 
   keyUp(e) {
-    if (e.keyCode === 13) { this.submit() }
+    if (e.keyCode === 13) {
+      this.submit()
+    }
   }
 
   handleChange(e) {
@@ -59,18 +60,19 @@ class Search_ extends React.Component<SearchProps, SearchState> {
 
     const submit = this.props.searchInProgress
       ? React.createElement(Spinner, { className: 'spinner-searchbar' })
-      : React.createElement('button', { className: 'link search-go', onClick: () => this.submit() }, 'GO')
+      : React.createElement(
+          'button',
+          { className: 'link search-go', onClick: () => this.submit() },
+          'GO',
+        )
 
     const searchResult = this.props.searchString
-      ? React.createElement(
-        SearchResult,
-        {
+      ? React.createElement(SearchResult, {
           closeSearch: this.props.closeSearch,
           searchString: this.props.searchString,
           searchResults: this.props.searchResults,
           selectPerson: this.props.focusPerson,
-        },
-      )
+        })
       : null
 
     return React.createElement(
@@ -91,8 +93,7 @@ const Search = connect(
     searchString: store.searchString(state),
     searchResults: store.searchResults(state),
   }),
-  dispatch => ({ }),
+  dispatch => ({}),
 )(Search_)
 
 export default Search
-

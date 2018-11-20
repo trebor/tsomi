@@ -13,11 +13,11 @@ export type Store = {
   focusedSubject: SubjectId,
   loadInProgress: ?SubjectId,
   people: PeopleCache,
-  searchInProgress: bool,
+  searchInProgress: boolean,
   searchResults: Array<PersonDetail>,
   searchString: ?string,
-  showAboutPage: bool,
-  wikiDivHidden: bool,
+  showAboutPage: boolean,
+  wikiDivHidden: boolean,
 }
 
 export const initialState = (): Store => {
@@ -43,41 +43,61 @@ export type Action = {
   [string]: any,
 }
 
-export const cachePerson = (subjectId: SubjectId, person: PersonDetail): Action =>
-  ({ type: 'CACHE_PERSON', subjectId, person })
-export const focusOnPerson = (subjectId: SubjectId): Action =>
-  ({ type: 'FOCUS_ON_PERSON', subjectId })
-export const saveSearchResults = (searchString: ?string, results: Array<PersonDetail>): Action =>
-  ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
-export const setAboutPage = (state: bool): Action =>
-  ({ type: 'SET_ABOUT_PAGE', state })
-export const setErrorMessage = (msg: ?string): Action =>
-  ({ type: 'SET_ERROR_MESSAGE', msg })
-export const setLoadInProgress = (subject: ?SubjectId): Action =>
-  ({ type: 'SET_LOAD_IN_PROGRESS', subject })
-export const setSearchInProgress = (status: bool) =>
-  ({ type: 'SET_SEARCH_IN_PROGRESS', status })
-export const setWikiDivHidden = (state: bool): Action =>
-  ({ type: 'SET_WIKI_DIV_HIDDEN', state })
-export const setWikiUri = (uri: Uri): Action =>
-  ({ type: 'SET_WIKI_URI', uri })
-export const toggleAboutPage = (): Action =>
-  ({ type: 'TOGGLE_ABOUT_PAGE' })
+export const cachePerson = (
+  subjectId: SubjectId,
+  person: PersonDetail,
+): Action => ({ type: 'CACHE_PERSON', subjectId, person })
+export const focusOnPerson = (subjectId: SubjectId): Action => ({
+  type: 'FOCUS_ON_PERSON',
+  subjectId,
+})
+export const saveSearchResults = (
+  searchString: ?string,
+  results: Array<PersonDetail>,
+): Action => ({ type: 'SAVE_SEARCH_RESULTS', searchString, results })
+export const setAboutPage = (state: boolean): Action => ({
+  type: 'SET_ABOUT_PAGE',
+  state,
+})
+export const setErrorMessage = (msg: ?string): Action => ({
+  type: 'SET_ERROR_MESSAGE',
+  msg,
+})
+export const setLoadInProgress = (subject: ?SubjectId): Action => ({
+  type: 'SET_LOAD_IN_PROGRESS',
+  subject,
+})
+export const setSearchInProgress = (status: boolean) => ({
+  type: 'SET_SEARCH_IN_PROGRESS',
+  status,
+})
+export const setWikiDivHidden = (state: boolean): Action => ({
+  type: 'SET_WIKI_DIV_HIDDEN',
+  state,
+})
+export const setWikiUri = (uri: Uri): Action => ({ type: 'SET_WIKI_URI', uri })
+export const toggleAboutPage = (): Action => ({ type: 'TOGGLE_ABOUT_PAGE' })
 
 export const errorMessage = (store: Store): ?string => store.errorMessage
 export const focusedSubject = (store: Store): SubjectId => store.focusedSubject
 export const people = (store: Store) => store.people
 export const loadInProgress = (store: Store): ?SubjectId => store.loadInProgress
-export const lookupPerson = (s: SubjectId) =>
-  (store: Store): PersonDetail | void => store.people[s.asString()]
-export const searchInProgress = (store: Store): bool => store.searchInProgress
-export const searchResults = (store: Store): Array<PersonDetail> => store.searchResults
+export const lookupPerson = (s: SubjectId) => (
+  store: Store,
+): PersonDetail | void => store.people[s.asString()]
+export const searchInProgress = (store: Store): boolean =>
+  store.searchInProgress
+export const searchResults = (store: Store): Array<PersonDetail> =>
+  store.searchResults
 export const searchString = (store: Store): ?string => store.searchString
-export const showAboutPage = (store: Store): bool => store.showAboutPage
-export const wikiDivHidden = (store: Store): bool => store.wikiDivHidden
+export const showAboutPage = (store: Store): boolean => store.showAboutPage
+export const wikiDivHidden = (store: Store): boolean => store.wikiDivHidden
 export const wikiUri = (store: Store): Uri => store.currentWikiPageUri
 
-export const runState = (state?: Store = initialState(), action: any): Store => {
+export const runState = (
+  state?: Store = initialState(),
+  action: any,
+): Store => {
   switch (action.type) {
     case 'CACHE_PERSON':
       return {
@@ -149,4 +169,3 @@ export const runState = (state?: Store = initialState(), action: any): Store => 
       return state
   }
 }
-
