@@ -17,7 +17,6 @@ describe('DBpedia searches', () => {
     searchForPeople('Joyce Carol Oates')
       .then(lst => {
         expect(lst.length).toEqual(1) // should dedupe data
-        console.log('lst[0]', lst[0])
         expect(lst[0].uri.endsWith('resource/Joyce_Carol_Oates')).toBe(true)
         expect(lst[0].name).toEqual('Joyce Carol Oates')
         expect(
@@ -25,8 +24,8 @@ describe('DBpedia searches', () => {
         ).toBe(true)
         expect(lst[0].birthDate.isSame(moment('1938-06-16'))).toBe(true)
         expect(lst[0].deathDate).toEqual(null)
-        expect(lst[0].influencedByCount).toEqual(18)
-        expect(lst[0].influencedCount).toEqual(6)
+        expect(lst[0].influencedByCount > 0).toBe(true)
+        expect(lst[0].influencedCount > 0).toBe(true)
         done()
       })
       .catch(err => {
@@ -40,7 +39,7 @@ describe('DBpedia searches', () => {
       })
   })
 
-  xit('retrieves a person with both composed and uncomposed characters in their names', done => {
+  it('retrieves a person with both composed and uncomposed characters in their names', done => {
     /* latin small letter e with diaeresis */
     searchForPeople('Charlotte Brontë')
       .then(lst => {
@@ -75,7 +74,7 @@ describe('DBpedia searches', () => {
       })
   })
 
-  xit('retrieves list of people with searchForPeople', done => {
+  it('retrieves list of people with searchForPeople', done => {
     searchForPeople('William Gibson')
       .then(lst => {
         expect(lst.length).toEqual(2)
@@ -93,7 +92,7 @@ describe('DBpedia searches', () => {
       })
   })
 
-  xit('retrieve Octavia E. Butler without including her middle initial', done => {
+  it('retrieve Octavia E. Butler without including her middle initial', done => {
     searchForPeople('Octavia Butler')
       .then(lst => {
         expect(lst.length).toEqual(1)
@@ -112,7 +111,7 @@ describe('DBpedia searches', () => {
   })
 })
 
-xdescribe('precise dbpedia gets', () => {
+describe('precise dbpedia gets', () => {
   it('retrieves Joyce Carol Oates with all influencers', done => {
     getPerson(new SubjectId('Joyce_Carol_Oates'))
       .then(person => {
@@ -125,8 +124,8 @@ xdescribe('precise dbpedia gets', () => {
         )
         expect(person.birthDate.isSame(moment('1938-06-16'))).toBe(true)
         expect(person.deathDate).toBeFalsy()
-        expect(person.influencedBy.length).toEqual(18)
-        expect(person.influenced.length).toEqual(6)
+        expect(person.influencedBy.length > 0).toBe(true)
+        expect(person.influenced.length > 0).toBe(true)
         done()
       })
       .catch(err => {
@@ -178,6 +177,7 @@ xdescribe('precise dbpedia gets', () => {
         expect(person.name).toEqual('Edward John Moreton Drax Plunkett Dunsany')
         expect(person.birthDate.isSame(moment('1878-07-24'))).toBe(true)
         expect(person.abstract).toBeDefined()
+        expect(person.abstract).not.toBeNull()
         expect(
           person.abstract.startsWith(
             'Edward John Moreton Drax Plunkett, 18th Baron of Dunsany',

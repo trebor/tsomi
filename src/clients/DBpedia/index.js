@@ -17,7 +17,8 @@ import trace from '../../trace'
 
 require('isomorphic-fetch')
 
-export const DBPediaRootURI: string = 'http://live.dbpedia.org'
+/* TODO: turn this into a configuration option */
+export const DBPediaRootURI: string = 'http://dbpedia.org'
 
 export const IsPrimaryTopicOfURI: Array<string> = [
   'http://xmlns.com/foaf/0.1/isPrimaryTopicOf',
@@ -34,23 +35,28 @@ export const BirthplaceURI: Array<string> = [
 ]
 export const BirthdateURI: Array<string> = [
   `${DBPediaRootURI}/ontology/birthDate`,
+  `${DBPediaRootURI}/property/birthDate`,
 ]
 export const DeathdateURI: Array<string> = [
   `${DBPediaRootURI}/ontology/deathDate`,
 ]
+export const AbstractURI: Array<string> = [
+  `${DBPediaRootURI}/ontology/abstract`,
+]
 
-type RDFTriple = {|
+type RDFSet = {|
   type: string,
   value: string,
   datatype: ?string,
+  lang: ?string,
 |}
 
-type RDFTree = { [string]: { [string]: Array<RDFTriple> } }
+type RDFTree = { [string]: { [string]: Array<RDFSet> } }
 
 // Handle a variety of different date format issues. Dates, especially in the
 // distant past, are somewhat uncertain and DBpedia returns dates in a few
 // different formats.
-const parseDBpediaDate = (triple: RDFTriple): ?moment => {
+const parseDBpediaDate = (triple: RDFSet): ?moment => {
   if (triple.datatype === 'http://www.w3.org/2001/XMLSchema#integer') {
     return moment({ year: triple.value })
   }
@@ -87,11 +93,14 @@ const findByRelationship = (
     Object.entries,
   )
 
-const lookupFirstRDFElement = (tree: any, keys: Array<string>): ?RDFTriple =>
+const lookupRDFElements = (tree: any, keys: Array<string>): Array<RDFSet> =>
+  fp.flatten(fp.map((key: string): ?RDFSet => tree[key])(keys))
+
+const lookupFirstRDFElement = (tree: any, keys: Array<string>): ?RDFSet =>
   fp.head(
     fp.filter(v => v != null)(
       fp.map(
-        (key: string): ?RDFTriple => {
+        (key: string): ?RDFSet => {
           const res = maybe_(lst => fp.head(lst))(tree[key])
           if (res != null) {
             return res
@@ -108,9 +117,7 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
     .then(r => r.json())
     .then(
       (r: RDFTree): ?PersonDetail => {
-        console.log('[getPerson]', s.asString())
-        console.log(r)
-        const person: ?{ [string]: Array<RDFTriple> } =
+        const person: ?{ [string]: Array<RDFSet> } =
           r[mkResourceUrl(s.asString())]
         if (!person) {
           return null
@@ -132,36 +139,26 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
           mkOntologyUrl('influencedBy'),
           s,
         )(r)
-        const influencedBy = trace('influencedBy')(
-          Array.from(new Set(influencedBy_.concat(influencedBy__))),
+        const influencedBy = Array.from(
+          new Set(influencedBy_.concat(influencedBy__)),
         )
 
-        const wikipediaUri: ?RDFTriple = lookupFirstRDFElement(
+        const wikipediaUri: ?RDFSet = lookupFirstRDFElement(
           person,
           IsPrimaryTopicOfURI,
         )
 
-        const thumbnail: ?RDFTriple = lookupFirstRDFElement(
-          person,
-          ThumbnailURI,
-        )
+        const thumbnail: ?RDFSet = lookupFirstRDFElement(person, ThumbnailURI)
 
-        const birthPlace: ?RDFTriple = lookupFirstRDFElement(
-          person,
-          BirthplaceURI,
-        )
+        const birthPlace: ?RDFSet = lookupFirstRDFElement(person, BirthplaceURI)
 
-        const birthDate: ?RDFTriple = lookupFirstRDFElement(
-          person,
-          BirthdateURI,
-        )
+        const birthDate: ?RDFSet = lookupFirstRDFElement(person, BirthdateURI)
 
-        const deathDate: ?RDFTriple = lookupFirstRDFElement(
-          person,
-          DeathdateURI,
-        )
+        const deathDate: ?RDFSet = lookupFirstRDFElement(person, DeathdateURI)
 
-        const name: ?RDFTriple = lookupFirstRDFElement(person, NameURI)
+        const abstracts: Array<RDFSet> = lookupRDFElements(person, AbstractURI)
+
+        const name: ?RDFSet = lookupFirstRDFElement(person, NameURI)
         if (name != null) {
           return mkPersonDetail({
             id: s,
@@ -172,7 +169,7 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
               maybe_(n => n.value),
               fp.head,
               fp.filter(js => js.lang === 'en'),
-            )(person.abstract),
+            )(abstracts),
             birthPlace: maybe_(n => n.value)(birthPlace),
             birthDate: maybe_(n => parseDBpediaDate(n))(birthDate),
             deathDate: maybe_(n => parseDBpediaDate(n))(deathDate),
