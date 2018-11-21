@@ -19,14 +19,25 @@ require('isomorphic-fetch')
 
 export const DBPediaRootURI: string = 'http://live.dbpedia.org'
 
-export const IsPrimaryTopicOfURI: string =
-  'http://xmlns.com/foaf/0.1/isPrimaryTopicOf'
-export const ThumbnailURI: string = `${DBPediaRootURI}/ontology/thumbnail`
-//export const NameURI: string = `${DBPediaRootURI}/property/name`
-export const NameURI: string = 'http://xmlns.com/foaf/0.1/name'
-export const BirthplaceURI: string = `${DBPediaRootURI}/ontology/birthPlace`
-export const BirthdateURI: string = `${DBPediaRootURI}/ontology/birthDate`
-export const DeathdateURI: string = `${DBPediaRootURI}/ontology/deathDate`
+export const IsPrimaryTopicOfURI: Array<string> = [
+  'http://xmlns.com/foaf/0.1/isPrimaryTopicOf',
+]
+export const ThumbnailURI: Array<string> = [
+  `${DBPediaRootURI}/ontology/thumbnail`,
+]
+export const NameURI: Array<string> = [
+  `${DBPediaRootURI}/property/name`,
+  'http://xmlns.com/foaf/0.1/name',
+]
+export const BirthplaceURI: Array<string> = [
+  `${DBPediaRootURI}/ontology/birthPlace`,
+]
+export const BirthdateURI: Array<string> = [
+  `${DBPediaRootURI}/ontology/birthDate`,
+]
+export const DeathdateURI: Array<string> = [
+  `${DBPediaRootURI}/ontology/deathDate`,
+]
 
 type RDFTriple = {|
   type: string,
@@ -76,8 +87,19 @@ const findByRelationship = (
     Object.entries,
   )
 
-const lookupFirstRDFElement = (tree: any, key: string): ?RDFTriple =>
-  maybe_(lst => fp.head(lst))(tree[key])
+const lookupFirstRDFElement = (tree: any, keys: Array<string>): ?RDFTriple =>
+  fp.head(
+    fp.filter(v => v != null)(
+      fp.map(
+        (key: string): ?RDFTriple => {
+          const res = maybe_(lst => fp.head(lst))(tree[key])
+          if (res != null) {
+            return res
+          }
+        },
+      )(keys),
+    ),
+  )
 
 export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
   const dataUrl = mkDataUrl(s)
@@ -86,6 +108,8 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
     .then(r => r.json())
     .then(
       (r: RDFTree): ?PersonDetail => {
+        console.log('[getPerson]', s.asString())
+        console.log(r)
         const person: ?{ [string]: Array<RDFTriple> } =
           r[mkResourceUrl(s.asString())]
         if (!person) {
@@ -93,13 +117,11 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
         }
 
         /* eslint no-underscore-dangle: off */
-        const influenced_ = trace('influenced_')(
-          person.influenced
-            ? person.influenced.map(i => mkSubjectFromDBpediaUri(i.value))
-            : [],
-        )
-        const influenced__ = trace('influenced__')(
-          findByRelationship(mkOntologyUrl('influenced'), s)(r),
+        const influenced_ = person.influenced
+          ? person.influenced.map(i => mkSubjectFromDBpediaUri(i.value))
+          : []
+        const influenced__ = findByRelationship(mkOntologyUrl('influenced'), s)(
+          r,
         )
         const influenced = Array.from(new Set(influenced_.concat(influenced__)))
 
@@ -110,8 +132,8 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
           mkOntologyUrl('influencedBy'),
           s,
         )(r)
-        const influencedBy = Array.from(
-          new Set(influencedBy_.concat(influencedBy__)),
+        const influencedBy = trace('influencedBy')(
+          Array.from(new Set(influencedBy_.concat(influencedBy__))),
         )
 
         const wikipediaUri: ?RDFTriple = lookupFirstRDFElement(
@@ -159,6 +181,7 @@ export const getPerson = (s: SubjectId): Promise<?PersonDetail> => {
             thumbnail: maybe_(v => v.value)(thumbnail),
           })
         } else {
+          console.log('name is null')
           return null
         }
       },

@@ -632,9 +632,6 @@ const updateInfluenceGraph = (
     currentPeople,
   )
 
-  console.log('[updateInfluenceGraph incoming]', incomingPeople)
-  console.log('[updateInfluenceGraph outgoing]', outgoingPeople)
-
   graph.removeLinks()
   outgoingPeople.values().forEach((p: PersonDetail) => graph.removePerson(p))
 
@@ -722,7 +719,6 @@ const RadialInfluenceAnimation = (
     if (node.vy === 0) node.ty = null
   }
 
-  console.log('[RadialInfluenceAnimation]', graph.getLinks())
   const force = alpha => {
     const links = graph.getLinks()
     const focus = graph.getFocus()
@@ -998,13 +994,7 @@ class InfluenceCanvas {
      * the influence graph and display the empty loading circle. */
     let nodeUnderLoad = subject ? this.graph.nodes[subject.asString()] : null
 
-    console.log(
-      '[setLoadInProgress subject and nodeUnderLoad]',
-      subject,
-      nodeUnderLoad,
-    )
     if (subject && nodeUnderLoad) {
-      console.log('[setLoadInProgress adding a loading circle]')
       this.graph.getVisibleNodes().forEach((n: PersonNode) => {
         n.isLoading = subject ? subject.asString() === n.getId() : false
         if (n.isLoading) {
@@ -1020,7 +1010,6 @@ class InfluenceCanvas {
         }
       })
     } else if (subject && !nodeUnderLoad) {
-      console.log('[setLoadInProgress removing all nodes]')
       this.graph.nodes = {}
       this.graph.links = []
       this.nodesElem
@@ -1113,7 +1102,6 @@ class InfluenceCanvas {
         d.getId() === this.focus.id.asString() ? 'scale(1.0)' : 'scale(0.5)',
       )
 
-    console.log('[refreshCanvas this.graph.getLinks]', this.graph.getLinks())
     const linkSel = this.linksElem.selectAll('path').data(this.graph.getLinks())
     renderLinks(linkSel.enter(), this.graph)
     linkSel.exit().remove()

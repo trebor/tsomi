@@ -98,7 +98,6 @@ class App_ extends React.Component<AppProps, AppState> {
       )
       .catch(err => {
         if (err === undefined) return
-        console.log('[getAndCachePerson_ handler]', err)
         this.props.setErrorMessage(
           `Retrieving ${n.toString()} failed. Give us a few minutes and please try again.`,
         )
@@ -106,7 +105,6 @@ class App_ extends React.Component<AppProps, AppState> {
   }
 
   focusPerson(n: SubjectId): void {
-    console.log('[focusPerson]', n.asString())
     this.props.setLoadInProgress(n)
     this.getAndCachePerson_(n)
       .then((person: ?PersonDetail) => {
@@ -137,7 +135,6 @@ class App_ extends React.Component<AppProps, AppState> {
         this.props.setLoadInProgress(null)
       })
       .catch(err => {
-        console.log('[focusPerson]', err)
         this.props.setErrorMessage(
           `Oops! Focusing on ${n.asString()} failed. Give us a few minutes and please try again.`,
         )
