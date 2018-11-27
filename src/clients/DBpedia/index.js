@@ -4,6 +4,7 @@ import fp from 'lodash/fp'
 import moment from 'moment'
 import { parseString } from 'xml2js'
 
+import config from '../../config'
 import {
   type PersonDetail,
   mkPersonDetail,
@@ -17,31 +18,28 @@ import trace from '../../trace'
 
 require('isomorphic-fetch')
 
-/* TODO: turn this into a configuration option */
-export const DBPediaRootURI: string = 'http://dbpedia.org'
-
 export const IsPrimaryTopicOfURI: Array<string> = [
   'http://xmlns.com/foaf/0.1/isPrimaryTopicOf',
 ]
 export const ThumbnailURI: Array<string> = [
-  `${DBPediaRootURI}/ontology/thumbnail`,
+  `${config.dbpediaRoot}/ontology/thumbnail`,
 ]
 export const NameURI: Array<string> = [
-  `${DBPediaRootURI}/property/name`,
+  `${config.dbpediaRoot}/property/name`,
   'http://xmlns.com/foaf/0.1/name',
 ]
 export const BirthplaceURI: Array<string> = [
-  `${DBPediaRootURI}/ontology/birthPlace`,
+  `${config.dbpediaRoot}/ontology/birthPlace`,
 ]
 export const BirthdateURI: Array<string> = [
-  `${DBPediaRootURI}/ontology/birthDate`,
-  `${DBPediaRootURI}/property/birthDate`,
+  `${config.dbpediaRoot}/ontology/birthDate`,
+  `${config.dbpediaRoot}/property/birthDate`,
 ]
 export const DeathdateURI: Array<string> = [
-  `${DBPediaRootURI}/ontology/deathDate`,
+  `${config.dbpediaRoot}/ontology/deathDate`,
 ]
 export const AbstractURI: Array<string> = [
-  `${DBPediaRootURI}/ontology/abstract`,
+  `${config.dbpediaRoot}/ontology/abstract`,
 ]
 
 type RDFSet = {|
@@ -72,12 +70,14 @@ const parseDBpediaDate = (triple: RDFSet): ?moment => {
 
 const mkDataUrl = (s: SubjectId): string => {
   const subStr = encodeURIComponent(s.asString())
-  return `${DBPediaRootURI}/data/${subStr}.json`
+  return `${config.dbpediaRoot}/data/${subStr}.json`
 }
 
-const mkResourceUrl = (s: string): string => `${DBPediaRootURI}/resource/${s}`
+const mkResourceUrl = (s: string): string =>
+  `${config.dbpediaRoot}/resource/${s}`
 
-const mkOntologyUrl = (s: string): string => `${DBPediaRootURI}/ontology/${s}`
+const mkOntologyUrl = (s: string): string =>
+  `${config.dbpediaRoot}/ontology/${s}`
 
 const findByRelationship = (
   relationship: string,
